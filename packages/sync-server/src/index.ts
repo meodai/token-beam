@@ -1,2 +1,2 @@
-export { TokenSyncServer } from './server';
-export type { SyncSession, SyncMessage } from './server';
+export { TokenSyncServer } from './server.js';
+export type { SyncSession, SyncMessage } from './server.js';

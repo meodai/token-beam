@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { TokenSyncServer } from './server';
+import { TokenSyncServer } from './server.js';
 
 const port = parseInt(process.env.PORT || '8080', 10);
 const server = new TokenSyncServer(port);
