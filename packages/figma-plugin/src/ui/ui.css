@@ -1,0 +1,145 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--figma-color-text, #333);
+  background: var(--figma-color-bg, #fff);
+  padding: 12px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+
+input[type="url"] {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--figma-color-border, #ccc);
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--figma-color-bg, #fff);
+  color: var(--figma-color-text, #333);
+}
+
+button {
+  padding: 6px 12px;
+  border: 1px solid var(--figma-color-border, #ccc);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  background: var(--figma-color-bg-secondary, #f5f5f5);
+  color: var(--figma-color-text, #333);
+}
+
+button:hover {
+  background: var(--figma-color-bg-hover, #e8e8e8);
+}
+
+button.primary {
+  background: var(--figma-color-bg-brand, #18a0fb);
+  color: #fff;
+  border-color: var(--figma-color-bg-brand, #18a0fb);
+  width: 100%;
+  margin-top: 12px;
+}
+
+button.primary:hover {
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--figma-color-border, #ccc);
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--figma-color-bg, #fff);
+  color: var(--figma-color-text, #333);
+}
+
+section {
+  margin-bottom: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+#var-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.var-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--figma-color-border, #e0e0e0);
+  flex-shrink: 0;
+}
+
+.var-name {
+  font-size: 11px;
+  color: var(--figma-color-text, #333);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.var-value {
+  font-size: 11px;
+  color: var(--figma-color-text-secondary, #999);
+  flex-shrink: 0;
+}
+
+.type-badge {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--figma-color-bg-secondary, #f0f0f0);
+  color: var(--figma-color-text-secondary, #666);
+  flex-shrink: 0;
+}
+
+#status {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--figma-color-text-secondary, #666);
+}

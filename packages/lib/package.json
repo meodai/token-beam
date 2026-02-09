@@ -1,0 +1,26 @@
+{
+  "name": "figma-sync",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/figma-sync.js",
+  "module": "./dist/figma-sync.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/figma-sync.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.2",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^4.0.0"
+  }
+}

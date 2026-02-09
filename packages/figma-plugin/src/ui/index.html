@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./ui.css" />
+</head>
+<body>
+  <div id="app">
+    <section class="input-section">
+      <label for="url-input">Data URL</label>
+      <div class="input-row">
+        <input id="url-input" type="url" placeholder="http://localhost:5173/api/colors" />
+        <button id="fetch-btn">Fetch</button>
+      </div>
+    </section>
+
+    <section id="preview-section" class="hidden">
+      <h3 id="collection-name"></h3>
+      <div id="var-preview"></div>
+    </section>
+
+    <section id="target-section" class="hidden">
+      <label for="collection-select">Target collection</label>
+      <select id="collection-select">
+        <option value="__new__">Create new collection</option>
+      </select>
+    </section>
+
+    <button id="sync-btn" class="primary hidden" disabled>Sync to Figma</button>
+    <div id="status"></div>
+  </div>
+  <script type="module" src="./ui.ts"></script>
+</body>
+</html>
