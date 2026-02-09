@@ -1,5 +1,5 @@
 import { createServer, type Server } from 'http';
-import type { FigmaSyncPayload } from './types';
+import type { TokenSyncPayload } from './types';
 
 export interface ServeOptions {
   port?: number;
@@ -7,7 +7,7 @@ export interface ServeOptions {
 }
 
 export function servePayload(
-  payload: FigmaSyncPayload,
+  payload: TokenSyncPayload,
   options: ServeOptions = {},
 ): Promise<{ server: Server; url: string }> {
   const port = options.port ?? 3333;
@@ -35,7 +35,7 @@ export function servePayload(
 
     server.listen(port, hostname, () => {
       const url = `http://${hostname}:${port}`;
-      console.log(`figma-sync serving at ${url}`);
+      console.log(`token-sync serving at ${url}`);
       resolve({ server, url });
     });
   });

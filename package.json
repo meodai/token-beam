@@ -1,5 +1,5 @@
 {
-  "name": "figma-sync-monorepo",
+  "name": "token-sync-monorepo",
   "private": true,
   "workspaces": [
     "packages/lib",

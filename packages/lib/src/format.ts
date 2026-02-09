@@ -1,14 +1,14 @@
 import type {
-  FigmaColorValue,
-  FigmaVariableType,
-  FigmaSyncVariable,
-  FigmaSyncPayload,
-  FigmaSyncMode,
-  VariableInput,
-  ExplicitVariableEntry,
+  ColorValue,
+  TokenType,
+  DesignToken,
+  TokenSyncPayload,
+  TokenMode,
+  TokenInput,
+  ExplicitTokenEntry,
 } from './types';
 
-export function hexToFigmaRGBA(hex: string): FigmaColorValue {
+export function hexToRGBA(hex: string): ColorValue {
   let h = hex.replace(/^#/, '');
 
   if (h.length === 3) {
@@ -26,7 +26,7 @@ export function hexToFigmaRGBA(hex: string): FigmaColorValue {
   return { r, g, b, a };
 }
 
-function isColorValue(value: unknown): value is FigmaColorValue {
+function isColorValue(value: unknown): value is ColorValue {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -41,61 +41,66 @@ function isHexColor(value: string): boolean {
   return /^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(value);
 }
 
-export function resolveVariable(
+export function resolveToken(
   name: string,
-  value: VariableInput,
-  explicitType?: FigmaVariableType,
-): FigmaSyncVariable {
+  value: TokenInput,
+  explicitType?: TokenType,
+): DesignToken {
   if (explicitType) {
-    if (explicitType === 'COLOR' && typeof value === 'string') {
-      return { name, type: 'COLOR', value: hexToFigmaRGBA(value) };
+    if (explicitType === 'color' && typeof value === 'string') {
+      return { name, type: 'color', value: hexToRGBA(value) };
     }
     return { name, type: explicitType, value };
   }
 
   if (typeof value === 'boolean') {
-    return { name, type: 'BOOLEAN', value };
+    return { name, type: 'boolean', value };
   }
   if (typeof value === 'number') {
-    return { name, type: 'FLOAT', value };
+    return { name, type: 'number', value };
   }
   if (isColorValue(value)) {
-    return { name, type: 'COLOR', value };
+    return { name, type: 'color', value };
   }
   if (typeof value === 'string' && isHexColor(value)) {
-    return { name, type: 'COLOR', value: hexToFigmaRGBA(value) };
+    return { name, type: 'color', value: hexToRGBA(value) };
   }
-  return { name, type: 'STRING', value: String(value) };
+  return { name, type: 'string', value: String(value) };
 }
 
 export function createCollection(
   name: string,
-  variables: Record<string, VariableInput> | ExplicitVariableEntry[],
+  tokens: Record<string, TokenInput> | ExplicitTokenEntry[],
   modeName: string = 'Value',
-): FigmaSyncPayload {
-  const resolved: FigmaSyncVariable[] = Array.isArray(variables)
-    ? variables.map((v) => resolveVariable(v.name, v.value, v.type))
-    : Object.entries(variables).map(([k, v]) => resolveVariable(k, v));
+): TokenSyncPayload {
+  const resolved: DesignToken[] = Array.isArray(tokens)
+    ? tokens.map((t) => resolveToken(t.name, t.value, t.type))
+    : Object.entries(tokens).map(([k, v]) => resolveToken(k, v));
 
   return {
-    collectionName: name,
-    modes: [{ name: modeName, variables: resolved }],
+    collections: [
+      {
+        name,
+        modes: [{ name: modeName, tokens: resolved }],
+      },
+    ],
   };
 }
 
 export function createMultiModeCollection(
   name: string,
-  modeVariables: Record<string, Record<string, VariableInput> | ExplicitVariableEntry[]>,
-): FigmaSyncPayload {
-  const modes: FigmaSyncMode[] = Object.entries(modeVariables).map(
-    ([modeName, variables]) => {
-      const resolved: FigmaSyncVariable[] = Array.isArray(variables)
-        ? variables.map((v) => resolveVariable(v.name, v.value, v.type))
-        : Object.entries(variables).map(([k, v]) => resolveVariable(k, v));
+  modeTokens: Record<string, Record<string, TokenInput> | ExplicitTokenEntry[]>,
+): TokenSyncPayload {
+  const modes: TokenMode[] = Object.entries(modeTokens).map(
+    ([modeName, tokens]) => {
+      const resolved: DesignToken[] = Array.isArray(tokens)
+        ? tokens.map((t) => resolveToken(t.name, t.value, t.type))
+        : Object.entries(tokens).map(([k, v]) => resolveToken(k, v));
 
-      return { name: modeName, variables: resolved };
+      return { name: modeName, tokens: resolved };
     },
   );
 
-  return { collectionName: name, modes };
+  return { collections: [{ name, modes }] };
 }
+

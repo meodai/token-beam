@@ -1,5 +1,5 @@
 {
-  "name": "figma-sync-demo",
+  "name": "token-sync-demo",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,7 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "figma-sync": "*"
+    "token-sync": "*"
   },
   "devDependencies": {
     "vite": "^6.0.0"

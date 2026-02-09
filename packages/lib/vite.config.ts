@@ -7,9 +7,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'FigmaSync',
+      name: 'TokenSync',
       formats: ['es'],
-      fileName: 'figma-sync',
+      fileName: 'token-sync',
     },
     rollupOptions: {
       external: ['http'],

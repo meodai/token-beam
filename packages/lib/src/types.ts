@@ -1,3 +1,49 @@
+// W3C DTCG-aligned generic token types
+export type TokenType = 'color' | 'number' | 'string' | 'boolean';
+
+export interface ColorValue {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+}
+
+export interface DesignToken {
+  name: string;
+  type: TokenType;
+  value: ColorValue | number | string | boolean;
+}
+
+export interface TokenMode {
+  name: string;
+  tokens: DesignToken[];
+}
+
+export interface TokenCollection {
+  name: string;
+  modes: TokenMode[];
+}
+
+export interface TokenSyncPayload {
+  collections: TokenCollection[];
+}
+
+// Helper types for input
+export type TokenInput = string | number | boolean | ColorValue;
+
+export interface ExplicitTokenEntry {
+  name: string;
+  value: TokenInput;
+  type?: TokenType;
+}
+
+// Adapter interface
+export interface TargetAdapter<T> {
+  name: string;
+  transform(payload: TokenSyncPayload): T;
+}
+
+// Legacy Figma types (for adapter output)
 export type FigmaVariableType = 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN';
 
 export interface FigmaColorValue {
@@ -18,15 +64,7 @@ export interface FigmaSyncMode {
   variables: FigmaSyncVariable[];
 }
 
-export interface FigmaSyncPayload {
+export interface FigmaCollectionPayload {
   collectionName: string;
   modes: FigmaSyncMode[];
-}
-
-export type VariableInput = string | number | boolean | FigmaColorValue;
-
-export interface ExplicitVariableEntry {
-  name: string;
-  value: VariableInput;
-  type?: FigmaVariableType;
 }

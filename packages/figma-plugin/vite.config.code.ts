@@ -5,7 +5,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/code.ts'),
-      name: 'FigmaSyncPlugin',
+      name: 'TokenSyncPlugin',
       formats: ['iife'],
       fileName: () => 'code.js',
     },

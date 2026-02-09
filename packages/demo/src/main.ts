@@ -1,10 +1,10 @@
-import type { FigmaSyncPayload, FigmaColorValue } from 'figma-sync';
+import type { FigmaCollectionPayload, FigmaColorValue } from 'token-sync';
 
 const API_PATH = '/api/colors';
 
 async function init() {
   const res = await fetch(API_PATH);
-  const payload: FigmaSyncPayload = await res.json();
+  const payload: FigmaCollectionPayload = await res.json();
   render(payload);
 }
 
@@ -12,7 +12,7 @@ function figmaColorToCSS(c: FigmaColorValue): string {
   return `rgba(${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(c.b * 255)}, ${c.a})`;
 }
 
-function render(payload: FigmaSyncPayload) {
+function render(payload: FigmaCollectionPayload) {
   const app = document.getElementById('app')!;
   const fullUrl = `${window.location.origin}${API_PATH}`;
   const firstMode = payload.modes[0];

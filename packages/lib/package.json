@@ -1,13 +1,13 @@
 {
-  "name": "figma-sync",
+  "name": "token-sync",
   "version": "0.1.0",
   "type": "module",
-  "main": "./dist/figma-sync.js",
-  "module": "./dist/figma-sync.js",
+  "main": "./dist/token-sync.js",
+  "module": "./dist/token-sync.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/figma-sync.js",
+      "import": "./dist/token-sync.js",
       "types": "./dist/index.d.ts"
     }
   },
