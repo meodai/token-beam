@@ -4,13 +4,17 @@
   "workspaces": [
     "packages/lib",
     "packages/figma-plugin",
-    "packages/demo"
+    "packages/demo",
+    "packages/sync-server"
   ],
   "scripts": {
-    "build": "npm run build:lib && npm run build:plugin",
+    "build": "npm run build:lib && npm run build:plugin && npm run build:server",
     "build:lib": "npm run build -w packages/lib",
     "build:plugin": "npm run build -w packages/figma-plugin",
-    "dev:demo": "npm run dev -w packages/demo"
+    "build:server": "npm run build -w packages/sync-server",
+    "dev:demo": "npm run dev -w packages/demo",
+    "dev:server": "npm run dev -w packages/sync-server",
+    "start:server": "npm run start -w packages/sync-server"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

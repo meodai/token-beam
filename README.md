@@ -1,0 +1,227 @@
+# Token Sync
+
+A tool-agnostic design token synchronization system aligned with the **W3C Design Tokens Community Group** specification.
+
+## Specification Compliance
+
+This project implements the [W3C Design Tokens Format Module 2025.10](https://www.designtokens.org/tr/2025.10/format/) specification (Final Community Group Report, 28 October 2025).
+
+### Core Features Aligned with Spec
+
+- **Generic Token Types**: Lowercase type names (`color`, `number`, `string`, `boolean`) per spec section 8
+- **$value and $type Properties**: All tokens use `$value` for content and `$type` for type declaration (section 5)
+- **Color Values**: RGBA format with normalized 0-1 values (`ColorValue` interface)
+- **Dimension Values**: Object format with `value` and `unit` properties (section 8.2)
+- **References/Aliases**: Support for `{token.path}` reference syntax (section 7)
+
+### Architecture
+
+#### Core Library (`packages/lib`)
+
+The generic token data model that is tool-agnostic:
+
+```typescript
+interface DesignToken {
+  name: string;
+  type: TokenType; // 'color' | 'number' | 'string' | 'boolean'
+  value: ColorValue | number | string | boolean;
+}
+
+interface TokenCollection {
+  name: string;
+  modes: TokenMode[];
+}
+
+interface TokenSyncPayload {
+  collections: TokenCollection[];
+}
+```
+
+#### Target Adapters
+
+Pure transform functions that convert the generic payload into tool-specific formats:
+
+- **`figmaCollectionAdapter`**: Transforms generic tokens → Figma Variables API format
+  - Maps `'color'` → `'COLOR'`, `'number'` → `'FLOAT'`
+  - Converts `tokens` array → `variables` array
+  - Wraps collections with `collectionName` property
+
+Future adapters: Adobe XD, Sketch, Penpot, etc.
+
+#### Communication
+
+- **HTTP-based**: REST API serving JSON payloads (one-time fetch)
+- **Real-time sync**: WebSocket server for live design-to-code updates via token-based pairing
+
+## Real-Time Sync
+
+The **`packages/sync-server`** package provides a WebSocket server for real-time bidirectional synchronization between the web demo and Figma plugin.
+
+### How It Works
+
+1. **Web client** connects to sync server and receives a unique 6-character token (e.g., `A3F9K2`)
+2. **User** copies the token and pastes it into the Figma plugin
+3. **Figma plugin** connects using the token and gets paired with the web session
+4. **Changes** made on the website are instantly synced to Figma in real-time
+5. **Session** stays alive for 30 minutes of inactivity, then auto-expires
+
+### Running the Sync Server
+
+```bash
+# Development mode (with auto-reload)
+npm run dev:server
+
+# Production mode
+npm run build:server
+npm run start:server
+```
+
+The server runs on `ws://localhost:8080` by default. Set `PORT` environment variable to change:
+
+```bash
+PORT=9000 npm run start:server
+```
+
+### Architecture
+
+```
+┌─────────────┐         WebSocket          ┌──────────────────┐
+│  Web Demo   │ ◄────── Token: A3F9K2 ──── │  Sync Server     │
+│  (Browser)  │                             │  (Node.js + WS)  │
+└─────────────┘                             └──────────────────┘
+                                                     ▲
+                                                     │ WebSocket
+                                                     │ Token: A3F9K2
+                                            ┌────────┴────────┐
+                                            │ Figma Plugin    │
+                                            │ (Plugin UI)     │
+                                            └─────────────────┘
+```
+
+### Session Flow
+
+1. Web connects → Server generates token → Web displays token
+2. Figma enters token → Server pairs sessions
+3. Web updates color → Server forwards to Figma → Figma applies
+4. Both clients stay synced until disconnect or timeout
+
+## Project Structure
+
+```
+token-sync/
+├── packages/
+│   ├── lib/              # Core generic token library
+│   │   ├── src/
+│   │   │   ├── types.ts          # W3C DTCG-aligned types
+│   │   │   ├── format.ts         # Token creation utilities
+│   │   │   ├── adapters/         # Tool-specific adapters
+│   │   │   │   ├── figma-collection.ts
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts
+│   │   └── dist/token-sync.js
+│   │
+│   ├── sync-server/      # WebSocket server for real-time sync
+│   │   └── (coming soon)
+│   │
+│   ├── demo/             # Demo web app
+│   │   └── vite.config.ts  # Uses adapter to serve Figma format
+│   │
+│   └── figma-plugin/     # Figma plugin consuming adapted JSON
+│
+├── package.json
+└── README.md
+```
+
+## Usage
+
+### Creating Tokens (W3C DTCG Format)
+
+```typescript
+import { createCollection } from 'token-sync';
+
+const payload = createCollection('My Colors', {
+  'color/primary': '#0066cc',
+  'spacing/base': 16,
+  'text/label': 'Hello'
+});
+
+// Returns W3C DTCG-aligned structure:
+// {
+//   collections: [{
+//     name: "My Colors",
+//     modes: [{
+//       name: "Value",
+//       tokens: [
+//         { name: "color/primary", type: "color", value: {r:0, g:0.4, b:0.8, a:1} },
+//         { name: "spacing/base", type: "number", value: 16 },
+//         { name: "text/label", type: "string", value: "Hello" }
+//       ]
+//     }]
+//   }]
+// }
+```
+
+### Using Adapters
+
+```typescript
+import { createCollection, figmaCollectionAdapter } from 'token-sync';
+
+const genericPayload = createCollection('My Colors', { 'color/primary': '#0066cc' });
+const figmaPayload = figmaCollectionAdapter.transform(genericPayload);
+
+// figmaPayload[0] = {
+//   collectionName: "My Colors",
+//   modes: [{
+//     name: "Value",
+//     variables: [
+//       { name: "color/primary", type: "COLOR", value: {r:0, g:0.4, b:0.8, a:1} }
+//     ]
+//   }]
+// }
+```
+
+### Serving Tokens
+
+```typescript
+import { servePayload } from 'token-sync';
+
+const payload = createCollection('Colors', { primary: '#0066cc' });
+const { server, url } = await servePayload(payload, { port: 3333 });
+console.log(`Serving at ${url}`); // http://localhost:3333
+```
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Build all packages
+npm run build
+
+# Build library only
+npm run build:lib
+
+# Build Figma plugin
+npm run build:plugin
+
+# Run demo (with hot reload)
+npm run dev:demo
+```
+
+## W3C DTCG Spec Reference
+
+- **Specification**: [Design Tokens Format Module 2025.10](https://www.designtokens.org/tr/2025.10/format/)
+- **Status**: Final Community Group Report (Candidate Recommendation)
+- **Published**: 28 October 2025
+- **Community Group**: [W3C Design Tokens CG](https://www.w3.org/groups/cg/design-tokens)
+
+### Key Sections Implemented
+
+- Section 5: Design Token (name, $value, $type properties)
+- Section 7: Aliases/References
+- Section 8: Types (color, dimension, number, string, boolean)
+
+## License
+
+MIT
