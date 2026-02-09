@@ -1,6 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { createServer, type Server as HTTPServer } from 'http';
-import type { FigmaCollectionPayload } from 'token-sync';
 
 export interface SyncSession {
   id: string;
@@ -15,7 +14,7 @@ export interface SyncMessage {
   type: 'pair' | 'sync' | 'ping' | 'error';
   sessionToken?: string;
   clientType?: 'web' | 'figma';
-  payload?: FigmaCollectionPayload;
+  payload?: unknown;
   error?: string;
 }
 

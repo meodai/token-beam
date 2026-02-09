@@ -43,28 +43,3 @@ export interface TargetAdapter<T> {
   transform(payload: TokenSyncPayload): T;
 }
 
-// Legacy Figma types (for adapter output)
-export type FigmaVariableType = 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN';
-
-export interface FigmaColorValue {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-}
-
-export interface FigmaSyncVariable {
-  name: string;
-  type: FigmaVariableType;
-  value: FigmaColorValue | number | string | boolean;
-}
-
-export interface FigmaSyncMode {
-  name: string;
-  variables: FigmaSyncVariable[];
-}
-
-export interface FigmaCollectionPayload {
-  collectionName: string;
-  modes: FigmaSyncMode[];
-}

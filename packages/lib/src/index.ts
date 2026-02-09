@@ -10,11 +10,12 @@ export type {
   TokenInput,
   ExplicitTokenEntry,
   TargetAdapter,
-  FigmaVariableType,
-  FigmaColorValue,
-  FigmaSyncVariable,
-  FigmaSyncMode,
-  FigmaCollectionPayload,
 } from './types';
 export type { ServeOptions } from './serve';
 export { figmaCollectionAdapter } from './adapters';
+export type {
+  FigmaVariableType,
+  FigmaSyncVariable,
+  FigmaSyncMode,
+  FigmaCollectionPayload,
+} from './adapters';

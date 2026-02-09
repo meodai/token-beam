@@ -11,12 +11,11 @@
     }
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/cli.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/cli.js"
   },
   "dependencies": {
-    "token-sync": "*",
     "ws": "^8.18.0"
   },
   "devDependencies": {

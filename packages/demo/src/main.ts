@@ -1,10 +1,10 @@
-import type { FigmaCollectionPayload, FigmaColorValue } from 'token-sync';
+import type { FigmaCollectionPayload, ColorValue } from 'token-sync';
 import { SyncClient } from './sync-client';
 
 const API_PATH = '/api/colors';
 const SYNC_SERVER_URL = 'ws://localhost:8080';
 
-let syncClient: SyncClient | null = null;
+let syncClient: SyncClient<FigmaCollectionPayload> | null = null;
 let currentPayload: FigmaCollectionPayload | null = null;
 let sessionToken: string | null = null;
 
@@ -21,7 +21,7 @@ function initSync() {
     syncClient.disconnect();
   }
 
-  syncClient = new SyncClient({
+  syncClient = new SyncClient<FigmaCollectionPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
     onPaired: (token) => {
@@ -58,6 +58,7 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
   if (!syncStatus) return;
 
   const statusEl = syncStatus.querySelector('.status-indicator') as HTMLElement;
+  const tokenDisplay = syncStatus.querySelector('.token-display') as HTMLElement;
   const tokenEl = syncStatus.querySelector('#sync-token') as HTMLElement;
   const errorEl = syncStatus.querySelector('#sync-error') as HTMLElement;
 
@@ -65,7 +66,7 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
     case 'connecting':
       statusEl.className = 'status-indicator connecting';
       statusEl.textContent = 'Connecting...';
-      tokenEl.style.display = 'none';
+      tokenDisplay.style.display = 'none';
       errorEl.style.display = 'none';
       break;
     case 'ready':
@@ -73,20 +74,20 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
       statusEl.textContent = 'Live Sync Ready';
       if (token) {
         tokenEl.textContent = token;
-        tokenEl.style.display = 'block';
+        tokenDisplay.style.display = '';
       }
       errorEl.style.display = 'none';
       break;
     case 'disconnected':
       statusEl.className = 'status-indicator disconnected';
       statusEl.textContent = 'Disconnected';
-      tokenEl.style.display = 'none';
+      tokenDisplay.style.display = 'none';
       errorEl.style.display = 'none';
       break;
     case 'error':
       statusEl.className = 'status-indicator error';
       statusEl.textContent = 'Error';
-      tokenEl.style.display = 'none';
+      tokenDisplay.style.display = 'none';
       if (error) {
         errorEl.textContent = error;
         errorEl.style.display = 'block';
@@ -95,7 +96,7 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
   }
 }
 
-function figmaColorToCSS(c: FigmaColorValue): string {
+function colorToCSS(c: ColorValue): string {
   return `rgba(${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(c.b * 255)}, ${c.a})`;
 }
 
@@ -138,7 +139,7 @@ function render(payload: FigmaCollectionPayload) {
     const el = document.createElement('div');
     el.className = 'swatch';
     if (v.type === 'COLOR') {
-      el.style.backgroundColor = figmaColorToCSS(v.value as FigmaColorValue);
+      el.style.backgroundColor = colorToCSS(v.value as ColorValue);
     }
     el.innerHTML = `<span class="label">${v.name}</span>`;
     swatches.appendChild(el);

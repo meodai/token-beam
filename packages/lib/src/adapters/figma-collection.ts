@@ -3,12 +3,27 @@ import type {
   TokenType,
   DesignToken,
   TargetAdapter,
-  FigmaVariableType,
-  FigmaSyncVariable,
-  FigmaCollectionPayload,
   ColorValue,
-  FigmaColorValue,
 } from '../types';
+
+// Figma-specific output types
+export type FigmaVariableType = 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN';
+
+export interface FigmaSyncVariable {
+  name: string;
+  type: FigmaVariableType;
+  value: ColorValue | number | string | boolean;
+}
+
+export interface FigmaSyncMode {
+  name: string;
+  variables: FigmaSyncVariable[];
+}
+
+export interface FigmaCollectionPayload {
+  collectionName: string;
+  modes: FigmaSyncMode[];
+}
 
 function tokenTypeToFigma(type: TokenType): FigmaVariableType {
   switch (type) {
@@ -27,7 +42,7 @@ function tokenToVariable(token: DesignToken): FigmaSyncVariable {
   return {
     name: token.name,
     type: tokenTypeToFigma(token.type),
-    value: token.value as FigmaColorValue | number | string | boolean,
+    value: token.value as ColorValue | number | string | boolean,
   };
 }
 
