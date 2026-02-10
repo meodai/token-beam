@@ -42,6 +42,67 @@ const description = 'Real-time design token synchronization between web and desi
         </div>
       </section>
 
+      <section class="demo">
+        <div class="container">
+          <h2>See It In Action</h2>
+          <div class="demo-grid">
+            <div class="demo-token-side">
+              <h3>Your Design System</h3>
+              <div class="token-generator">
+                <div class="color-preview" id="colorPreview"></div>
+                <div class="token-info">
+                  <div class="token-label">Token</div>
+                  <code class="token-code" id="tokenCode">dts://k8x9m2p4n7q5</code>
+                  <div class="token-value-container">
+                    <div class="token-label">Color Value</div>
+                    <div class="token-value" id="tokenValue">#0066cc</div>
+                  </div>
+                </div>
+                <button class="btn btn-primary" id="updateColorBtn">Update Color</button>
+              </div>
+            </div>
+            
+            <div class="demo-arrow">
+              <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 30H50M50 30L35 15M50 30L35 45" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+
+            <div class="demo-tool-side">
+              <h3>Design Tool (Figma)</h3>
+              <div class="tool-mockup">
+                <div class="tool-header">
+                  <div class="tool-tabs">
+                    <div class="tool-tab active">Design</div>
+                    <div class="tool-tab">Prototype</div>
+                  </div>
+                </div>
+                <div class="tool-canvas">
+                  <div class="tool-sidebar">
+                    <div class="sidebar-section">Layers</div>
+                    <div class="layer-item">Button</div>
+                    <div class="layer-item">Card</div>
+                  </div>
+                  <div class="tool-viewport">
+                    <div class="design-element" id="designElement">
+                      <div class="design-button">Click me</div>
+                    </div>
+                  </div>
+                  <div class="tool-properties">
+                    <div class="property-label">Fill</div>
+                    <div class="property-color" id="propertyColor"></div>
+                  </div>
+                </div>
+                <div class="sync-status" id="syncStatus">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Waiting for changes...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="features" id="features">
         <div class="container">
           <h2>Why Token Sync?</h2>
@@ -311,6 +372,270 @@ const description = 'Real-time design token synchronization between web and desi
       background: var(--color-light-gray);
     }
 
+    /* Demo */
+    .demo {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .demo h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .demo-arrow {
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .demo-token-side, .demo-tool-side {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .demo-token-side h3, .demo-tool-side h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-dark);
+    }
+
+    .token-generator {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .color-preview {
+      width: 100%;
+      height: 200px;
+      border-radius: 0.5rem;
+      background: var(--color-primary);
+      transition: background-color 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .token-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .token-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--color-gray);
+      margin-bottom: 0.25rem;
+    }
+
+    .token-code {
+      display: block;
+      padding: 0.75rem;
+      background: var(--color-light-gray);
+      border-radius: 0.5rem;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.875rem;
+      word-break: break-all;
+    }
+
+    .token-value-container {
+      margin-top: 0.5rem;
+    }
+
+    .token-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: 'Monaco', 'Courier New', monospace;
+      color: var(--color-dark);
+      transition: color 0.3s ease;
+    }
+
+    #updateColorBtn {
+      width: 100%;
+    }
+
+    /* Tool Mockup */
+    .tool-mockup {
+      background: #f5f5f5;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .tool-header {
+      background: white;
+      border-bottom: 1px solid var(--color-border);
+      padding: 0.5rem 1rem;
+    }
+
+    .tool-tabs {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .tool-tab {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      color: var(--color-gray);
+      cursor: pointer;
+    }
+
+    .tool-tab.active {
+      color: var(--color-dark);
+      font-weight: 600;
+      border-bottom: 2px solid var(--color-primary);
+    }
+
+    .tool-canvas {
+      display: grid;
+      grid-template-columns: 120px 1fr 100px;
+      height: 300px;
+      background: white;
+    }
+
+    .tool-sidebar {
+      background: #fafafa;
+      border-right: 1px solid var(--color-border);
+      padding: 1rem;
+    }
+
+    .sidebar-section {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--color-gray);
+      margin-bottom: 0.5rem;
+    }
+
+    .layer-item {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      background: white;
+      margin-bottom: 0.25rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--color-border);
+    }
+
+    .tool-viewport {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: #fcfcfc;
+    }
+
+    .design-element {
+      transition: all 0.3s ease;
+    }
+
+    .design-button {
+      background: var(--color-primary);
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.6s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .tool-properties {
+      background: #fafafa;
+      border-left: 1px solid var(--color-border);
+      padding: 1rem;
+    }
+
+    .property-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--color-gray);
+      margin-bottom: 0.5rem;
+    }
+
+    .property-color {
+      width: 60px;
+      height: 60px;
+      border-radius: 0.5rem;
+      background: var(--color-primary);
+      border: 2px solid white;
+      box-shadow: 0 0 0 1px var(--color-border);
+      transition: background-color 0.6s ease;
+    }
+
+    .sync-status {
+      background: white;
+      border-top: 1px solid var(--color-border);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-gray);
+      transition: background-color 0.3s ease;
+    }
+
+    .status-dot.syncing {
+      background: orange;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    .status-dot.synced {
+      background: var(--color-success);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .status-text {
+      color: var(--color-gray);
+    }
+
+    @media (max-width: 1024px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .demo-arrow {
+        transform: rotate(90deg);
+      }
+
+      .tool-canvas {
+        grid-template-columns: 100px 1fr 80px;
+      }
+    }
+
+    /* Features */
+
     .features h2 {
       text-align: center;
       font-size: 2.5rem;
@@ -447,4 +772,106 @@ const description = 'Real-time design token synchronization between web and desi
       font-family: 'Monaco', 'Courier New', monospace;
     }
   </style>
+
+  <script>
+    // Generate random colors
+    function generateRandomColor() {
+      const hue = Math.floor(Math.random() * 360);
+      const saturation = Math.floor(Math.random() * 40) + 60; // 60-100%
+      const lightness = Math.floor(Math.random() * 30) + 40; // 40-70%
+      
+      // Convert HSL to RGB to HEX
+      const h = hue / 360;
+      const s = saturation / 100;
+      const l = lightness / 100;
+      
+      let r, g, b;
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p: number, q: number, t: number) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+        
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      
+      const toHex = (x: number) => {
+        const hex = Math.round(x * 255).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      };
+      
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+
+    // Initialize demo
+    let currentColor = '#0066cc';
+    
+    const colorPreview = document.getElementById('colorPreview');
+    const tokenValue = document.getElementById('tokenValue');
+    const designButton = document.querySelector('.design-button');
+    const propertyColor = document.getElementById('propertyColor');
+    const statusDot = document.querySelector('.status-dot');
+    const statusText = document.querySelector('.status-text');
+    const updateBtn = document.getElementById('updateColorBtn');
+
+    function updateColor(color: string) {
+      currentColor = color;
+      
+      // Update token side immediately
+      if (colorPreview) colorPreview.style.backgroundColor = color;
+      if (tokenValue) {
+        tokenValue.textContent = color;
+        tokenValue.style.color = color;
+      }
+      
+      // Show syncing status
+      if (statusDot) statusDot.classList.add('syncing');
+      if (statusText) statusText.textContent = 'Syncing...';
+      
+      // Update design tool after delay
+      setTimeout(() => {
+        if (designButton instanceof HTMLElement) {
+          designButton.style.backgroundColor = color;
+        }
+        if (propertyColor) propertyColor.style.backgroundColor = color;
+        
+        // Show synced status
+        if (statusDot) {
+          statusDot.classList.remove('syncing');
+          statusDot.classList.add('synced');
+        }
+        if (statusText) statusText.textContent = 'Synced!';
+        
+        // Reset status after 2 seconds
+        setTimeout(() => {
+          if (statusDot) statusDot.classList.remove('synced');
+          if (statusText) statusText.textContent = 'Waiting for changes...';
+        }, 2000);
+      }, 1200);
+    }
+
+    // Button click handler
+    if (updateBtn) {
+      updateBtn.addEventListener('click', () => {
+        const newColor = generateRandomColor();
+        updateColor(newColor);
+      });
+    }
+
+    // Auto-update every 5 seconds
+    setInterval(() => {
+      const newColor = generateRandomColor();
+      updateColor(newColor);
+    }, 5000);
+  </script>
 </html>
