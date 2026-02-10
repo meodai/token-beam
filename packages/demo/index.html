@@ -53,104 +53,83 @@
       margin-bottom: .75rem;
       color: var(--c-surface-on-alt);
     }
-    .sync-section {
+    .dts-widget {
       margin-bottom: 1.5rem;
-      padding: 1rem;
+      padding: .5rem;
       border: var(--s-line) solid var(--c-border);
-      border-radius: 0;
-    }
-    .sync-info {
+      border-radius: var(--s-radius);
       display: flex;
       flex-direction: column;
-      gap: .75rem;
+      gap: .4rem;
     }
-    .status-indicator {
-      padding: .25rem .75rem;
-      border-radius: var(--s-radius);
-      font-size: .65rem;
-      font-weight: 400;
-      width: fit-content;
-      border: var(--s-line) solid;
-      letter-spacing: 0.04em;
-    }
-    .status-indicator.connecting {
-      border-color: #b07d16;
-      color: #b07d16;
-    }
-    .status-indicator.connected {
-      border-color: #1b8a2d;
-      color: #1b8a2d;
-    }
-    .status-indicator.disconnected {
-      border-color: var(--c-border);
-      color: var(--c-surface-on-alt);
-    }
-    .status-indicator.error {
-      border-color: #c4342d;
-      color: #c4342d;
-    }
-    .token-display {
+    .dts-widget__row {
       display: flex;
       align-items: center;
       gap: .5rem;
     }
-    .token-display label {
+    .dts-widget__label {
       font-size: .65rem;
-      font-weight: 400;
-      color: var(--c-surface-on-alt);
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .sync-token {
-      padding: .5rem 1rem !important;
-      background: var(--c-surface) !important;
-      border: var(--s-line-fat) solid var(--c-accent) !important;
-      border-radius: var(--s-radius) !important;
-      font-size: 1rem !important;
-      font-weight: 400 !important;
-      letter-spacing: 0.2em;
-      color: var(--c-surface-on) !important;
-      font-family: inherit !important;
-    }
-    .sync-help {
-      font-size: .65rem;
+      letter-spacing: 0.08em;
       color: var(--c-surface-on-alt);
-      font-style: normal;
-      letter-spacing: 0.02em;
+      white-space: nowrap;
     }
-    .error-message {
-      padding: .5rem .75rem;
+    .dts-widget__token {
+      flex: 1;
+      padding: .4rem .6rem;
+      background: var(--c-surface);
+      border: var(--s-line-fat) solid var(--c-accent);
+      border-radius: var(--s-radius);
+      font-size: .75rem;
+      letter-spacing: 0.18em;
+      color: var(--c-surface-on);
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .dts-widget__token:disabled {
+      opacity: .6;
+      cursor: default;
+    }
+    .dts-widget__token:hover,
+    .dts-widget__token:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .dts-widget__unlink {
+      background: none;
+      border: var(--s-line) solid var(--c-border);
+      border-radius: var(--s-radius);
+      padding: .3rem .5rem;
+      cursor: pointer;
+      font-size: .6rem;
+      color: var(--c-surface-on-alt);
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      transition: all 0.2s var(--ease);
+    }
+    .dts-widget__unlink:hover {
+      border-color: #c4342d;
+      color: #c4342d;
+      transform: translateY(-1px);
+    }
+    .dts-widget__error {
+      padding: .35rem .5rem;
       border: var(--s-line) solid #c4342d;
       color: #c4342d;
       border-radius: var(--s-radius);
       font-size: .65rem;
     }
-    .unlink-btn {
-      background: none;
-      border: var(--s-line) solid var(--c-border);
-      border-radius: var(--s-radius);
-      padding: .25rem .5rem;
-      cursor: pointer;
-      font-size: .75rem;
-      color: var(--c-surface-on-alt);
-      line-height: 1;
-      transition: all 0.2s var(--ease);
+    .dts-widget--waiting {
+      border-color: #b07d16;
     }
-    .unlink-btn:hover {
+    .dts-widget--connected {
+      border-color: #1b8a2d;
+    }
+    .dts-widget--error {
       border-color: #c4342d;
-      color: #c4342d;
-      transform: translateY(-1px);
-    }
-    code {
-      flex: 1;
-      padding: .5rem .75rem;
-      background: transparent;
-      border: var(--s-line) solid var(--c-border);
-      border-radius: var(--s-radius);
-      font-size: .75rem;
-      font-family: inherit;
-      word-break: break-all;
-      color: var(--c-surface-on);
     }
     button {
       padding: .5rem 1rem;

@@ -28,19 +28,13 @@ function queryElement<T extends HTMLElement>(parent: HTMLElement, selector: stri
 async function init() {
   const app = getElement<HTMLDivElement>('app');
   app.innerHTML = `
-    <div class="sync-section" id="sync-status">
-      <h2>Live Sync</h2>
-      <div class="sync-info">
-        <div class="status-indicator connecting">Connecting...</div>
-        <div class="token-display" style="display: none;">
-          <label>Session Token:</label>
-          <code id="sync-token" class="sync-token"></code>
-          <button id="copy-token-btn" title="Copy token">Copy</button>
-          <button id="unlink-btn" class="unlink-btn" title="Disconnect and generate new token">&#x26D3;&#xFE0E;</button>
-        </div>
-        <div id="sync-error" class="error-message" style="display: none;"></div>
-        <p class="sync-help">Enter this token in your token-sync plugin to pair</p>
+    <div class="dts-widget dts-widget--waiting" id="sync-status">
+      <div class="dts-widget__row">
+        <div class="dts-widget__label">Token Sync</div>
+        <button id="sync-token" class="dts-widget__token" type="button" title="Click to copy"></button>
+        <button id="unlink-btn" class="dts-widget__unlink" type="button" title="Disconnect and generate new token">Unlink</button>
       </div>
+      <div id="sync-error" class="dts-widget__error" style="display: none;"></div>
     </div>
 
     <div id="payload-section"></div>
@@ -50,12 +44,9 @@ async function init() {
     unlink();
   });
 
-  getElement('copy-token-btn').addEventListener('click', () => {
+  getElement('sync-token').addEventListener('click', () => {
     if (sessionToken) {
       navigator.clipboard.writeText(sessionToken);
-      const btn = getElement('copy-token-btn');
-      btn.textContent = 'Copied!';
-      setTimeout(() => (btn.textContent = 'Copy'), 1500);
     }
   });
 
@@ -127,56 +118,58 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
   const syncStatus = document.getElementById('sync-status');
   if (!syncStatus) return;
 
-  const statusEl = queryElement<HTMLDivElement>(syncStatus, '.status-indicator');
-  const tokenDisplay = queryElement<HTMLDivElement>(syncStatus, '.token-display');
-  const tokenEl = queryElement<HTMLElement>(syncStatus, '#sync-token');
+  const tokenEl = queryElement<HTMLButtonElement>(syncStatus, '#sync-token');
   const errorEl = queryElement<HTMLDivElement>(syncStatus, '#sync-error');
   const unlinkBtn = queryElement<HTMLButtonElement>(syncStatus, '#unlink-btn');
-  const helpEl = queryElement<HTMLParagraphElement>(syncStatus, '.sync-help');
 
-  if (!statusEl || !tokenDisplay || !tokenEl || !errorEl || !unlinkBtn || !helpEl) return;
+  if (!tokenEl || !errorEl || !unlinkBtn) return;
+
+  syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
 
   switch (status) {
     case 'connecting':
-      statusEl.className = 'status-indicator connecting';
-      statusEl.textContent = 'Connecting...';
-      tokenDisplay.style.display = 'none';
+      syncStatus.classList.add('dts-widget--waiting');
+      tokenEl.textContent = 'Connecting...';
+      tokenEl.disabled = true;
       errorEl.style.display = 'none';
-      helpEl.style.display = 'none';
+      unlinkBtn.style.display = 'none';
       break;
     case 'ready':
-      statusEl.className = 'status-indicator connected';
-      statusEl.textContent = 'Waiting for plugin...';
       if (token) {
         tokenEl.textContent = token;
-        tokenDisplay.style.display = '';
       }
+      syncStatus.classList.add('dts-widget--waiting');
+      tokenEl.disabled = false;
       unlinkBtn.style.display = 'none';
       errorEl.style.display = 'none';
-      helpEl.style.display = '';
       break;
     case 'syncing':
-      statusEl.className = 'status-indicator connected';
-      statusEl.textContent = 'Plugin connected — syncing!';
+      syncStatus.classList.add('dts-widget--connected');
+      if (token) {
+        tokenEl.textContent = token;
+      }
+      tokenEl.disabled = false;
       unlinkBtn.style.display = '';
       errorEl.style.display = 'none';
-      helpEl.style.display = 'none';
       break;
     case 'disconnected':
-      statusEl.className = 'status-indicator disconnected';
-      statusEl.textContent = 'Disconnected';
-      tokenDisplay.style.display = 'none';
+      syncStatus.classList.add('dts-widget--waiting');
+      tokenEl.textContent = 'Disconnected';
+      tokenEl.disabled = true;
       errorEl.style.display = 'none';
-      helpEl.style.display = 'none';
+      unlinkBtn.style.display = 'none';
       break;
     case 'error':
-      statusEl.className = 'status-indicator error';
-      statusEl.textContent = 'Error';
+      syncStatus.classList.add('dts-widget--error');
+      tokenEl.textContent = 'Error';
+      tokenEl.disabled = true;
+      unlinkBtn.style.display = 'none';
       if (error) {
         errorEl.textContent = error;
         errorEl.style.display = 'block';
+      } else {
+        errorEl.style.display = 'none';
       }
-      helpEl.style.display = 'none';
       break;
   }
 }
