@@ -11,6 +11,7 @@ let currentPayload: TokenSyncPayload | null = null;
 let sessionToken: string | null = null;
 let isPaired = false;
 let copyStatusTimer: number | null = null;
+let messageTimer: number | null = null;
 
 // --- DOM helpers ---
 
@@ -22,6 +23,30 @@ function getElement<T extends HTMLElement>(id: string): T {
 
 function queryElement<T extends HTMLElement>(parent: HTMLElement, selector: string): T | null {
   return parent.querySelector<T>(selector);
+}
+
+function showTemporaryMessage(message: string, duration: number = 3000) {
+  const syncStatus = document.querySelector<HTMLDivElement>('[data-dts="widget"]');
+  if (!syncStatus) return;
+
+  const errorEl = queryElement<HTMLDivElement>(syncStatus, '[data-dts="error"]');
+  if (!errorEl) return;
+
+  if (messageTimer) {
+    window.clearTimeout(messageTimer);
+  }
+
+  errorEl.textContent = message;
+  errorEl.style.display = 'block';
+  errorEl.classList.remove('dts-widget__error--error');
+  errorEl.classList.add('dts-widget__error--info');
+
+  messageTimer = window.setTimeout(() => {
+    errorEl.style.display = 'none';
+    errorEl.classList.remove('dts-widget__error--info');
+    errorEl.textContent = '';
+    messageTimer = null;
+  }, duration);
 }
 
 // --- Init ---
@@ -187,6 +212,10 @@ function initSync() {
       if (error.includes('client disconnected')) {
         isPaired = false;
         updateSyncStatus('ready', sessionToken ?? undefined);
+        // Extract client type from message like "figma client disconnected"
+        const clientType = error.split(' ')[0];
+        const capitalizedType = clientType.charAt(0).toUpperCase() + clientType.slice(1);
+        showTemporaryMessage(`${capitalizedType} disconnected`);
         return;
       }
       updateSyncStatus('error', undefined, error);
@@ -246,6 +275,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = false;
       unlinkBtn.style.display = 'none';
       errorEl.style.display = 'none';
+      errorEl.classList.remove('dts-widget__error--error', 'dts-widget__error--info');
       helpWrap.style.display = '';
       break;
     case 'syncing':
@@ -256,6 +286,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = false;
       unlinkBtn.style.display = '';
       errorEl.style.display = 'none';
+      errorEl.classList.remove('dts-widget__error--error', 'dts-widget__error--info');
       helpWrap.classList.remove('is-open');
       helpBtn.setAttribute('aria-expanded', 'false');
       helpWrap.style.display = 'none';
@@ -265,6 +296,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.textContent = 'Disconnected';
       tokenEl.disabled = true;
       errorEl.style.display = 'none';
+      errorEl.classList.remove('dts-widget__error--error', 'dts-widget__error--info');
       helpWrap.classList.remove('is-open');
       helpBtn.setAttribute('aria-expanded', 'false');
       unlinkBtn.style.display = 'none';
@@ -281,8 +313,11 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       if (error) {
         errorEl.textContent = error;
         errorEl.style.display = 'block';
+        errorEl.classList.remove('dts-widget__error--info');
+        errorEl.classList.add('dts-widget__error--error');
       } else {
         errorEl.style.display = 'none';
+        errorEl.classList.remove('dts-widget__error--error', 'dts-widget__error--info');
       }
       break;
   }

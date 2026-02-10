@@ -228,10 +228,18 @@
     }
     .dts-widget__error {
       padding: .35rem .5rem;
-      border: var(--s-line) solid #c4342d;
-      color: #c4342d;
+      border: var(--s-line) solid var(--c-border);
+      color: var(--c-surface-on);
       border-radius: var(--s-radius);
       font-size: .65rem;
+    }
+    .dts-widget__error--error {
+      border-color: #c4342d;
+      color: #c4342d;
+    }
+    .dts-widget__error--info {
+      border-color: var(--c-border);
+      color: var(--c-surface-on-alt);
     }
     .dts-widget__status {
       position: absolute;
