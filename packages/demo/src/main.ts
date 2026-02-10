@@ -7,8 +7,26 @@ type PluginLink = {
   url: string;
 };
 
+// Auto-detect WebSocket URL based on environment
+function getSyncServerUrl(): string {
+  // Use explicit env var if provided
+  if (import.meta.env.VITE_SYNC_SERVER_URL) {
+    return import.meta.env.VITE_SYNC_SERVER_URL;
+  }
+  
+  // In development (localhost), use ws://localhost:8080
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    return 'ws://localhost:8080';
+  }
+  
+  // In production, build wss:// URL from current location
+  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const port = location.port ? `:${location.port}` : '';
+  return `${protocol}//${location.hostname}${port}`;
+}
+
 const API_PATH = '/api/colors';
-const SYNC_SERVER_URL = 'ws://localhost:8080';
+const SYNC_SERVER_URL = getSyncServerUrl();
 const SYNC_SERVER_HTTP = SYNC_SERVER_URL.replace('ws://', 'http://').replace('wss://', 'https://');
 
 type DemoSyncStatus = 'connecting' | 'ready' | 'syncing' | 'disconnected' | 'error';

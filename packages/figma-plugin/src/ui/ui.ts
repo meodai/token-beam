@@ -10,7 +10,19 @@ interface SandboxSyncMessage {
 
 type SyncStatusState = 'connected' | 'error' | 'connecting' | 'disconnected';
 
-const SYNC_SERVER_URL = import.meta.env.VITE_SYNC_SERVER_URL ?? 'ws://localhost:8080';
+// Auto-detect WebSocket URL based on environment
+function getSyncServerUrl(): string {
+  // Use explicit env var if provided
+  if (import.meta.env.VITE_SYNC_SERVER_URL) {
+    return import.meta.env.VITE_SYNC_SERVER_URL;
+  }
+  
+  // Figma plugins don't have window.location, so default to production URL
+  // Users can override via VITE_SYNC_SERVER_URL at build time
+  return 'wss://token-sync.fly.dev';
+}
+
+const SYNC_SERVER_URL = getSyncServerUrl();
 
 // --- DOM helpers ---
 
