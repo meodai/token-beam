@@ -34,8 +34,17 @@ async function init() {
         <button id="sync-token" class="dts-widget__token" type="button" title="Click to copy"></button>
         <button id="unlink-btn" class="dts-widget__unlink" type="button" title="Disconnect and generate new token">Unlink</button>
         <div id="help-wrap" class="dts-widget__help">
-          <button id="help-btn" class="dts-widget__help-btn" type="button" aria-label="About Token Sync">?</button>
-          <div class="dts-widget__tooltip" role="tooltip">
+          <button
+            id="help-btn"
+            class="dts-widget__help-btn"
+            type="button"
+            aria-label="About Token Sync"
+            aria-expanded="false"
+            aria-controls="help-tooltip"
+          >
+            ?
+          </button>
+          <div id="help-tooltip" class="dts-widget__tooltip" role="tooltip">
             <p>
               This widget allows you to sync this website with your favorite design program.
             </p>
@@ -59,6 +68,25 @@ async function init() {
       return `<li><a href="${plugin.url}" target="_blank" rel="noreferrer">${plugin.name}</a></li>`;
     })
     .join('');
+
+  const helpWrap = getElement<HTMLDivElement>('help-wrap');
+  const helpBtn = getElement<HTMLButtonElement>('help-btn');
+  const closeHelp = () => {
+    helpWrap.classList.remove('is-open');
+    helpBtn.setAttribute('aria-expanded', 'false');
+  };
+
+  helpBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const isOpen = helpWrap.classList.toggle('is-open');
+    helpBtn.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!helpWrap.contains(event.target as Node)) {
+      closeHelp();
+    }
+  });
 
   getElement('sync-token').addEventListener('click', () => {
     if (sessionToken) {
@@ -138,8 +166,9 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
   const errorEl = queryElement<HTMLDivElement>(syncStatus, '#sync-error');
   const unlinkBtn = queryElement<HTMLButtonElement>(syncStatus, '#unlink-btn');
   const helpWrap = queryElement<HTMLDivElement>(syncStatus, '#help-wrap');
+  const helpBtn = queryElement<HTMLButtonElement>(syncStatus, '#help-btn');
 
-  if (!tokenEl || !errorEl || !unlinkBtn || !helpWrap) return;
+  if (!tokenEl || !errorEl || !unlinkBtn || !helpWrap || !helpBtn) return;
 
   syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
 
@@ -170,6 +199,8 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = false;
       unlinkBtn.style.display = '';
       errorEl.style.display = 'none';
+      helpWrap.classList.remove('is-open');
+      helpBtn.setAttribute('aria-expanded', 'false');
       helpWrap.style.display = 'none';
       break;
     case 'disconnected':
@@ -177,6 +208,8 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.textContent = 'Disconnected';
       tokenEl.disabled = true;
       errorEl.style.display = 'none';
+      helpWrap.classList.remove('is-open');
+      helpBtn.setAttribute('aria-expanded', 'false');
       unlinkBtn.style.display = 'none';
       helpWrap.style.display = '';
       break;
@@ -185,6 +218,8 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.textContent = 'Error';
       tokenEl.disabled = true;
       unlinkBtn.style.display = 'none';
+      helpWrap.classList.remove('is-open');
+      helpBtn.setAttribute('aria-expanded', 'false');
       helpWrap.style.display = '';
       if (error) {
         errorEl.textContent = error;
