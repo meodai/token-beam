@@ -28,6 +28,12 @@ export class TokenSyncServer {
   private cleanupTimer?: ReturnType<typeof setInterval>;
   private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
   private readonly MAX_PAYLOAD_SIZE = 10 * 1024 * 1024; // 10MB - reasonable for design tokens with embedded assets
+  
+  // Blocked origins - manually curate commercial users
+  private readonly BLOCKED_ORIGINS = [
+    // Example: 'big-company-design-system.com',
+    // Example: 'startup-ui-kit.io',
+  ];
 
   constructor(private port: number = 8080) {
     this.httpServer = createServer((req, res) => {
@@ -84,14 +90,35 @@ export class TokenSyncServer {
     this.wss = new WebSocketServer({ 
       server: this.httpServer,
       maxPayload: this.MAX_PAYLOAD_SIZE,
+      verifyClient: (info) => {
+        // Check HTTP Origin header (set by browser, harder to fake)
+        const origin = info.origin || info.req.headers.origin;
+        if (origin && this.isOriginBlocked(origin)) {
+          console.log(`Blocked connection from: ${origin}`);
+          return false;
+        }
+        return true;
+      },
     });
     this.setupWebSocket();
     this.startCleanupInterval();
   }
 
+  private isOriginBlocked(origin: string): boolean {
+    try {
+      const hostname = new URL(origin).hostname;
+      return this.BLOCKED_ORIGINS.some(blocked => 
+        hostname === blocked || hostname.endsWith('.' + blocked)
+      );
+    } catch {
+      return false;
+    }
+  }
+
   private setupWebSocket() {
-    this.wss.on('connection', (ws: WebSocket) => {
-      console.log('New WebSocket connection');
+    this.wss.on('connection', (ws: WebSocket, req) => {
+      const httpOrigin = req.headers.origin;
+      console.log('New WebSocket connection', { origin: httpOrigin });
 
       ws.on('message', (data: Buffer) => {
         // Check message size
@@ -140,6 +167,19 @@ export class TokenSyncServer {
     if (!clientType) {
       this.sendError(ws, 'clientType is required');
       return;
+    }
+
+    // Also check user-provided origin (can be spoofed but good for logging)
+    if (message.origin && this.isOriginBlocked(message.origin)) {
+      console.log(`Blocked pairing from reported origin: ${message.origin}`);
+      this.sendError(ws, 'Commercial use detected. Contact sales@token-sync.dev for licensing.');
+      ws.close();
+      return;
+    }
+
+    // Log origin for monitoring
+    if (message.origin) {
+      console.log(`Session paired with origin: ${message.origin}`);
     }
 
     // Web client creates new session
