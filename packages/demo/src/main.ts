@@ -1,4 +1,4 @@
-import type { TokenSyncPayload, ColorValue } from 'token-sync';
+import type { TokenSyncPayload } from 'token-sync';
 import { SyncClient } from 'token-sync';
 
 const API_PATH = '/api/colors';
@@ -23,17 +23,6 @@ function queryElement<T extends HTMLElement>(parent: HTMLElement, selector: stri
   return parent.querySelector<T>(selector);
 }
 
-function isColorValue(value: unknown): value is ColorValue {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'r' in value &&
-    'g' in value &&
-    'b' in value &&
-    'a' in value
-  );
-}
-
 // --- Init ---
 
 async function init() {
@@ -50,7 +39,7 @@ async function init() {
           <button id="unlink-btn" class="unlink-btn" title="Disconnect and generate new token">&#x26D3;&#xFE0E;</button>
         </div>
         <div id="sync-error" class="error-message" style="display: none;"></div>
-        <p class="sync-help">Enter this token in the Figma plugin to pair</p>
+        <p class="sync-help">Enter this token in your token-sync plugin to pair</p>
       </div>
     </div>
 
@@ -157,7 +146,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       break;
     case 'ready':
       statusEl.className = 'status-indicator connected';
-      statusEl.textContent = 'Waiting for Figma plugin...';
+      statusEl.textContent = 'Waiting for plugin...';
       if (token) {
         tokenEl.textContent = token;
         tokenDisplay.style.display = '';
@@ -168,7 +157,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       break;
     case 'syncing':
       statusEl.className = 'status-indicator connected';
-      statusEl.textContent = 'Figma connected — syncing!';
+      statusEl.textContent = 'Plugin connected — syncing!';
       unlinkBtn.style.display = '';
       errorEl.style.display = 'none';
       helpEl.style.display = 'none';
@@ -194,10 +183,6 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
 
 // --- Render ---
 
-function colorToCSS(c: ColorValue): string {
-  return `rgba(${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(c.b * 255)}, ${c.a})`;
-}
-
 function renderPayload(payload: TokenSyncPayload) {
   const section = getElement<HTMLDivElement>('payload-section');
   const collection = payload.collections[0];
@@ -213,8 +198,8 @@ function renderPayload(payload: TokenSyncPayload) {
   for (const token of firstMode.tokens) {
     const el = document.createElement('div');
     el.className = 'swatch';
-    if (token.type === 'color' && isColorValue(token.value)) {
-      el.style.backgroundColor = colorToCSS(token.value);
+    if (token.type === 'color' && typeof token.value === 'string') {
+      el.style.backgroundColor = token.value;
     }
     el.innerHTML = `<span class="label">${token.name}</span>`;
     swatches.appendChild(el);

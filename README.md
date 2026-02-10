@@ -10,7 +10,7 @@ This project implements the [W3C Design Tokens Format Module 2025.10](https://ww
 
 - **Generic Token Types**: Lowercase type names (`color`, `number`, `string`, `boolean`) per spec section 8
 - **$value and $type Properties**: All tokens use `$value` for content and `$type` for type declaration (section 5)
-- **Color Values**: RGBA format with normalized 0-1 values (`ColorValue` interface)
+- **Color Values**: Stored as spec strings (e.g. `#0066cc`) — each consumer adapter converts to its target format
 - **Dimension Values**: Object format with `value` and `unit` properties (section 8.2)
 - **References/Aliases**: Support for `{token.path}` reference syntax (section 7)
 
@@ -24,7 +24,7 @@ The generic token data model that is tool-agnostic:
 interface DesignToken {
   name: string;
   type: TokenType; // 'color' | 'number' | 'string' | 'boolean'
-  value: ColorValue | number | string | boolean;
+  value: string | number | boolean;
 }
 
 interface TokenCollection {
@@ -41,7 +41,7 @@ interface TokenSyncPayload {
 
 Each consumer plugin owns its own adapter — a pure transform function that converts the generic `TokenSyncPayload` into the tool-specific format. The lib provides the `TargetAdapter<T>` interface, but the implementation lives in the plugin:
 
-- **Figma plugin** (`packages/figma-plugin/src/adapter.ts`): Maps `'color'` → `'COLOR'`, `'number'` → `'FLOAT'`, converts `tokens` → `variables`
+- **Figma plugin** (`packages/figma-plugin/src/adapter.ts`): Maps `'color'` → `'COLOR'`, `'number'` → `'FLOAT'`, converts hex strings → 0–1 RGBA, transforms `tokens` → `variables`
 - Future plugins (Adobe XD, Sketch, Penpot, etc.) each implement their own adapter
 
 #### Communication
@@ -55,7 +55,7 @@ The **`packages/sync-server`** package provides a WebSocket server for real-time
 
 ### How It Works
 
-1. **Web client** connects to sync server and receives a unique 6-character token (e.g., `A3F9K2`)
+1. **Web client** connects to sync server and receives a prefixed token (e.g., `dts:A3F9K2`)
 2. **User** copies the token and pastes it into the Figma plugin
 3. **Figma plugin** connects using the token and gets paired with the web session
 4. **Changes** made on the website are instantly synced to Figma in real-time
@@ -82,12 +82,12 @@ PORT=9000 npm run start:server
 
 ```
 ┌─────────────┐         WebSocket          ┌──────────────────┐
-│  Web Demo   │ ◄────── Token: A3F9K2 ──── │  Sync Server     │
+│  Web Demo   │ ◄────── Token: dts:A3F9K2 ──── │  Sync Server     │
 │  (Browser)  │                             │  (Node.js + WS)  │
 └─────────────┘                             └──────────────────┘
                                                      ▲
                                                      │ WebSocket
-                                                     │ Token: A3F9K2
+                                                     │ Token: dts:A3F9K2
                                             ┌────────┴────────┐
                                             │ Figma Plugin    │
                                             │ (Plugin UI)     │
@@ -147,7 +147,7 @@ const payload = createCollection('My Colors', {
 //     modes: [{
 //       name: "Value",
 //       tokens: [
-//         { name: "color/primary", type: "color", value: {r:0, g:0.4, b:0.8, a:1} },
+//         { name: "color/primary", type: "color", value: "#0066cc" },
 //         { name: "spacing/base", type: "number", value: 16 },
 //         { name: "text/label", type: "string", value: "Hello" }
 //       ]

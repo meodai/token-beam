@@ -240,7 +240,7 @@ export class TokenSyncServer {
   }
 
   private generateToken(): string {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `dts:${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
   }
 
   private generateSessionId(): string {

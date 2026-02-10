@@ -1,17 +1,10 @@
 // W3C DTCG-aligned generic token types
 export type TokenType = 'color' | 'number' | 'string' | 'boolean';
 
-export interface ColorValue {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-}
-
 export interface DesignToken {
   name: string;
   type: TokenType;
-  value: ColorValue | number | string | boolean;
+  value: string | number | boolean;
 }
 
 export interface TokenMode {
@@ -29,7 +22,7 @@ export interface TokenSyncPayload {
 }
 
 // Helper types for input
-export type TokenInput = string | number | boolean | ColorValue;
+export type TokenInput = string | number | boolean;
 
 export interface ExplicitTokenEntry {
   name: string;
