@@ -35,7 +35,7 @@ input[type="text"] {
   flex: 1;
   padding: 6px 10px;
   border: 1px solid var(--figma-color-border, #d4d8d8);
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 13px;
   font-family: inherit;
   font-weight: 400;
@@ -67,7 +67,7 @@ select:disabled {
 button {
   padding: 6px 12px;
   border: 1px solid var(--figma-color-border, #d4d8d8);
-  border-radius: 999px;
+  border-radius: 0;
   cursor: pointer;
   font-size: .6rem;
   font-family: inherit;
@@ -110,7 +110,7 @@ select {
   width: 100%;
   padding: 6px 10px;
   border: 1px solid var(--figma-color-border, #d4d8d8);
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 11px;
   font-family: inherit;
   font-weight: 300;
@@ -133,7 +133,7 @@ section {
   margin-top: 8px;
   font-size: .6rem;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid;
   letter-spacing: 0.04em;
 }
