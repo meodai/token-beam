@@ -124,22 +124,19 @@ connectBtn.addEventListener('click', () => {
       }
     },
     onError: (error) => {
-      showResult(error, false);
-      updateSyncStatus('Error', 'error');
+      // Silently reset to initial state
       unlockUI();
       syncClient = null;
     },
     onDisconnected: () => {
-      showResult('Disconnected', false);
-      updateSyncStatus('Disconnected', 'disconnected');
+      // Silently reset to initial state
       unlockUI();
       syncClient = null;
     },
   });
 
   syncClient.connect().catch((err: unknown) => {
-    showResult(err instanceof Error ? err.message : 'Connection failed', false);
-    updateSyncStatus('Error', 'error');
+    // Silently reset to initial state
     unlockUI();
     syncClient = null;
   });
@@ -152,6 +149,7 @@ function lockUI() {
 
 function unlockUI() {
   tokenInput.disabled = false;
+  tokenInput.value = '';
   updateConnectEnabled();
   connectBtn.textContent = 'Connect & Sync';
   pairedOrigin = null;
