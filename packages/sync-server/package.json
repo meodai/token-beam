@@ -2,6 +2,8 @@
   "name": "token-sync-server",
   "version": "0.1.0",
   "type": "module",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE.md",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

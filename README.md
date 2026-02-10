@@ -305,4 +305,19 @@ npm run start:server
 
 ## License
 
-MIT
+**MIT License** for:
+- Core library (`token-sync` npm package)
+- Figma, Sketch, and Aseprite plugins
+- Documentation and examples
+
+**AGPL-3.0 / Commercial License** for:
+- Sync server (`packages/sync-server`)
+
+The sync server is free for open source projects but requires a commercial license for proprietary/commercial use. See [packages/sync-server/LICENSE.md](packages/sync-server/LICENSE.md) for details.
+
+**Commercial License:** $4,999/year for enterprise self-hosting  
+**Contact:** sales@token-sync.dev
+
+---
+
+MIT License - Copyright (c) 2026 Daniel Stutz (meodai)

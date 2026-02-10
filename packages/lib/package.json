@@ -2,6 +2,7 @@
   "name": "token-sync",
   "version": "0.1.0",
   "type": "module",
+  "license": "MIT",
   "main": "./dist/token-sync.js",
   "module": "./dist/token-sync.js",
   "types": "./dist/index.d.ts",

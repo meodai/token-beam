@@ -1,0 +1,70 @@
+# Token Sync Server License
+
+This software is dual-licensed under the AGPL-3.0 and a Commercial License.
+
+## AGPL-3.0 License (Open Source & Non-Commercial)
+
+For open source and non-commercial projects, this software is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+**You may use this software for free if:**
+- ✓ Your project is open source (OSI-approved license)
+- ✓ You're using it for personal, educational, or non-commercial purposes
+- ✓ You comply with AGPL-3.0 terms (including source disclosure for network services)
+
+**AGPL-3.0 Requirements:**
+- You must open source your entire application
+- You must open source any modifications to this software
+- You must provide source code to users accessing your service over a network (Section 13)
+- You must preserve all copyright and license notices
+
+See the full AGPL-3.0 license at: https://www.gnu.org/licenses/agpl-3.0.html
+
+## Commercial License
+
+For commercial, proprietary, or closed-source applications, you must obtain a commercial license.
+
+**You need a commercial license if:**
+- ✗ You want to use this in a closed-source application
+- ✗ You want to provide a SaaS/hosted service without disclosing source
+- ✗ You're integrating this into a commercial product or website
+- ✗ Your company revenue exceeds $0 and you don't want AGPL restrictions
+
+**Commercial License includes:**
+- ✓ Use in closed-source/proprietary applications
+- ✓ Deploy as SaaS without source disclosure
+- ✓ Self-host unlimited instances
+- ✓ White-label and rebrand
+- ✓ Source code access with modification rights
+- ✓ Priority support with SLA
+- ✓ Perpetual license with annual support renewal
+
+### Pricing
+
+**Enterprise License: $4,999/year**
+- Unlimited deployments
+- Unlimited users
+- Priority support (24h SLA)
+- Source code access
+- Custom integrations available
+
+### Open Source Exception
+
+Open source projects with an OSI-approved license can request a **free commercial license**.
+
+**Requirements:**
+- Project must be publicly available (e.g., GitHub)
+- Must use an OSI-approved open source license
+- Must not be a commercial/proprietary product
+
+To apply, email: opensource@token-sync.dev
+
+## Contact
+
+For commercial licensing inquiries:
+- Email: sales@token-sync.dev
+- Website: https://token-sync.dev
+
+---
+
+Copyright (c) 2026 Daniel Stutz (meodai)
+All rights reserved.
