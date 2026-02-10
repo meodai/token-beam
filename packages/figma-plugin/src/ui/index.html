@@ -6,19 +6,19 @@
   <link rel="stylesheet" href="./ui.css" />
 </head>
 <body>
-  <div id="app">
-    <section class="sync-section">
-      <label for="token-input">Session Token</label>
-      <div class="input-row">
-        <input id="token-input" type="text" placeholder="dts://XXXXXX" />
+  <div class="plugin">
+    <section class="plugin__section">
+      <label class="plugin__label" for="token-input">Session Token</label>
+      <div class="plugin__input-row">
+        <input class="plugin__input" id="token-input" type="text" placeholder="dts://XXXXXX" />
       </div>
     </section>
 
-    <div id="connect-wrap">
-      <button id="connect-btn" class="primary" disabled>Connect &amp; Sync</button>
+    <div class="plugin__connect-wrap">
+      <button class="plugin__button plugin__button--primary" id="connect-btn" disabled>Connect &amp; Sync</button>
     </div>
-    <div id="sync-status" class="sync-status hidden"></div>
-    <div id="result" class="result hidden"></div>
+    <div class="plugin__status plugin__hidden" id="sync-status"></div>
+    <div class="plugin__result plugin__hidden" id="result"></div>
   </div>
   <script type="module" src="./ui.ts"></script>
 </body>

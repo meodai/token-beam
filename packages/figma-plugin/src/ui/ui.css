@@ -4,7 +4,7 @@
   box-sizing: border-box;
 }
 
-body {
+.plugin {
   font-family: 'Iosevka Web', 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
   font-weight: 300;
   font-size: 11px;
@@ -16,7 +16,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-label {
+.plugin__label {
   display: block;
   font-size: 0.65rem;
   font-weight: 600;
@@ -26,20 +26,20 @@ label {
   color: var(--figma-color-text-secondary, #717979);
 }
 
-.input-row {
+.plugin__input-row {
   display: flex;
   gap: 6px;
 }
 
-section {
+.plugin__section {
   margin-bottom: 0;
 }
 
-#connect-wrap {
+.plugin__connect-wrap {
   margin-top: 0;
 }
 
-input[type='text'] {
+.plugin__input {
   flex: 1;
   padding: 6px 10px;
   border: 1px solid var(--figma-color-border, #d4d8d8);
@@ -54,25 +54,24 @@ input[type='text'] {
   text-align: center;
 }
 
-input[type='text']::placeholder {
+.plugin__input::placeholder {
   text-transform: none;
   letter-spacing: normal;
   font-weight: 300;
   font-size: 11px;
 }
 
-input[type='text']:focus {
+.plugin__input:focus {
   outline: none;
   border-color: var(--figma-color-text, #292f2f);
 }
 
-input:disabled,
-select:disabled {
+.plugin__input:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-button {
+.plugin__button {
   padding: 6px 12px;
   border: 1px solid var(--figma-color-border, #d4d8d8);
   border-radius: 0;
@@ -86,12 +85,12 @@ button {
   transition: all 0.15s cubic-bezier(0.3, 0.7, 0, 1);
 }
 
-button:hover {
+.plugin__button:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 0 0 var(--figma-color-text, #292f2f);
 }
 
-button.primary {
+.plugin__button--primary {
   background: var(--figma-color-text, #292f2f);
   color: var(--figma-color-bg, #fff);
   border-color: var(--figma-color-text, #292f2f);
@@ -101,38 +100,19 @@ button.primary {
   padding: 8px 12px;
 }
 
-button.primary:hover {
+.plugin__button--primary:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 0 0 var(--figma-color-text-secondary, #717979);
 }
 
-button:disabled {
+.plugin__button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-select {
-  width: 100%;
-  padding: 6px 10px;
-  border: 1px solid var(--figma-color-border, #d4d8d8);
-  border-radius: 0;
-  font-size: 11px;
-  font-family: inherit;
-  font-weight: 300;
-  background: var(--figma-color-bg, #fff);
-  color: var(--figma-color-text, #292f2f);
-  appearance: none;
-  cursor: pointer;
-}
-
-select:focus {
-  outline: none;
-  border-color: var(--figma-color-text, #292f2f);
-}
-
-.sync-status {
+.plugin__status {
   font-size: 0.6rem;
   padding: 4px 10px;
   border-radius: 0;
@@ -140,7 +120,7 @@ select:focus {
   letter-spacing: 0.04em;
 }
 
-.sync-status::before {
+.plugin__status::before {
   content: '';
   display: inline-block;
   width: 5px;
@@ -150,55 +130,54 @@ select:focus {
   vertical-align: middle;
 }
 
-.sync-status.connected {
+.plugin__status--connected {
   color: #1b8a2d;
   border-color: #1b8a2d;
   background: transparent;
 }
 
-.sync-status.connected::before {
+.plugin__status--connected::before {
   background: #1b8a2d;
 }
 
-.sync-status.connecting {
+.plugin__status--connecting {
   color: #b07d16;
   border-color: #b07d16;
   background: transparent;
 }
 
-.sync-status.connecting::before {
+.plugin__status--connecting::before {
   background: #b07d16;
 }
 
-.sync-status.error {
+.plugin__status--error {
   color: #c4342d;
   border-color: #c4342d;
   background: transparent;
 }
 
-.sync-status.error::before {
+.plugin__status--error::before {
   background: #c4342d;
 }
 
-.sync-status.disconnected {
+.plugin__status--disconnected {
   color: var(--figma-color-text-secondary, #717979);
   border-color: var(--figma-color-border, #d4d8d8);
   background: transparent;
 }
 
-.sync-status.disconnected::before {
+.plugin__status--disconnected::before {
   background: var(--figma-color-text-secondary, #717979);
 }
 
-.hidden {
-  display: none;
-}
-
-
-#result.success {
+.plugin__result--success {
   color: #1b8a2d;
 }
 
-#result.error {
+.plugin__result--error {
   color: #c4342d;
+}
+
+.plugin__hidden {
+  display: none;
 }
