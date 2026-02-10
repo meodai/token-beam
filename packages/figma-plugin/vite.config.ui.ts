@@ -4,6 +4,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig({
   root: resolve(__dirname, 'src/ui'),
+  envDir: resolve(__dirname),
   plugins: [viteSingleFile()],
   build: {
     target: 'esnext',

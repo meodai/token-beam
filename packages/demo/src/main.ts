@@ -7,14 +7,56 @@ const SYNC_SERVER_URL = 'ws://localhost:8080';
 let syncClient: SyncClient<FigmaCollectionPayload> | null = null;
 let currentPayload: FigmaCollectionPayload | null = null;
 let sessionToken: string | null = null;
+let isPaired = false;
+
+// --- Init ---
 
 async function init() {
+  const app = document.getElementById('app')!;
+  app.innerHTML = `
+    <div class="sync-section" id="sync-status">
+      <h2>Live Sync</h2>
+      <div class="sync-info">
+        <div class="status-indicator connecting">Connecting...</div>
+        <div class="token-display" style="display: none;">
+          <label>Session Token:</label>
+          <code id="sync-token" class="sync-token"></code>
+          <button id="copy-token-btn" title="Copy token">Copy</button>
+          <button id="unlink-btn" class="unlink-btn" title="Disconnect and generate new token">&#x26D3;&#xFE0E;</button>
+        </div>
+        <div id="sync-error" class="error-message" style="display: none;"></div>
+        <p class="sync-help">Enter this token in the Figma plugin to pair</p>
+      </div>
+    </div>
+
+    <div id="payload-section"></div>
+  `;
+
+  document.getElementById('unlink-btn')!.addEventListener('click', () => {
+    unlink();
+  });
+
+  document.getElementById('copy-token-btn')!.addEventListener('click', () => {
+    if (sessionToken) {
+      navigator.clipboard.writeText(sessionToken);
+      const btn = document.getElementById('copy-token-btn')!;
+      btn.textContent = 'Copied!';
+      setTimeout(() => (btn.textContent = 'Copy'), 1500);
+    }
+  });
+
+  await fetchAndRender();
+  initSync();
+}
+
+async function fetchAndRender() {
   const res = await fetch(API_PATH);
   const payload: FigmaCollectionPayload = await res.json();
   currentPayload = payload;
-  render(payload);
-  initSync();
+  renderPayload(payload);
 }
+
+// --- Sync ---
 
 function initSync() {
   if (syncClient) {
@@ -29,6 +71,7 @@ function initSync() {
       updateSyncStatus('ready', token);
     },
     onTargetConnected: () => {
+      isPaired = true;
       updateSyncStatus('syncing');
       if (currentPayload) {
         syncClient?.sync(currentPayload);
@@ -38,13 +81,13 @@ function initSync() {
       updateSyncStatus('connecting');
     },
     onDisconnected: () => {
+      isPaired = false;
       updateSyncStatus('disconnected');
     },
     onError: (error) => {
       updateSyncStatus('error', undefined, error);
     },
     onSync: (payload) => {
-      // Handle sync from Figma (if needed)
       console.log('Received sync from Figma:', payload);
     },
   });
@@ -55,6 +98,16 @@ function initSync() {
   });
 }
 
+function unlink() {
+  isPaired = false;
+  if (syncClient) {
+    syncClient.disconnect();
+    syncClient = null;
+  }
+  sessionToken = null;
+  initSync();
+}
+
 function updateSyncStatus(status: string, token?: string, error?: string) {
   const syncStatus = document.getElementById('sync-status');
   if (!syncStatus) return;
@@ -63,6 +116,8 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
   const tokenDisplay = syncStatus.querySelector('.token-display') as HTMLElement;
   const tokenEl = syncStatus.querySelector('#sync-token') as HTMLElement;
   const errorEl = syncStatus.querySelector('#sync-error') as HTMLElement;
+  const unlinkBtn = syncStatus.querySelector('#unlink-btn') as HTMLElement;
+  const helpEl = syncStatus.querySelector('.sync-help') as HTMLElement;
 
   switch (status) {
     case 'connecting':
@@ -70,6 +125,7 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
       statusEl.textContent = 'Connecting...';
       tokenDisplay.style.display = 'none';
       errorEl.style.display = 'none';
+      helpEl.style.display = 'none';
       break;
     case 'ready':
       statusEl.className = 'status-indicator connected';
@@ -78,18 +134,23 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
         tokenEl.textContent = token;
         tokenDisplay.style.display = '';
       }
+      unlinkBtn.style.display = 'none';
       errorEl.style.display = 'none';
+      helpEl.style.display = '';
       break;
     case 'syncing':
       statusEl.className = 'status-indicator connected';
       statusEl.textContent = 'Figma connected — syncing!';
+      unlinkBtn.style.display = '';
       errorEl.style.display = 'none';
+      helpEl.style.display = 'none';
       break;
     case 'disconnected':
       statusEl.className = 'status-indicator disconnected';
       statusEl.textContent = 'Disconnected';
       tokenDisplay.style.display = 'none';
       errorEl.style.display = 'none';
+      helpEl.style.display = 'none';
       break;
     case 'error':
       statusEl.className = 'status-indicator error';
@@ -98,44 +159,23 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
         errorEl.textContent = error;
         errorEl.style.display = 'block';
       }
+      helpEl.style.display = 'none';
       break;
   }
 }
+
+// --- Render ---
 
 function colorToCSS(c: ColorValue): string {
   return `rgba(${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(c.b * 255)}, ${c.a})`;
 }
 
-function render(payload: FigmaCollectionPayload) {
-  const app = document.getElementById('app')!;
-  const fullUrl = `${window.location.origin}${API_PATH}`;
+function renderPayload(payload: FigmaCollectionPayload) {
+  const section = document.getElementById('payload-section')!;
   const firstMode = payload.modes[0];
 
-  app.innerHTML = `
+  section.innerHTML = `
     <h1>${payload.collectionName}</h1>
-    
-    <div class="sync-section" id="sync-status">
-      <h2>Live Sync</h2>
-      <div class="sync-info">
-        <div class="status-indicator connecting">Connecting...</div>
-        <div class="token-display" style="display: none;">
-          <label>Figma Plugin Token:</label>
-          <code id="sync-token" class="sync-token"></code>
-          <button id="copy-token-btn">Copy Token</button>
-        </div>
-        <div id="sync-error" class="error-message" style="display: none;"></div>
-        <p class="sync-help">Enter this token in the Figma plugin to sync changes in real-time</p>
-      </div>
-    </div>
-
-    <div class="url-bar">
-      <label>HTTP API URL (one-time fetch):</label>
-      <div class="url-row">
-        <code id="url-code">${fullUrl}</code>
-        <button id="copy-btn">Copy URL</button>
-      </div>
-    </div>
-    
     <div class="swatches" id="swatches"></div>
     <button id="regen-btn">Regenerate</button>
   `;
@@ -151,28 +191,10 @@ function render(payload: FigmaCollectionPayload) {
     swatches.appendChild(el);
   }
 
-  document.getElementById('copy-btn')!.addEventListener('click', () => {
-    navigator.clipboard.writeText(fullUrl);
-    const btn = document.getElementById('copy-btn')!;
-    btn.textContent = 'Copied!';
-    setTimeout(() => (btn.textContent = 'Copy URL'), 1500);
-  });
-
-  const copyTokenBtn = document.getElementById('copy-token-btn');
-  if (copyTokenBtn) {
-    copyTokenBtn.addEventListener('click', () => {
-      if (sessionToken) {
-        navigator.clipboard.writeText(sessionToken);
-        copyTokenBtn.textContent = 'Copied!';
-        setTimeout(() => (copyTokenBtn.textContent = 'Copy Token'), 1500);
-      }
-    });
-  }
-
   document.getElementById('regen-btn')!.addEventListener('click', async () => {
-    await init();
-    // Sync new payload
-    if (syncClient && currentPayload) {
+    await fetchAndRender();
+    // Re-sync if paired
+    if (isPaired && syncClient && currentPayload) {
       syncClient.sync(currentPayload);
     }
   });

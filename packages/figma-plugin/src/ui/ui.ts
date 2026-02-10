@@ -35,7 +35,10 @@ interface SyncMessage {
   error?: string;
 }
 
-// --- Inline SyncClient (Figma plugin UI can't import external modules) ---
+// Server URL from env var (set at build time), fallback to localhost
+const SYNC_SERVER_URL = (import.meta as any).env?.VITE_SYNC_SERVER_URL || 'ws://localhost:8080';
+
+// --- Inline SyncClient ---
 
 class SyncClient {
   private ws?: WebSocket;
@@ -102,135 +105,26 @@ class SyncClient {
 
 // --- DOM refs ---
 
-const urlInput = document.getElementById('url-input') as HTMLInputElement;
-const fetchBtn = document.getElementById('fetch-btn') as HTMLButtonElement;
-const previewSection = document.getElementById('preview-section')!;
-const collectionNameEl = document.getElementById('collection-name')!;
-const varPreview = document.getElementById('var-preview')!;
-const targetSection = document.getElementById('target-section')!;
-const collectionSelect = document.getElementById('collection-select') as HTMLSelectElement;
-const syncBtn = document.getElementById('sync-btn') as HTMLButtonElement;
-const statusEl = document.getElementById('status')!;
-
-const serverInput = document.getElementById('server-input') as HTMLInputElement;
 const tokenInput = document.getElementById('token-input') as HTMLInputElement;
+const collectionSelect = document.getElementById('collection-select') as HTMLSelectElement;
 const connectBtn = document.getElementById('connect-btn') as HTMLButtonElement;
 const syncStatusEl = document.getElementById('sync-status')!;
+const statusEl = document.getElementById('status')!;
 
-let currentPayload: FigmaSyncPayload | null = null;
 let syncClient: SyncClient | null = null;
+let selectedCollectionId: string | null = null;
 
-// --- Live Sync ---
+// --- Enable connect button when token has content ---
 
-function updateSyncStatus(text: string, state: 'connected' | 'error' | 'connecting' | 'disconnected') {
-  syncStatusEl.classList.remove('hidden');
-  syncStatusEl.textContent = text;
-  syncStatusEl.className = `sync-status ${state}`;
-}
-
-connectBtn.addEventListener('click', () => {
-  // Toggle: disconnect if already connected
-  if (syncClient) {
-    syncClient.disconnect();
-    syncClient = null;
-    return;
-  }
-
-  const token = tokenInput.value.trim().toUpperCase();
-  const server = serverInput.value.trim();
-  if (!token || !server) return;
-
-  updateSyncStatus('Connecting...', 'connecting');
-  connectBtn.disabled = true;
-
-  syncClient = new SyncClient(server, token, {
-    onPaired: () => {
-      updateSyncStatus('Connected', 'connected');
-      connectBtn.textContent = 'Disconnect';
-      connectBtn.disabled = false;
-    },
-    onSync: (payload) => {
-      currentPayload = payload;
-      renderPreview(payload);
-      statusEl.textContent = '';
-      parent.postMessage({ pluginMessage: { type: 'request-collections' } }, '*');
-    },
-    onError: (error) => {
-      updateSyncStatus(error, 'error');
-      connectBtn.disabled = false;
-    },
-    onDisconnected: () => {
-      updateSyncStatus('Disconnected', 'disconnected');
-      connectBtn.textContent = 'Connect';
-      connectBtn.disabled = false;
-      syncClient = null;
-    },
-  });
-
-  syncClient.connect().catch((err) => {
-    updateSyncStatus(err instanceof Error ? err.message : 'Connection failed', 'error');
-    connectBtn.textContent = 'Connect';
-    connectBtn.disabled = false;
-    syncClient = null;
-  });
+tokenInput.addEventListener('input', () => {
+  connectBtn.disabled = !tokenInput.value.trim();
 });
 
-// --- URL Fetch ---
+// --- Request collections from Figma sandbox on load ---
 
-fetchBtn.addEventListener('click', async () => {
-  const url = urlInput.value.trim();
-  if (!url) return;
+parent.postMessage({ pluginMessage: { type: 'request-collections' } }, '*');
 
-  statusEl.textContent = 'Fetching...';
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data: FigmaSyncPayload = await res.json();
-    currentPayload = data;
-    renderPreview(data);
-    statusEl.textContent = '';
-    parent.postMessage({ pluginMessage: { type: 'request-collections' } }, '*');
-  } catch (err) {
-    statusEl.textContent = `Error: ${err instanceof Error ? err.message : err}`;
-    currentPayload = null;
-  }
-});
-
-function renderPreview(payload: FigmaSyncPayload) {
-  collectionNameEl.textContent = payload.collectionName;
-  const firstMode = payload.modes[0];
-  varPreview.innerHTML = '';
-
-  for (const v of firstMode.variables) {
-    const row = document.createElement('div');
-    row.className = 'var-row';
-
-    if (v.type === 'COLOR') {
-      const color = v.value as FigmaColorValue;
-      const r = Math.round(color.r * 255);
-      const g = Math.round(color.g * 255);
-      const b = Math.round(color.b * 255);
-      row.innerHTML = `
-        <span class="swatch" style="background:rgba(${r},${g},${b},${color.a})"></span>
-        <span class="var-name">${v.name}</span>
-      `;
-    } else {
-      const typeLabel = v.type.toLowerCase();
-      row.innerHTML = `
-        <span class="type-badge">${typeLabel}</span>
-        <span class="var-name">${v.name}</span>
-        <span class="var-value">${v.value}</span>
-      `;
-    }
-
-    varPreview.appendChild(row);
-  }
-
-  previewSection.classList.remove('hidden');
-  targetSection.classList.remove('hidden');
-  syncBtn.classList.remove('hidden');
-  syncBtn.disabled = false;
-}
+// --- Messages from Figma sandbox ---
 
 window.onmessage = (event) => {
   const msg = event.data.pluginMessage;
@@ -241,11 +135,11 @@ window.onmessage = (event) => {
   }
   if (msg.type === 'sync-complete') {
     statusEl.textContent = 'Synced!';
-    syncBtn.disabled = false;
+    updateSyncStatus('Synced!', 'connected');
   }
   if (msg.type === 'sync-error') {
     statusEl.textContent = `Error: ${msg.error}`;
-    syncBtn.disabled = false;
+    updateSyncStatus(`Sync error: ${msg.error}`, 'error');
   }
 };
 
@@ -259,20 +153,82 @@ function populateCollections(collections: CollectionInfo[]) {
   }
 }
 
-syncBtn.addEventListener('click', () => {
-  if (!currentPayload) return;
-  syncBtn.disabled = true;
-  statusEl.textContent = 'Syncing...';
+// --- Sync status UI ---
 
-  const selected = collectionSelect.value;
-  const message: Record<string, unknown> = {
-    type: 'sync',
-    payload: currentPayload,
-  };
+function updateSyncStatus(text: string, state: 'connected' | 'error' | 'connecting' | 'disconnected') {
+  syncStatusEl.classList.remove('hidden');
+  syncStatusEl.textContent = text;
+  syncStatusEl.className = `sync-status ${state}`;
+}
 
-  if (selected !== '__new__') {
-    message.existingCollectionId = selected;
+// --- Connect & Sync ---
+
+connectBtn.addEventListener('click', () => {
+  // Disconnect if already connected
+  if (syncClient) {
+    syncClient.disconnect();
+    syncClient = null;
+    unlockUI();
+    return;
   }
 
-  parent.postMessage({ pluginMessage: message }, '*');
+  const token = tokenInput.value.trim().toUpperCase();
+  if (!token) return;
+
+  selectedCollectionId = collectionSelect.value;
+
+  updateSyncStatus('Connecting...', 'connecting');
+  lockUI();
+
+  syncClient = new SyncClient(SYNC_SERVER_URL, token, {
+    onPaired: () => {
+      updateSyncStatus('Paired — waiting for data...', 'connected');
+      connectBtn.textContent = 'Disconnect';
+      connectBtn.disabled = false;
+    },
+    onSync: (payload) => {
+      updateSyncStatus('Receiving data...', 'connected');
+
+      // Forward payload directly to Figma sandbox for sync
+      const message: Record<string, unknown> = {
+        type: 'sync',
+        payload,
+      };
+
+      if (selectedCollectionId && selectedCollectionId !== '__new__') {
+        message.existingCollectionId = selectedCollectionId;
+      }
+
+      parent.postMessage({ pluginMessage: message }, '*');
+    },
+    onError: (error) => {
+      updateSyncStatus(error, 'error');
+      unlockUI();
+      syncClient = null;
+    },
+    onDisconnected: () => {
+      updateSyncStatus('Disconnected', 'disconnected');
+      unlockUI();
+      syncClient = null;
+    },
+  });
+
+  syncClient.connect().catch((err) => {
+    updateSyncStatus(err instanceof Error ? err.message : 'Connection failed', 'error');
+    unlockUI();
+    syncClient = null;
+  });
 });
+
+function lockUI() {
+  tokenInput.disabled = true;
+  collectionSelect.disabled = true;
+  connectBtn.disabled = true;
+}
+
+function unlockUI() {
+  tokenInput.disabled = false;
+  collectionSelect.disabled = false;
+  connectBtn.disabled = !tokenInput.value.trim();
+  connectBtn.textContent = 'Connect & Sync';
+}

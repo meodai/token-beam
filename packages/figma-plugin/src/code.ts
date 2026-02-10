@@ -33,7 +33,7 @@ interface RequestCollectionsMessage {
 
 type PluginMessage = SyncMessage | RequestCollectionsMessage;
 
-figma.showUI(__html__, { width: 420, height: 520, themeColors: true });
+figma.showUI(__html__, { width: 320, height: 260, themeColors: true });
 
 figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === 'request-collections') {

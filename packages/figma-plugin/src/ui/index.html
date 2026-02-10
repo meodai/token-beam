@@ -8,40 +8,21 @@
 <body>
   <div id="app">
     <section class="sync-section">
-      <label for="token-input">Live Sync</label>
+      <label for="token-input">Session Token</label>
       <div class="input-row">
-        <input id="server-input" type="url" placeholder="ws://localhost:8080" value="ws://localhost:8080" />
-      </div>
-      <div class="input-row" style="margin-top: 6px;">
-        <input id="token-input" type="text" placeholder="Enter session token" />
-        <button id="connect-btn">Connect</button>
-      </div>
-      <div id="sync-status" class="sync-status hidden"></div>
-    </section>
-
-    <div class="divider"><span>or</span></div>
-
-    <section class="input-section">
-      <label for="url-input">Fetch from URL</label>
-      <div class="input-row">
-        <input id="url-input" type="url" placeholder="http://localhost:5173/api/colors" />
-        <button id="fetch-btn">Fetch</button>
+        <input id="token-input" type="text" placeholder="Enter token from demo" />
       </div>
     </section>
 
-    <section id="preview-section" class="hidden">
-      <h3 id="collection-name"></h3>
-      <div id="var-preview"></div>
-    </section>
-
-    <section id="target-section" class="hidden">
-      <label for="collection-select">Target collection</label>
+    <section id="target-section">
+      <label for="collection-select">Target Collection</label>
       <select id="collection-select">
         <option value="__new__">Create new collection</option>
       </select>
     </section>
 
-    <button id="sync-btn" class="primary hidden" disabled>Sync to Figma</button>
+    <button id="connect-btn" class="primary" disabled>Connect &amp; Sync</button>
+    <div id="sync-status" class="sync-status hidden"></div>
     <div id="status"></div>
   </div>
   <script type="module" src="./ui.ts"></script>
