@@ -6,10 +6,11 @@ export default defineConfig({
   plugins: [dts({ rollupTypes: true })],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'TokenSync',
+      entry: {
+        'token-sync': resolve(__dirname, 'src/index.ts'),
+        'node': resolve(__dirname, 'src/node.ts'),
+      },
       formats: ['es'],
-      fileName: 'token-sync',
     },
     rollupOptions: {
       external: ['http'],

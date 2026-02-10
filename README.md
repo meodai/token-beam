@@ -39,14 +39,10 @@ interface TokenSyncPayload {
 
 #### Target Adapters
 
-Pure transform functions that convert the generic payload into tool-specific formats:
+Each consumer plugin owns its own adapter — a pure transform function that converts the generic `TokenSyncPayload` into the tool-specific format. The lib provides the `TargetAdapter<T>` interface, but the implementation lives in the plugin:
 
-- **`figmaCollectionAdapter`**: Transforms generic tokens → Figma Variables API format
-  - Maps `'color'` → `'COLOR'`, `'number'` → `'FLOAT'`
-  - Converts `tokens` array → `variables` array
-  - Wraps collections with `collectionName` property
-
-Future adapters: Adobe XD, Sketch, Penpot, etc.
+- **Figma plugin** (`packages/figma-plugin/src/adapter.ts`): Maps `'color'` → `'COLOR'`, `'number'` → `'FLOAT'`, converts `tokens` → `variables`
+- Future plugins (Adobe XD, Sketch, Penpot, etc.) each implement their own adapter
 
 #### Communication
 
@@ -114,19 +110,18 @@ token-sync/
 │   │   ├── src/
 │   │   │   ├── types.ts          # W3C DTCG-aligned types
 │   │   │   ├── format.ts         # Token creation utilities
-│   │   │   ├── adapters/         # Tool-specific adapters
-│   │   │   │   ├── figma-collection.ts
-│   │   │   │   └── index.ts
+│   │   │   ├── sync-client.ts    # Generic WebSocket SyncClient
 │   │   │   └── index.ts
 │   │   └── dist/token-sync.js
 │   │
 │   ├── sync-server/      # WebSocket server for real-time sync
 │   │   └── (coming soon)
 │   │
-│   ├── demo/             # Demo web app
-│   │   └── vite.config.ts  # Uses adapter to serve Figma format
+│   ├── demo/             # Demo web app (sends generic TokenSyncPayload)
+│   │   └── vite.config.ts
 │   │
-│   └── figma-plugin/     # Figma plugin consuming adapted JSON
+│   └── figma-plugin/     # Figma plugin (owns its own adapter transform)
+│       └── src/adapter.ts  # Figma-specific adapter
 │
 ├── package.json
 └── README.md
@@ -161,29 +156,27 @@ const payload = createCollection('My Colors', {
 // }
 ```
 
-### Using Adapters
+### Writing a Custom Adapter
+
+Each consumer implements its own adapter using the `TargetAdapter<T>` interface from the lib:
 
 ```typescript
-import { createCollection, figmaCollectionAdapter } from 'token-sync';
+import type { TargetAdapter, TokenSyncPayload } from 'token-sync';
 
-const genericPayload = createCollection('My Colors', { 'color/primary': '#0066cc' });
-const figmaPayload = figmaCollectionAdapter.transform(genericPayload);
+interface MyToolPayload { /* tool-specific shape */ }
 
-// figmaPayload[0] = {
-//   collectionName: "My Colors",
-//   modes: [{
-//     name: "Value",
-//     variables: [
-//       { name: "color/primary", type: "COLOR", value: {r:0, g:0.4, b:0.8, a:1} }
-//     ]
-//   }]
-// }
+const myToolAdapter: TargetAdapter<MyToolPayload> = {
+  name: 'my-tool',
+  transform(payload: TokenSyncPayload): MyToolPayload {
+    // transform generic tokens → tool-specific format
+  },
+};
 ```
 
 ### Serving Tokens
 
 ```typescript
-import { servePayload } from 'token-sync';
+import { servePayload } from 'token-sync/node';
 
 const payload = createCollection('Colors', { primary: '#0066cc' });
 const { server, url } = await servePayload(payload, { port: 3333 });

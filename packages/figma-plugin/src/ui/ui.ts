@@ -1,25 +1,7 @@
-interface FigmaColorValue {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-}
-
-type FigmaVariableType = 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN';
-
-interface SyncVariable {
-  name: string;
-  type: FigmaVariableType;
-  value: FigmaColorValue | number | string | boolean;
-}
-
-interface FigmaSyncPayload {
-  collectionName: string;
-  modes: Array<{
-    name: string;
-    variables: SyncVariable[];
-  }>;
-}
+import type { TokenSyncPayload } from 'token-sync';
+import { SyncClient } from 'token-sync';
+import { figmaCollectionAdapter } from '../adapter';
+import type { FigmaCollectionPayload } from '../adapter';
 
 interface CollectionInfo {
   id: string;
@@ -27,81 +9,8 @@ interface CollectionInfo {
   modes: Array<{ modeId: string; name: string }>;
 }
 
-interface SyncMessage {
-  type: 'pair' | 'sync' | 'ping' | 'error';
-  sessionToken?: string;
-  clientType?: 'web' | 'figma';
-  payload?: FigmaSyncPayload;
-  error?: string;
-}
-
 // Server URL from env var (set at build time), fallback to localhost
 const SYNC_SERVER_URL = (import.meta as any).env?.VITE_SYNC_SERVER_URL || 'ws://localhost:8080';
-
-// --- Inline SyncClient ---
-
-class SyncClient {
-  private ws?: WebSocket;
-  private pingTimer?: ReturnType<typeof setInterval>;
-  private readonly PING_INTERVAL = 30000;
-
-  constructor(
-    private serverUrl: string,
-    private sessionToken: string,
-    private callbacks: {
-      onPaired: () => void;
-      onSync: (payload: FigmaSyncPayload) => void;
-      onError: (error: string) => void;
-      onDisconnected: () => void;
-    },
-  ) {}
-
-  connect(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.ws = new WebSocket(this.serverUrl);
-
-      this.ws.onopen = () => {
-        this.send({ type: 'pair', clientType: 'figma', sessionToken: this.sessionToken });
-        this.pingTimer = setInterval(() => this.send({ type: 'ping' }), this.PING_INTERVAL);
-        resolve();
-      };
-
-      this.ws.onmessage = (event) => {
-        try {
-          const msg: SyncMessage = JSON.parse(event.data);
-          if (msg.type === 'pair') this.callbacks.onPaired();
-          else if (msg.type === 'sync' && msg.payload) this.callbacks.onSync(msg.payload);
-          else if (msg.type === 'error' && msg.error) this.callbacks.onError(msg.error);
-        } catch { /* ignore malformed */ }
-      };
-
-      this.ws.onerror = () => reject(new Error('WebSocket connection failed'));
-      this.ws.onclose = () => {
-        this.stopPing();
-        this.callbacks.onDisconnected();
-      };
-    });
-  }
-
-  disconnect() {
-    this.stopPing();
-    this.ws?.close();
-    this.ws = undefined;
-  }
-
-  private send(msg: SyncMessage) {
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(msg));
-    }
-  }
-
-  private stopPing() {
-    if (this.pingTimer) {
-      clearInterval(this.pingTimer);
-      this.pingTimer = undefined;
-    }
-  }
-}
 
 // --- DOM refs ---
 
@@ -113,7 +22,7 @@ const connectBtn = document.getElementById('connect-btn') as HTMLButtonElement;
 const syncStatusEl = document.getElementById('sync-status')!;
 const statusEl = document.getElementById('status')!;
 
-let syncClient: SyncClient | null = null;
+let syncClient: SyncClient<TokenSyncPayload> | null = null;
 let selectedCollectionId: string | null = null;
 // Once a collection is created, we remember its ID for subsequent syncs
 let createdCollectionId: string | null = null;
@@ -175,6 +84,31 @@ function updateSyncStatus(text: string, state: 'connected' | 'error' | 'connecti
   syncStatusEl.className = `sync-status ${state}`;
 }
 
+// --- Transform & forward to Figma sandbox ---
+
+function forwardToSandbox(figmaPayload: FigmaCollectionPayload) {
+  const message: Record<string, unknown> = {
+    type: 'sync',
+    payload: figmaPayload,
+  };
+
+  // Use previously created collection, or the selected existing one
+  const collectionId = createdCollectionId || selectedCollectionId;
+  if (collectionId && collectionId !== '__new__') {
+    message.existingCollectionId = collectionId;
+  }
+
+  // If creating new, use custom name (or fallback to payload name)
+  if (!message.existingCollectionId) {
+    const customName = collectionNameInput.value.trim();
+    if (customName) {
+      message.collectionName = customName;
+    }
+  }
+
+  parent.postMessage({ pluginMessage: message }, '*');
+}
+
 // --- Connect & Sync ---
 
 connectBtn.addEventListener('click', () => {
@@ -194,7 +128,10 @@ connectBtn.addEventListener('click', () => {
   updateSyncStatus('Connecting...', 'connecting');
   lockUI();
 
-  syncClient = new SyncClient(SYNC_SERVER_URL, token, {
+  syncClient = new SyncClient<TokenSyncPayload>({
+    serverUrl: SYNC_SERVER_URL,
+    clientType: 'figma',
+    sessionToken: token,
     onPaired: () => {
       updateSyncStatus('Paired — waiting for data...', 'connected');
       connectBtn.textContent = 'Disconnect';
@@ -203,27 +140,13 @@ connectBtn.addEventListener('click', () => {
     onSync: (payload) => {
       updateSyncStatus('Receiving data...', 'connected');
 
-      // Forward payload directly to Figma sandbox for sync
-      const message: Record<string, unknown> = {
-        type: 'sync',
-        payload,
-      };
+      // Transform generic TokenSyncPayload → Figma format using adapter
+      const figmaCollections = figmaCollectionAdapter.transform(payload);
 
-      // Use previously created collection, or the selected existing one
-      const collectionId = createdCollectionId || selectedCollectionId;
-      if (collectionId && collectionId !== '__new__') {
-        message.existingCollectionId = collectionId;
+      // Forward each collection to the Figma sandbox
+      for (const figmaPayload of figmaCollections) {
+        forwardToSandbox(figmaPayload);
       }
-
-      // If creating new, use custom name (or fallback to payload name)
-      if (!message.existingCollectionId) {
-        const customName = collectionNameInput.value.trim();
-        if (customName) {
-          message.collectionName = customName;
-        }
-      }
-
-      parent.postMessage({ pluginMessage: message }, '*');
     },
     onError: (error) => {
       updateSyncStatus(error, 'error');

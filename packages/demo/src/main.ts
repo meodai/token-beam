@@ -1,11 +1,11 @@
-import type { FigmaCollectionPayload, ColorValue } from 'token-sync';
-import { SyncClient } from './sync-client';
+import type { TokenSyncPayload, ColorValue } from 'token-sync';
+import { SyncClient } from 'token-sync';
 
 const API_PATH = '/api/colors';
 const SYNC_SERVER_URL = 'ws://localhost:8080';
 
-let syncClient: SyncClient<FigmaCollectionPayload> | null = null;
-let currentPayload: FigmaCollectionPayload | null = null;
+let syncClient: SyncClient<TokenSyncPayload> | null = null;
+let currentPayload: TokenSyncPayload | null = null;
 let sessionToken: string | null = null;
 let isPaired = false;
 
@@ -51,7 +51,7 @@ async function init() {
 
 async function fetchAndRender() {
   const res = await fetch(API_PATH);
-  const payload: FigmaCollectionPayload = await res.json();
+  const payload: TokenSyncPayload = await res.json();
   currentPayload = payload;
   renderPayload(payload);
 }
@@ -63,7 +63,7 @@ function initSync() {
     syncClient.disconnect();
   }
 
-  syncClient = new SyncClient<FigmaCollectionPayload>({
+  syncClient = new SyncClient<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
     onPaired: (token) => {
@@ -88,7 +88,7 @@ function initSync() {
       updateSyncStatus('error', undefined, error);
     },
     onSync: (payload) => {
-      console.log('Received sync from Figma:', payload);
+      console.log('Received sync from target:', payload);
     },
   });
 
@@ -170,24 +170,25 @@ function colorToCSS(c: ColorValue): string {
   return `rgba(${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(c.b * 255)}, ${c.a})`;
 }
 
-function renderPayload(payload: FigmaCollectionPayload) {
+function renderPayload(payload: TokenSyncPayload) {
   const section = document.getElementById('payload-section')!;
-  const firstMode = payload.modes[0];
+  const collection = payload.collections[0];
+  const firstMode = collection.modes[0];
 
   section.innerHTML = `
-    <h1>${payload.collectionName}</h1>
+    <h1>${collection.name}</h1>
     <div class="swatches" id="swatches"></div>
     <button id="regen-btn">Regenerate</button>
   `;
 
   const swatches = document.getElementById('swatches')!;
-  for (const v of firstMode.variables) {
+  for (const token of firstMode.tokens) {
     const el = document.createElement('div');
     el.className = 'swatch';
-    if (v.type === 'COLOR') {
-      el.style.backgroundColor = colorToCSS(v.value as ColorValue);
+    if (token.type === 'color') {
+      el.style.backgroundColor = colorToCSS(token.value as ColorValue);
     }
-    el.innerHTML = `<span class="label">${v.name}</span>`;
+    el.innerHTML = `<span class="label">${token.name}</span>`;
     swatches.appendChild(el);
   }
 

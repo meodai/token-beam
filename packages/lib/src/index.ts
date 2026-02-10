@@ -1,5 +1,6 @@
 export { hexToRGBA, resolveToken, createCollection, createMultiModeCollection } from './format';
-export { servePayload } from './serve';
+export { SyncClient } from './sync-client';
+export type { SyncClientOptions, SyncMessage } from './sync-client';
 export type {
   TokenType,
   ColorValue,
@@ -11,11 +12,3 @@ export type {
   ExplicitTokenEntry,
   TargetAdapter,
 } from './types';
-export type { ServeOptions } from './serve';
-export { figmaCollectionAdapter } from './adapters';
-export type {
-  FigmaVariableType,
-  FigmaSyncVariable,
-  FigmaSyncMode,
-  FigmaCollectionPayload,
-} from './adapters';

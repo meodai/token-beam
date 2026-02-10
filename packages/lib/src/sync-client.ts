@@ -1,19 +1,17 @@
-export type ClientType = 'web' | 'figma';
-
 export interface SyncMessage<T = unknown> {
   type: 'pair' | 'sync' | 'ping' | 'error';
   sessionToken?: string;
-  clientType?: ClientType;
+  clientType?: string;
   payload?: T;
   error?: string;
 }
 
 export interface SyncClientOptions<T = unknown> {
   serverUrl: string;
-  clientType: ClientType;
+  clientType: string;
   sessionToken?: string;
   onPaired?: (token: string) => void;
-  onTargetConnected?: () => void;
+  onTargetConnected?: (clientType: string) => void;
   onSync?: (payload: T) => void;
   onError?: (error: string) => void;
   onDisconnected?: () => void;
@@ -35,17 +33,14 @@ export class SyncClient<T = unknown> {
         this.ws = new WebSocket(this.options.serverUrl);
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
           this.options.onConnected?.();
 
-          // Send pair request
           this.send({
             type: 'pair',
             clientType: this.options.clientType,
             sessionToken: this.options.sessionToken,
           });
 
-          // Start ping interval
           this.startPing();
           resolve();
         };
@@ -54,18 +49,14 @@ export class SyncClient<T = unknown> {
           try {
             const message: SyncMessage<T> = JSON.parse(event.data);
             this.handleMessage(message);
-          } catch (error) {
-            console.error('Failed to parse message:', error);
+          } catch {
+            // ignore malformed messages
           }
         };
 
-        this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
-          reject(error);
-        };
+        this.ws.onerror = () => reject(new Error('WebSocket connection failed'));
 
         this.ws.onclose = () => {
-          console.log('WebSocket disconnected');
           this.options.onDisconnected?.();
           this.stopPing();
           this.scheduleReconnect();
@@ -79,11 +70,12 @@ export class SyncClient<T = unknown> {
   private handleMessage(message: SyncMessage<T>) {
     switch (message.type) {
       case 'pair':
-        if (message.sessionToken && this.options.clientType === 'web') {
+        if (message.sessionToken) {
+          // We received our own session token (session creator)
           this.options.onPaired?.(message.sessionToken);
-        } else if (message.clientType === 'figma' && this.options.clientType === 'web') {
-          // Server notifies that the Figma client joined our session
-          this.options.onTargetConnected?.();
+        } else if (message.clientType) {
+          // Another client joined our session
+          this.options.onTargetConnected?.(message.clientType);
         }
         break;
 
@@ -100,16 +92,12 @@ export class SyncClient<T = unknown> {
         break;
 
       case 'ping':
-        // Ping response received
         break;
     }
   }
 
   public sync(payload: T) {
-    this.send({
-      type: 'sync',
-      payload,
-    });
+    this.send({ type: 'sync', payload });
   }
 
   private send(message: SyncMessage<T>) {
@@ -135,11 +123,8 @@ export class SyncClient<T = unknown> {
     if (this.reconnectTimer) return;
 
     this.reconnectTimer = setTimeout(() => {
-      console.log('Attempting to reconnect...');
       this.reconnectTimer = undefined;
-      this.connect().catch((error) => {
-        console.error('Reconnection failed:', error);
-      });
+      this.connect().catch(() => {});
     }, this.RECONNECT_DELAY);
   }
 

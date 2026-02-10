@@ -10,6 +10,9 @@
     "dev:code": "vite build --config vite.config.code.ts --watch",
     "dev:ui": "vite build --config vite.config.ui.ts --watch"
   },
+  "dependencies": {
+    "token-sync": "*"
+  },
   "devDependencies": {
     "@figma/plugin-typings": "^1.100.0",
     "concurrently": "^9.0.0",

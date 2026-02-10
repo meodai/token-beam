@@ -4,7 +4,7 @@ import type {
   DesignToken,
   TargetAdapter,
   ColorValue,
-} from '../types';
+} from 'token-sync';
 
 // Figma-specific output types
 export type FigmaVariableType = 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN';
