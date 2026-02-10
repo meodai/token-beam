@@ -31,7 +31,7 @@ const client = new SyncClient({
   serverUrl: 'ws://localhost:8080',
   clientType: 'web',
   onPaired: (token) => {
-    console.log('Share this token:', token); // e.g., "dts:A3F9K2"
+    console.log('Share this token:', token); // e.g., "dts://A3F9K2"
   },
   onSync: (payload) => {
     console.log('Received update:', payload);
@@ -50,7 +50,7 @@ client.sync(myTokenPayload);
 const client = new SyncClient({
   serverUrl: 'ws://localhost:8080',
   clientType: 'figma',
-  sessionToken: 'dts:A3F9K2', // Token from web client
+  sessionToken: 'dts://A3F9K2', // Token from web client
   onSync: (payload) => {
     // Apply tokens to Figma
     applyTokensToFigma(payload);
@@ -69,7 +69,7 @@ await client.connect();
 {
   "type": "pair",
   "clientType": "web" | "figma",
-  "sessionToken": "dts:A3F9K2" // Only for Figma
+  "sessionToken": "dts://A3F9K2" // Only for Figma
 }
 ```
 
@@ -77,7 +77,7 @@ await client.connect();
 ```json
 {
   "type": "pair",
-  "sessionToken": "dts:A3F9K2",
+  "sessionToken": "dts://A3F9K2",
   "clientType": "web" | "figma"
 }
 ```
@@ -100,7 +100,7 @@ await client.connect();
 
 ## Features
 
-- **Token-based pairing**: Prefixed tokens (e.g., `dts:A3F9K2`) — recognizable for future deep-linking
+- **Token-based pairing**: Prefixed tokens (e.g., `dts://A3F9K2`) — recognizable for future deep-linking
 - **Session management**: Auto-cleanup after 30 minutes of inactivity
 - **Reconnection handling**: Automatic reconnection with exponential backoff
 - **Health checks**: HTTP endpoint at `/health`
@@ -136,7 +136,7 @@ interface SyncClientOptions {
 
 ```
 Session Lifecycle:
-1. Web connects → Server generates token (e.g., "dts:A3F9K2")
+1. Web connects → Server generates token (e.g., "dts://A3F9K2")
 2. User copies token
 3. Figma enters token → Server pairs sessions
 4. Bidirectional sync active

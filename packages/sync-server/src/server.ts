@@ -25,6 +25,7 @@ export class TokenSyncServer {
   private wss: WebSocketServer;
   private httpServer: HTTPServer;
   private sessions: Map<string, SyncSession> = new Map();
+  private cleanupTimer?: ReturnType<typeof setInterval>;
   private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
   constructor(private port: number = 8080) {
@@ -240,7 +241,7 @@ export class TokenSyncServer {
   }
 
   private generateToken(): string {
-    return `dts:${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    return `dts://${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
   }
 
   private generateSessionId(): string {
@@ -248,7 +249,7 @@ export class TokenSyncServer {
   }
 
   private startCleanupInterval() {
-    setInterval(() => {
+    this.cleanupTimer = setInterval(() => {
       const now = Date.now();
       const sessionsToDelete: string[] = [];
 
@@ -286,6 +287,28 @@ export class TokenSyncServer {
   }
 
   public stop(): Promise<void> {
+    // Stop the cleanup timer
+    if (this.cleanupTimer) {
+      clearInterval(this.cleanupTimer);
+      this.cleanupTimer = undefined;
+    }
+
+    // Close all active connections so wss.close() doesn't hang
+    for (const session of this.sessions.values()) {
+      if (session.webClient?.readyState === WebSocket.OPEN) {
+        session.webClient.close();
+      }
+      if (session.figmaClient?.readyState === WebSocket.OPEN) {
+        session.figmaClient.close();
+      }
+    }
+    this.sessions.clear();
+
+    // Terminate any remaining connections not tracked in sessions
+    for (const client of this.wss.clients) {
+      client.terminate();
+    }
+
     return new Promise((resolve) => {
       this.wss.close(() => {
         this.httpServer.close(() => {

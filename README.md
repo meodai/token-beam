@@ -55,7 +55,7 @@ The **`packages/sync-server`** package provides a WebSocket server for real-time
 
 ### How It Works
 
-1. **Web client** connects to sync server and receives a prefixed token (e.g., `dts:A3F9K2`)
+1. **Web client** connects to sync server and receives a prefixed token (e.g., `dts://A3F9K2`)
 2. **User** copies the token and pastes it into the Figma plugin
 3. **Figma plugin** connects using the token and gets paired with the web session
 4. **Changes** made on the website are instantly synced to Figma in real-time
@@ -82,12 +82,12 @@ PORT=9000 npm run start:server
 
 ```
 ┌─────────────┐         WebSocket          ┌──────────────────┐
-│  Web Demo   │ ◄────── Token: dts:A3F9K2 ──── │  Sync Server     │
+│  Web Demo   │ ◄────── Token: dts://A3F9K2 ──── │  Sync Server     │
 │  (Browser)  │                             │  (Node.js + WS)  │
 └─────────────┘                             └──────────────────┘
                                                      ▲
                                                      │ WebSocket
-                                                     │ Token: dts:A3F9K2
+                                                     │ Token: dts://A3F9K2
                                             ┌────────┴────────┐
                                             │ Figma Plugin    │
                                             │ (Plugin UI)     │

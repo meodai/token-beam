@@ -137,8 +137,8 @@ connectBtn.addEventListener('click', () => {
   const raw = tokenInput.value.trim();
   if (!raw) return;
 
-  // Normalise: accept "dts:ABC123", "ABC123", or "dts:abc123"
-  const token = raw.startsWith('dts:') ? raw : `dts:${raw.toUpperCase()}`;
+  // Normalise: accept "dts://ABC123", "ABC123", or "dts://abc123"
+  const token = raw.startsWith('dts://') ? raw : `dts://${raw.toUpperCase()}`;
 
 
   selectedCollectionId = collectionSelect.value;
