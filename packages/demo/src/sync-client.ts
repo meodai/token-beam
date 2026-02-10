@@ -13,6 +13,7 @@ export interface SyncClientOptions<T = unknown> {
   clientType: ClientType;
   sessionToken?: string;
   onPaired?: (token: string) => void;
+  onTargetConnected?: () => void;
   onSync?: (payload: T) => void;
   onError?: (error: string) => void;
   onDisconnected?: () => void;
@@ -80,6 +81,9 @@ export class SyncClient<T = unknown> {
       case 'pair':
         if (message.sessionToken && this.options.clientType === 'web') {
           this.options.onPaired?.(message.sessionToken);
+        } else if (message.clientType === 'figma' && this.options.clientType === 'web') {
+          // Server notifies that the Figma client joined our session
+          this.options.onTargetConnected?.();
         }
         break;
 

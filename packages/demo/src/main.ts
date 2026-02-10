@@ -27,7 +27,9 @@ function initSync() {
     onPaired: (token) => {
       sessionToken = token;
       updateSyncStatus('ready', token);
-      // Automatically sync current payload when paired
+    },
+    onTargetConnected: () => {
+      updateSyncStatus('syncing');
       if (currentPayload) {
         syncClient?.sync(currentPayload);
       }
@@ -71,11 +73,16 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
       break;
     case 'ready':
       statusEl.className = 'status-indicator connected';
-      statusEl.textContent = 'Live Sync Ready';
+      statusEl.textContent = 'Waiting for Figma plugin...';
       if (token) {
         tokenEl.textContent = token;
         tokenDisplay.style.display = '';
       }
+      errorEl.style.display = 'none';
+      break;
+    case 'syncing':
+      statusEl.className = 'status-indicator connected';
+      statusEl.textContent = 'Figma connected — syncing!';
       errorEl.style.display = 'none';
       break;
     case 'disconnected':
@@ -87,7 +94,6 @@ function updateSyncStatus(status: string, token?: string, error?: string) {
     case 'error':
       statusEl.className = 'status-indicator error';
       statusEl.textContent = 'Error';
-      tokenDisplay.style.display = 'none';
       if (error) {
         errorEl.textContent = error;
         errorEl.style.display = 'block';
