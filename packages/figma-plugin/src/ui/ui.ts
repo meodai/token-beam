@@ -51,18 +51,19 @@ function getSuggestedCollectionName(): string {
   return `Token Sync (${base})`;
 }
 
-function updateConnectEnabled() {
-  const tokenReady = !!tokenInput.value.trim();
-  const needsName = collectionSelect.value === '__new__';
-  const nameReady = !needsName || !!collectionNameInput.value.trim();
-  connectBtn.disabled = !(tokenReady && nameReady);
+function isCollectionValid(): boolean {
+  if (collectionSelect.value !== '__new__') return true;
+  return !!collectionNameInput.value.trim();
 }
 
-function ensureCollectionName() {
+function updateConnectEnabled() {
+  const tokenReady = !!tokenInput.value.trim();
+  connectBtn.disabled = !(tokenReady && isCollectionValid());
+}
+
+function updateCollectionNamePlaceholder() {
   if (collectionSelect.value !== '__new__') return;
-  if (!collectionNameInput.value.trim()) {
-    collectionNameInput.value = getSuggestedCollectionName();
-  }
+  collectionNameInput.placeholder = getSuggestedCollectionName();
 }
 
 tokenInput.addEventListener('input', () => {
@@ -76,7 +77,7 @@ collectionNameInput.addEventListener('input', () => {
 // Show/hide collection name input based on select
 collectionSelect.addEventListener('change', () => {
   newNameRow.style.display = collectionSelect.value === '__new__' ? '' : 'none';
-  ensureCollectionName();
+  updateCollectionNamePlaceholder();
   updateConnectEnabled();
 });
 
@@ -92,6 +93,7 @@ window.onmessage = (event: MessageEvent) => {
 
   if (msg.type === 'collections-list') {
     populateCollections(msg.collections as CollectionInfo[]);
+    updateConnectEnabled();
   }
   if (msg.type === 'sync-complete') {
     if (msg.collectionId) {
@@ -180,10 +182,11 @@ connectBtn.addEventListener('click', () => {
   const token = raw.startsWith('dts://') ? raw : `dts://${raw.toUpperCase()}`;
 
   selectedCollectionId = collectionSelect.value;
-  ensureCollectionName();
   updateConnectEnabled();
-  if (collectionSelect.value === '__new__' && !collectionNameInput.value.trim()) {
+  if (!isCollectionValid()) {
     updateSyncStatus('Enter a collection name', 'error');
+    collectionNameInput.focus();
+    connectBtn.disabled = true;
     return;
   }
 
@@ -196,7 +199,7 @@ connectBtn.addEventListener('click', () => {
     sessionToken: token,
     onPaired: (_token, origin) => {
       pairedOrigin = origin ?? null;
-      ensureCollectionName();
+      updateCollectionNamePlaceholder();
       updateConnectEnabled();
       const label = pairedOrigin ?? 'unknown source';
       updateSyncStatus(`Paired with ${label} — waiting for data...`, 'connected');
