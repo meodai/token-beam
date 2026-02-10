@@ -66,5 +66,5 @@ For commercial licensing inquiries:
 
 ---
 
-Copyright (c) 2026 Daniel Stutz (meodai)
+Copyright (c) 2026 David Aerne (meodai)
 All rights reserved.

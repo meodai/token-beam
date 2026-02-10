@@ -320,4 +320,4 @@ The sync server is free for open source projects but requires a commercial licen
 
 ---
 
-MIT License - Copyright (c) 2026 Daniel Stutz (meodai)
+MIT License - Copyright (c) 2026 David Aerne (meodai)
