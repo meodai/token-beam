@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY tsconfig.json ./
+COPY tsconfig.docker.json ./tsconfig.json
 
 # Install all dependencies (including dev for build)
 RUN npm install
