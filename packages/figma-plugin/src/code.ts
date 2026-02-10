@@ -34,6 +34,26 @@ interface RequestCollectionsMessage {
 
 type PluginMessage = SyncMessage | RequestCollectionsMessage;
 
+function isColorValue(value: unknown): value is FigmaColorValue {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'r' in value &&
+    'g' in value &&
+    'b' in value &&
+    'a' in value
+  );
+}
+
+function toVariableValue(varDef: SyncVariable): VariableValue {
+  if (varDef.type === 'COLOR' && isColorValue(varDef.value)) {
+    const { r, g, b, a } = varDef.value;
+    return { r, g, b, a } satisfies RGBA;
+  }
+  // number, string, boolean are all valid VariableValue
+  return varDef.value as VariableValue;
+}
+
 figma.showUI(__html__, { width: 320, height: 260, themeColors: true });
 
 figma.ui.onmessage = async (msg: PluginMessage) => {
@@ -53,7 +73,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       const collectionId = await syncVariables(msg);
       figma.ui.postMessage({ type: 'sync-complete', collectionId });
       figma.notify('Variables synced!');
-    } catch (err) {
+    } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       figma.ui.postMessage({ type: 'sync-error', error: message });
       figma.notify('Sync failed: ' + message, { error: true });
@@ -77,8 +97,7 @@ async function syncVariables(msg: SyncMessage): Promise<string> {
       if (v) existingVars.set(v.name, v);
     }
   } else {
-    // Use custom name from UI, or fall back to payload name
-    const name = collectionName || payload.collectionName;
+    const name = collectionName ?? payload.collectionName;
     collection = figma.variables.createVariableCollection(name);
   }
 
@@ -101,15 +120,11 @@ async function syncVariables(msg: SyncMessage): Promise<string> {
       let variable = existingVars.get(varDef.name);
 
       if (!variable) {
-        variable = figma.variables.createVariable(
-          varDef.name,
-          collection,
-          varDef.type,
-        );
+        variable = figma.variables.createVariable(varDef.name, collection, varDef.type);
         existingVars.set(varDef.name, variable);
       }
 
-      variable.setValueForMode(modeId, varDef.value as VariableValue);
+      variable.setValueForMode(modeId, toVariableValue(varDef));
     }
   }
 

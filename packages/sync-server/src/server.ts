@@ -28,11 +28,13 @@ export class TokenSyncServer {
     this.httpServer = createServer((req, res) => {
       if (req.method === 'GET' && req.url === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ 
-          status: 'ok', 
-          activeSessions: this.sessions.size,
-          timestamp: new Date().toISOString()
-        }));
+        res.end(
+          JSON.stringify({
+            status: 'ok',
+            activeSessions: this.sessions.size,
+            timestamp: new Date().toISOString(),
+          }),
+        );
       } else {
         res.writeHead(404);
         res.end('Not found');
@@ -115,9 +117,7 @@ export class TokenSyncServer {
 
     // Figma client joins existing session
     if (clientType === 'figma' && sessionToken) {
-      const session = Array.from(this.sessions.values()).find(
-        (s) => s.token === sessionToken
-      );
+      const session = Array.from(this.sessions.values()).find((s) => s.token === sessionToken);
 
       if (!session) {
         this.sendError(ws, 'Invalid session token');
@@ -155,7 +155,7 @@ export class TokenSyncServer {
 
   private handleSync(ws: WebSocket, message: SyncMessage) {
     const session = this.findSessionByClient(ws);
-    
+
     if (!session) {
       this.sendError(ws, 'No active session');
       return;
@@ -181,7 +181,7 @@ export class TokenSyncServer {
     console.log(`Synced from ${isFromWeb ? 'web' : 'figma'} to ${isFromWeb ? 'figma' : 'web'}`);
   }
 
-  private handlePing(ws: WebSocket, message: SyncMessage) {
+  private handlePing(ws: WebSocket, _message: SyncMessage) {
     const session = this.findSessionByClient(ws);
     if (session) {
       session.lastActivity = new Date();
@@ -191,7 +191,7 @@ export class TokenSyncServer {
 
   private handleDisconnect(ws: WebSocket) {
     const session = this.findSessionByClient(ws);
-    
+
     if (!session) return;
 
     if (ws === session.webClient) {
@@ -217,7 +217,7 @@ export class TokenSyncServer {
 
   private findSessionByClient(ws: WebSocket): SyncSession | undefined {
     return Array.from(this.sessions.values()).find(
-      (s) => s.webClient === ws || s.figmaClient === ws
+      (s) => s.webClient === ws || s.figmaClient === ws,
     );
   }
 

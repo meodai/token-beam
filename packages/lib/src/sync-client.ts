@@ -25,7 +25,7 @@ export class SyncClient<T = unknown> {
   private readonly RECONNECT_DELAY = 3000;
   private readonly PING_INTERVAL = 30000;
 
-  constructor(private options: SyncClientOptions<T>) {}
+  constructor(private readonly options: SyncClientOptions<T>) {}
 
   public connect(): Promise<void> {
     return new Promise((resolve, reject) => {

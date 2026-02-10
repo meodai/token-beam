@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: "Iosevka Web", "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+  font-family: 'Iosevka Web', 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
   font-weight: 300;
   font-size: 11px;
   line-height: 1.5;
@@ -18,7 +18,7 @@ body {
 
 label {
   display: block;
-  font-size: .65rem;
+  font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -31,7 +31,7 @@ label {
   gap: 6px;
 }
 
-input[type="text"] {
+input[type='text'] {
   flex: 1;
   padding: 6px 10px;
   border: 1px solid var(--figma-color-border, #d4d8d8);
@@ -46,14 +46,14 @@ input[type="text"] {
   text-align: center;
 }
 
-input[type="text"]::placeholder {
+input[type='text']::placeholder {
   text-transform: none;
   letter-spacing: normal;
   font-weight: 300;
   font-size: 11px;
 }
 
-input[type="text"]:focus {
+input[type='text']:focus {
   outline: none;
   border-color: var(--figma-color-text, #292f2f);
 }
@@ -69,13 +69,13 @@ button {
   border: 1px solid var(--figma-color-border, #d4d8d8);
   border-radius: 0;
   cursor: pointer;
-  font-size: .6rem;
+  font-size: 0.6rem;
   font-family: inherit;
   font-weight: 400;
   letter-spacing: 0.04em;
   background: var(--figma-color-bg, #fff);
   color: var(--figma-color-text, #292f2f);
-  transition: all 0.15s cubic-bezier(.3, .7, 0, 1);
+  transition: all 0.15s cubic-bezier(0.3, 0.7, 0, 1);
 }
 
 button:hover {
@@ -131,7 +131,7 @@ section {
 
 .sync-status {
   margin-top: 8px;
-  font-size: .6rem;
+  font-size: 0.6rem;
   padding: 4px 10px;
   border-radius: 0;
   border: 1px solid;
@@ -194,7 +194,7 @@ section {
 
 #status {
   margin-top: 6px;
-  font-size: .6rem;
+  font-size: 0.6rem;
   color: var(--figma-color-text-secondary, #717979);
   letter-spacing: 0.02em;
 }

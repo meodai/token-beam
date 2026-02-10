@@ -42,7 +42,7 @@ function tokenToVariable(token: DesignToken): FigmaSyncVariable {
   return {
     name: token.name,
     type: tokenTypeToFigma(token.type),
-    value: token.value as ColorValue | number | string | boolean,
+    value: token.value,
   };
 }
 

@@ -137,7 +137,7 @@ import { createCollection } from 'token-sync';
 const payload = createCollection('My Colors', {
   'color/primary': '#0066cc',
   'spacing/base': 16,
-  'text/label': 'Hello'
+  'text/label': 'Hello',
 });
 
 // Returns W3C DTCG-aligned structure:
@@ -163,7 +163,9 @@ Each consumer implements its own adapter using the `TargetAdapter<T>` interface 
 ```typescript
 import type { TargetAdapter, TokenSyncPayload } from 'token-sync';
 
-interface MyToolPayload { /* tool-specific shape */ }
+interface MyToolPayload {
+  /* tool-specific shape */
+}
 
 const myToolAdapter: TargetAdapter<MyToolPayload> = {
   name: 'my-tool',

@@ -14,9 +14,12 @@
     "build:server": "npm run build -w packages/sync-server",
     "dev:demo": "npm run dev -w packages/demo",
     "dev:server": "npm run dev -w packages/sync-server",
-    "start:server": "npm run start -w packages/sync-server"
+    "start:server": "npm run start -w packages/sync-server",
+    "format": "prettier --write \"packages/*/src/**/*.{ts,css}\" \"*.{json,md}\"",
+    "format:check": "prettier --check \"packages/*/src/**/*.{ts,css}\" \"*.{json,md}\""
   },
   "devDependencies": {
+    "prettier": "^3.8.1",
     "typescript": "^5.7.0"
   }
 }

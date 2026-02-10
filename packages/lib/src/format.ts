@@ -91,16 +91,13 @@ export function createMultiModeCollection(
   name: string,
   modeTokens: Record<string, Record<string, TokenInput> | ExplicitTokenEntry[]>,
 ): TokenSyncPayload {
-  const modes: TokenMode[] = Object.entries(modeTokens).map(
-    ([modeName, tokens]) => {
-      const resolved: DesignToken[] = Array.isArray(tokens)
-        ? tokens.map((t) => resolveToken(t.name, t.value, t.type))
-        : Object.entries(tokens).map(([k, v]) => resolveToken(k, v));
+  const modes: TokenMode[] = Object.entries(modeTokens).map(([modeName, tokens]) => {
+    const resolved: DesignToken[] = Array.isArray(tokens)
+      ? tokens.map((t) => resolveToken(t.name, t.value, t.type))
+      : Object.entries(tokens).map(([k, v]) => resolveToken(k, v));
 
-      return { name: modeName, tokens: resolved };
-    },
-  );
+    return { name: modeName, tokens: resolved };
+  });
 
   return { collections: [{ name, modes }] };
 }
-

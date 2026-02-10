@@ -4,15 +4,40 @@ import { SyncClient } from 'token-sync';
 const API_PATH = '/api/colors';
 const SYNC_SERVER_URL = 'ws://localhost:8080';
 
+type DemoSyncStatus = 'connecting' | 'ready' | 'syncing' | 'disconnected' | 'error';
+
 let syncClient: SyncClient<TokenSyncPayload> | null = null;
 let currentPayload: TokenSyncPayload | null = null;
 let sessionToken: string | null = null;
 let isPaired = false;
 
+// --- DOM helpers ---
+
+function getElement<T extends HTMLElement>(id: string): T {
+  const el = document.getElementById(id);
+  if (!el) throw new Error(`Element #${id} not found`);
+  return el as T;
+}
+
+function queryElement<T extends HTMLElement>(parent: HTMLElement, selector: string): T | null {
+  return parent.querySelector<T>(selector);
+}
+
+function isColorValue(value: unknown): value is ColorValue {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'r' in value &&
+    'g' in value &&
+    'b' in value &&
+    'a' in value
+  );
+}
+
 // --- Init ---
 
 async function init() {
-  const app = document.getElementById('app')!;
+  const app = getElement<HTMLDivElement>('app');
   app.innerHTML = `
     <div class="sync-section" id="sync-status">
       <h2>Live Sync</h2>
@@ -32,14 +57,14 @@ async function init() {
     <div id="payload-section"></div>
   `;
 
-  document.getElementById('unlink-btn')!.addEventListener('click', () => {
+  getElement('unlink-btn').addEventListener('click', () => {
     unlink();
   });
 
-  document.getElementById('copy-token-btn')!.addEventListener('click', () => {
+  getElement('copy-token-btn').addEventListener('click', () => {
     if (sessionToken) {
       navigator.clipboard.writeText(sessionToken);
-      const btn = document.getElementById('copy-token-btn')!;
+      const btn = getElement('copy-token-btn');
       btn.textContent = 'Copied!';
       setTimeout(() => (btn.textContent = 'Copy'), 1500);
     }
@@ -51,7 +76,7 @@ async function init() {
 
 async function fetchAndRender() {
   const res = await fetch(API_PATH);
-  const payload: TokenSyncPayload = await res.json();
+  const payload = (await res.json()) as TokenSyncPayload;
   currentPayload = payload;
   renderPayload(payload);
 }
@@ -92,7 +117,7 @@ function initSync() {
     },
   });
 
-  syncClient.connect().catch((error) => {
+  syncClient.connect().catch((error: unknown) => {
     console.error('Failed to connect to sync server:', error);
     updateSyncStatus('error', undefined, 'Could not connect to sync server');
   });
@@ -108,16 +133,18 @@ function unlink() {
   initSync();
 }
 
-function updateSyncStatus(status: string, token?: string, error?: string) {
+function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string) {
   const syncStatus = document.getElementById('sync-status');
   if (!syncStatus) return;
 
-  const statusEl = syncStatus.querySelector('.status-indicator') as HTMLElement;
-  const tokenDisplay = syncStatus.querySelector('.token-display') as HTMLElement;
-  const tokenEl = syncStatus.querySelector('#sync-token') as HTMLElement;
-  const errorEl = syncStatus.querySelector('#sync-error') as HTMLElement;
-  const unlinkBtn = syncStatus.querySelector('#unlink-btn') as HTMLElement;
-  const helpEl = syncStatus.querySelector('.sync-help') as HTMLElement;
+  const statusEl = queryElement<HTMLDivElement>(syncStatus, '.status-indicator');
+  const tokenDisplay = queryElement<HTMLDivElement>(syncStatus, '.token-display');
+  const tokenEl = queryElement<HTMLElement>(syncStatus, '#sync-token');
+  const errorEl = queryElement<HTMLDivElement>(syncStatus, '#sync-error');
+  const unlinkBtn = queryElement<HTMLButtonElement>(syncStatus, '#unlink-btn');
+  const helpEl = queryElement<HTMLParagraphElement>(syncStatus, '.sync-help');
+
+  if (!statusEl || !tokenDisplay || !tokenEl || !errorEl || !unlinkBtn || !helpEl) return;
 
   switch (status) {
     case 'connecting':
@@ -171,7 +198,7 @@ function colorToCSS(c: ColorValue): string {
 }
 
 function renderPayload(payload: TokenSyncPayload) {
-  const section = document.getElementById('payload-section')!;
+  const section = getElement<HTMLDivElement>('payload-section');
   const collection = payload.collections[0];
   const firstMode = collection.modes[0];
 
@@ -181,20 +208,19 @@ function renderPayload(payload: TokenSyncPayload) {
     <button id="regen-btn">Regenerate</button>
   `;
 
-  const swatches = document.getElementById('swatches')!;
+  const swatches = getElement<HTMLDivElement>('swatches');
   for (const token of firstMode.tokens) {
     const el = document.createElement('div');
     el.className = 'swatch';
-    if (token.type === 'color') {
-      el.style.backgroundColor = colorToCSS(token.value as ColorValue);
+    if (token.type === 'color' && isColorValue(token.value)) {
+      el.style.backgroundColor = colorToCSS(token.value);
     }
     el.innerHTML = `<span class="label">${token.name}</span>`;
     swatches.appendChild(el);
   }
 
-  document.getElementById('regen-btn')!.addEventListener('click', async () => {
+  getElement('regen-btn').addEventListener('click', async () => {
     await fetchAndRender();
-    // Re-sync if paired
     if (isPaired && syncClient && currentPayload) {
       syncClient.sync(currentPayload);
     }

@@ -42,4 +42,3 @@ export interface TargetAdapter<T> {
   name: string;
   transform(payload: TokenSyncPayload): T;
 }
-
