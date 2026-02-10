@@ -1,8 +1,30 @@
 {
   "name": "token-sync",
   "version": "0.1.0",
+  "description": "Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant.",
   "type": "module",
   "license": "MIT",
+  "author": "David Aerne (meodai)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meodai/token-sync.git",
+    "directory": "packages/lib"
+  },
+  "homepage": "https://github.com/meodai/token-sync#readme",
+  "bugs": {
+    "url": "https://github.com/meodai/token-sync/issues"
+  },
+  "keywords": [
+    "design-tokens",
+    "w3c",
+    "dtcg",
+    "design-system",
+    "figma",
+    "sketch",
+    "sync",
+    "real-time",
+    "websocket"
+  ],
   "main": "./dist/token-sync.js",
   "module": "./dist/token-sync.js",
   "types": "./dist/index.d.ts",
@@ -17,7 +39,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "example-widget.html"
   ],
   "scripts": {
     "build": "vite build",

@@ -2,6 +2,59 @@
 
 Core types and sync client for building design-token workflows.
 
+## Quick Start
+
+### Installation
+
+```bash
+npm install token-sync
+```
+
+### Try the Example Widget
+
+The package includes a complete, working example widget (`example-widget.html`). After installing the package, you can find it in:
+
+```
+node_modules/token-sync/example-widget.html
+```
+
+Open it in your browser to see a fully functional sync widget with demo controls. The file includes:
+- Complete HTML markup
+- All necessary CSS styling
+- Interactive JavaScript demo
+- Integration code examples
+
+You can copy and paste from this example directly into your project!
+
+### Basic Usage
+
+```ts
+import { SyncClient, createCollection } from 'token-sync';
+import type { TokenSyncPayload } from 'token-sync';
+
+const syncClient = new SyncClient<TokenSyncPayload>({
+  serverUrl: 'ws://localhost:8080',
+  clientType: 'web',
+  origin: 'My Design System',
+  onPaired: (token) => {
+    console.log('Pairing token:', token);
+  },
+  onTargetConnected: () => {
+    console.log('Design tool connected!');
+  },
+});
+
+syncClient.connect();
+
+// Send tokens to connected design tools
+const payload = createCollection('colors', {
+  primary: '#0066cc',
+  secondary: '#6b7280',
+});
+
+syncClient.send(payload);
+```
+
 ## Widget Example
 
 Use this as a compact, embeddable pairing widget. Clicking the token field copies the session token.
@@ -229,6 +282,8 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
 .dts-widget--connected { border-color: #1b8a2d; }
 .dts-widget--error { border-color: #c4342d; }
 ```
+
+> **💡 Tip:** For a complete, ready-to-use implementation with all HTML, CSS, and JavaScript, check out the included `example-widget.html` file in this package!
 
 ```ts
 import type { TokenSyncPayload } from 'token-sync';
