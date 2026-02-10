@@ -28,49 +28,69 @@ function queryElement<T extends HTMLElement>(parent: HTMLElement, selector: stri
 async function init() {
   const app = getElement<HTMLDivElement>('app');
   app.innerHTML = `
-    <div class="dts-widget dts-widget--waiting" id="sync-status">
+    <div class="dts-widget dts-widget--waiting" data-dts="widget">
       <div class="dts-widget__row">
         <div class="dts-widget__label">Token Sync</div>
-        <button id="sync-token" class="dts-widget__token" type="button" title="Click to copy"></button>
-        <button id="unlink-btn" class="dts-widget__unlink" type="button" title="Disconnect and generate new token">Unlink</button>
-        <div id="help-wrap" class="dts-widget__help">
+        <button
+          class="dts-widget__token"
+          type="button"
+          title="Click to copy"
+          data-dts="token"
+        ></button>
+        <button
+          class="dts-widget__unlink"
+          type="button"
+          title="Disconnect and generate new token"
+          data-dts="unlink"
+        >
+          Unlink
+        </button>
+        <div class="dts-widget__help" data-dts="help-wrap">
           <button
-            id="help-btn"
             class="dts-widget__help-btn"
             type="button"
             aria-label="About Token Sync"
             aria-expanded="false"
-            aria-controls="help-tooltip"
+            data-dts="help-btn"
           >
             ?
           </button>
-          <div id="help-tooltip" class="dts-widget__tooltip" role="tooltip">
+          <div class="dts-widget__tooltip" role="tooltip" data-dts="help-tooltip">
             <p>
               This widget allows you to sync this website with your favorite design program.
             </p>
-            <ul id="plugin-list" class="dts-widget__plugins"></ul>
+            <ul class="dts-widget__plugins" data-dts="plugin-list"></ul>
           </div>
         </div>
       </div>
-      <div id="sync-error" class="dts-widget__error" style="display: none;"></div>
+      <div class="dts-widget__error" style="display: none;" data-dts="error"></div>
     </div>
 
     <div id="payload-section"></div>
   `;
 
-  getElement('unlink-btn').addEventListener('click', () => {
+  const syncStatus = getElement<HTMLDivElement>('app').querySelector<HTMLDivElement>(
+    '[data-dts="widget"]',
+  );
+  if (!syncStatus) return;
+
+  const tokenEl = syncStatus.querySelector<HTMLButtonElement>('[data-dts="token"]');
+  const unlinkBtn = syncStatus.querySelector<HTMLButtonElement>('[data-dts="unlink"]');
+  const pluginList = syncStatus.querySelector<HTMLUListElement>('[data-dts="plugin-list"]');
+  const helpWrap = syncStatus.querySelector<HTMLDivElement>('[data-dts="help-wrap"]');
+  const helpBtn = syncStatus.querySelector<HTMLButtonElement>('[data-dts="help-btn"]');
+
+  if (!tokenEl || !unlinkBtn || !pluginList || !helpWrap || !helpBtn) return;
+
+  unlinkBtn.addEventListener('click', () => {
     unlink();
   });
 
-  const pluginList = getElement<HTMLUListElement>('plugin-list');
   pluginList.innerHTML = pluginLinks
     .map((plugin) => {
       return `<li><a href="${plugin.url}" target="_blank" rel="noreferrer">${plugin.name}</a></li>`;
     })
     .join('');
-
-  const helpWrap = getElement<HTMLDivElement>('help-wrap');
-  const helpBtn = getElement<HTMLButtonElement>('help-btn');
   const closeHelp = () => {
     helpWrap.classList.remove('is-open');
     helpBtn.setAttribute('aria-expanded', 'false');
@@ -88,7 +108,7 @@ async function init() {
     }
   });
 
-  getElement('sync-token').addEventListener('click', () => {
+  tokenEl.addEventListener('click', () => {
     if (sessionToken) {
       navigator.clipboard.writeText(sessionToken);
     }
@@ -159,14 +179,14 @@ function unlink() {
 }
 
 function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string) {
-  const syncStatus = document.getElementById('sync-status');
+  const syncStatus = document.querySelector<HTMLDivElement>('[data-dts="widget"]');
   if (!syncStatus) return;
 
-  const tokenEl = queryElement<HTMLButtonElement>(syncStatus, '#sync-token');
-  const errorEl = queryElement<HTMLDivElement>(syncStatus, '#sync-error');
-  const unlinkBtn = queryElement<HTMLButtonElement>(syncStatus, '#unlink-btn');
-  const helpWrap = queryElement<HTMLDivElement>(syncStatus, '#help-wrap');
-  const helpBtn = queryElement<HTMLButtonElement>(syncStatus, '#help-btn');
+  const tokenEl = queryElement<HTMLButtonElement>(syncStatus, '[data-dts="token"]');
+  const errorEl = queryElement<HTMLDivElement>(syncStatus, '[data-dts="error"]');
+  const unlinkBtn = queryElement<HTMLButtonElement>(syncStatus, '[data-dts="unlink"]');
+  const helpWrap = queryElement<HTMLDivElement>(syncStatus, '[data-dts="help-wrap"]');
+  const helpBtn = queryElement<HTMLButtonElement>(syncStatus, '[data-dts="help-btn"]');
 
   if (!tokenEl || !errorEl || !unlinkBtn || !helpWrap || !helpBtn) return;
 

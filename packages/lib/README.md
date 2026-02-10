@@ -7,31 +7,42 @@ Core types and sync client for building design-token workflows.
 Use this as a compact, embeddable pairing widget. Clicking the token field copies the session token.
 
 ```html
-<div class="dts-widget dts-widget--waiting" id="sync-status">
+<div class="dts-widget dts-widget--waiting" data-dts="widget">
   <div class="dts-widget__row">
     <div class="dts-widget__label">Token Sync</div>
-    <button id="sync-token" class="dts-widget__token" type="button" title="Click to copy"></button>
-    <button id="unlink-btn" class="dts-widget__unlink" type="button" title="Disconnect">Unlink</button>
-    <div id="help-wrap" class="dts-widget__help">
+    <button
+      class="dts-widget__token"
+      type="button"
+      title="Click to copy"
+      data-dts="token"
+    ></button>
+    <button
+      class="dts-widget__unlink"
+      type="button"
+      title="Disconnect"
+      data-dts="unlink"
+    >
+      Unlink
+    </button>
+    <div class="dts-widget__help" data-dts="help-wrap">
       <button
-        id="help-btn"
         class="dts-widget__help-btn"
         type="button"
         aria-label="About Token Sync"
         aria-expanded="false"
-        aria-controls="help-tooltip"
+        data-dts="help-btn"
       >
         ?
       </button>
-      <div id="help-tooltip" class="dts-widget__tooltip" role="tooltip">
+      <div class="dts-widget__tooltip" role="tooltip" data-dts="help-tooltip">
         <p>
           This widget allows you to sync this website with your favorite design program.
         </p>
-        <ul id="plugin-list" class="dts-widget__plugins"></ul>
+        <ul class="dts-widget__plugins" data-dts="plugin-list"></ul>
       </div>
     </div>
   </div>
-  <div id="sync-error" class="dts-widget__error" style="display: none;"></div>
+  <div class="dts-widget__error" style="display: none;" data-dts="error"></div>
 </div>
 ```
 
@@ -148,13 +159,13 @@ type DemoSyncStatus = 'connecting' | 'ready' | 'syncing' | 'disconnected' | 'err
 let syncClient: SyncClient<TokenSyncPayload> | null = null;
 let sessionToken: string | null = null;
 
-const syncStatus = document.getElementById('sync-status') as HTMLDivElement;
-const tokenEl = document.getElementById('sync-token') as HTMLButtonElement;
-const unlinkBtn = document.getElementById('unlink-btn') as HTMLButtonElement;
-const errorEl = document.getElementById('sync-error') as HTMLDivElement;
-const helpWrap = document.getElementById('help-wrap') as HTMLDivElement;
-const helpBtn = document.getElementById('help-btn') as HTMLButtonElement;
-const pluginList = document.getElementById('plugin-list') as HTMLUListElement;
+const syncStatus = document.querySelector('[data-dts="widget"]') as HTMLDivElement;
+const tokenEl = syncStatus.querySelector('[data-dts="token"]') as HTMLButtonElement;
+const unlinkBtn = syncStatus.querySelector('[data-dts="unlink"]') as HTMLButtonElement;
+const errorEl = syncStatus.querySelector('[data-dts="error"]') as HTMLDivElement;
+const helpWrap = syncStatus.querySelector('[data-dts="help-wrap"]') as HTMLDivElement;
+const helpBtn = syncStatus.querySelector('[data-dts="help-btn"]') as HTMLButtonElement;
+const pluginList = syncStatus.querySelector('[data-dts="plugin-list"]') as HTMLUListElement;
 
 pluginList.innerHTML = pluginLinks
   .map((plugin) => `<li><a href="${plugin.url}">${plugin.name}</a></li>`)
