@@ -88,6 +88,16 @@
       text-align: left;
       cursor: pointer;
     }
+    .dts-widget__token-wrap {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .dts-widget__token-wrap .dts-widget__token {
+      width: 100%;
+      padding-right: 3.6rem;
+    }
     .dts-widget__token:disabled {
       opacity: .6;
       cursor: default;
@@ -98,6 +108,9 @@
       box-shadow: none;
     }
     .dts-widget__unlink {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
       background: none;
       border: var(--s-line) solid var(--c-border);
       border-radius: var(--s-radius);
@@ -110,10 +123,37 @@
       letter-spacing: 0.08em;
       transition: all 0.2s var(--ease);
     }
+    .dts-widget__unlink-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+    }
+    .dts-widget__unlink-icon--broken {
+      display: none;
+    }
+    .dts-widget__unlink-label {
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      transition: all 0.2s var(--ease);
+    }
     .dts-widget__unlink:hover {
       border-color: #c4342d;
       color: #c4342d;
       transform: translateY(-1px);
+    }
+    .dts-widget__unlink:hover .dts-widget__unlink-icon--linked {
+      display: none;
+    }
+    .dts-widget__unlink:hover .dts-widget__unlink-icon--broken {
+      display: inline-flex;
+    }
+    .dts-widget__unlink:hover .dts-widget__unlink-label {
+      max-width: 60px;
+      opacity: 1;
     }
     .dts-widget__help {
       position: relative;
@@ -187,11 +227,24 @@
       font-size: .65rem;
     }
     .dts-widget__status {
-      padding: .2rem .35rem;
-      font-size: .6rem;
+      position: absolute;
+      right: .35rem;
+      top: 50%;
+      transform: translateY(-50%) translateX(6px);
+      padding: .1rem .35rem;
+      font-size: .55rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--c-surface-on-alt);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s var(--ease);
+      border: var(--s-line) solid var(--c-border);
+      background: var(--c-surface);
+    }
+    .dts-widget__status.is-visible {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
     }
     .dts-widget--waiting {
       border-color: #b07d16;

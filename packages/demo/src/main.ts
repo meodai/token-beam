@@ -32,19 +32,36 @@ async function init() {
     <div class="dts-widget dts-widget--waiting" data-dts="widget">
       <div class="dts-widget__row">
         <div class="dts-widget__label">Token Sync</div>
-        <button
-          class="dts-widget__token"
-          type="button"
-          title="Click to copy"
-          data-dts="token"
-        ></button>
+        <div class="dts-widget__token-wrap" data-dts="token-wrap">
+          <button
+            class="dts-widget__token"
+            type="button"
+            title="Click to copy"
+            data-dts="token"
+          ></button>
+          <span class="dts-widget__status" data-dts="status" aria-live="polite"></span>
+        </div>
         <button
           class="dts-widget__unlink"
           type="button"
           title="Disconnect and generate new token"
           data-dts="unlink"
         >
-          Unlink
+          <span class="dts-widget__unlink-icon dts-widget__unlink-icon--linked" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter">
+              <path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-2 2" />
+              <path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l2-2" />
+            </svg>
+          </span>
+          <span class="dts-widget__unlink-icon dts-widget__unlink-icon--broken" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter">
+              <path d="M8 8l2-2a5 5 0 0 1 7 7l-2 2" />
+              <path d="M16 16l-2 2a5 5 0 0 1-7-7l2-2" />
+              <path d="M7 17l-2 2" />
+              <path d="M17 7l2-2" />
+            </svg>
+          </span>
+          <span class="dts-widget__unlink-label">Unlink</span>
         </button>
         <div class="dts-widget__help" data-dts="help-wrap">
           <button
@@ -65,7 +82,6 @@ async function init() {
         </div>
       </div>
       <div class="dts-widget__error" style="display: none;" data-dts="error"></div>
-      <div class="dts-widget__status" style="display: none;" data-dts="status"></div>
     </div>
 
     <div id="payload-section"></div>
@@ -81,7 +97,7 @@ async function init() {
   const pluginList = syncStatus.querySelector<HTMLUListElement>('[data-dts="plugin-list"]');
   const helpWrap = syncStatus.querySelector<HTMLDivElement>('[data-dts="help-wrap"]');
   const helpBtn = syncStatus.querySelector<HTMLButtonElement>('[data-dts="help-btn"]');
-  const statusEl = syncStatus.querySelector<HTMLDivElement>('[data-dts="status"]');
+  const statusEl = syncStatus.querySelector<HTMLSpanElement>('[data-dts="status"]');
 
   if (!tokenEl || !unlinkBtn || !pluginList || !helpWrap || !helpBtn || !statusEl) return;
 
@@ -115,12 +131,12 @@ async function init() {
     if (sessionToken) {
       navigator.clipboard.writeText(sessionToken);
       statusEl.textContent = 'Copied';
-      statusEl.style.display = 'block';
+      statusEl.classList.add('is-visible');
       if (copyStatusTimer) {
         window.clearTimeout(copyStatusTimer);
       }
       copyStatusTimer = window.setTimeout(() => {
-        statusEl.style.display = 'none';
+        statusEl.classList.remove('is-visible');
         statusEl.textContent = '';
         copyStatusTimer = null;
       }, 1500);
@@ -200,12 +216,12 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
   const unlinkBtn = queryElement<HTMLButtonElement>(syncStatus, '[data-dts="unlink"]');
   const helpWrap = queryElement<HTMLDivElement>(syncStatus, '[data-dts="help-wrap"]');
   const helpBtn = queryElement<HTMLButtonElement>(syncStatus, '[data-dts="help-btn"]');
-  const statusEl = queryElement<HTMLDivElement>(syncStatus, '[data-dts="status"]');
+  const statusEl = queryElement<HTMLSpanElement>(syncStatus, '[data-dts="status"]');
 
   if (!tokenEl || !errorEl || !unlinkBtn || !helpWrap || !helpBtn || !statusEl) return;
 
   syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
-  statusEl.style.display = 'none';
+  statusEl.classList.remove('is-visible');
   statusEl.textContent = '';
 
   switch (status) {

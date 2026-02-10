@@ -10,19 +10,36 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
 <div class="dts-widget dts-widget--waiting" data-dts="widget">
   <div class="dts-widget__row">
     <div class="dts-widget__label">Token Sync</div>
-    <button
-      class="dts-widget__token"
-      type="button"
-      title="Click to copy"
-      data-dts="token"
-    ></button>
+    <div class="dts-widget__token-wrap" data-dts="token-wrap">
+      <button
+        class="dts-widget__token"
+        type="button"
+        title="Click to copy"
+        data-dts="token"
+      ></button>
+      <span class="dts-widget__status" data-dts="status" aria-live="polite"></span>
+    </div>
     <button
       class="dts-widget__unlink"
       type="button"
       title="Disconnect"
       data-dts="unlink"
     >
-      Unlink
+      <span class="dts-widget__unlink-icon dts-widget__unlink-icon--linked" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter">
+          <path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-2 2" />
+          <path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l2-2" />
+        </svg>
+      </span>
+      <span class="dts-widget__unlink-icon dts-widget__unlink-icon--broken" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter">
+          <path d="M8 8l2-2a5 5 0 0 1 7 7l-2 2" />
+          <path d="M16 16l-2 2a5 5 0 0 1-7-7l2-2" />
+          <path d="M7 17l-2 2" />
+          <path d="M17 7l2-2" />
+        </svg>
+      </span>
+      <span class="dts-widget__unlink-label">Unlink</span>
     </button>
     <div class="dts-widget__help" data-dts="help-wrap">
       <button
@@ -43,7 +60,6 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
     </div>
   </div>
   <div class="dts-widget__error" style="display: none;" data-dts="error"></div>
-  <div class="dts-widget__status" style="display: none;" data-dts="status"></div>
 </div>
 ```
 
@@ -78,7 +94,20 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   text-align: left;
   cursor: pointer;
 }
+.dts-widget__token-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.dts-widget__token-wrap .dts-widget__token {
+  width: 100%;
+  padding-right: 3.6rem;
+}
 .dts-widget__unlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   background: none;
   border: 1px solid #d4d8d8;
   padding: 0.3rem 0.5rem;
@@ -86,6 +115,33 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
+}
+.dts-widget__unlink-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+.dts-widget__unlink-icon--broken {
+  display: none;
+}
+.dts-widget__unlink-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.dts-widget__unlink:hover .dts-widget__unlink-icon--linked {
+  display: none;
+}
+.dts-widget__unlink:hover .dts-widget__unlink-icon--broken {
+  display: inline-flex;
+}
+.dts-widget__unlink:hover .dts-widget__unlink-label {
+  max-width: 60px;
+  opacity: 1;
 }
 .dts-widget__help {
   position: relative;
@@ -145,11 +201,24 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   font-size: 0.65rem;
 }
 .dts-widget__status {
-  padding: 0.2rem 0.35rem;
-  font-size: 0.6rem;
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  padding: 0.1rem 0.35rem;
+  font-size: 0.55rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #717979;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  border: 1px solid #d4d8d8;
+  background: #fff;
+}
+.dts-widget__status.is-visible {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 .dts-widget--waiting { border-color: #b07d16; }
 .dts-widget--connected { border-color: #1b8a2d; }
@@ -174,7 +243,7 @@ const errorEl = syncStatus.querySelector('[data-dts="error"]') as HTMLDivElement
 const helpWrap = syncStatus.querySelector('[data-dts="help-wrap"]') as HTMLDivElement;
 const helpBtn = syncStatus.querySelector('[data-dts="help-btn"]') as HTMLButtonElement;
 const pluginList = syncStatus.querySelector('[data-dts="plugin-list"]') as HTMLUListElement;
-const statusEl = syncStatus.querySelector('[data-dts="status"]') as HTMLDivElement;
+const statusEl = syncStatus.querySelector('[data-dts="status"]') as HTMLSpanElement;
 
 pluginList.innerHTML = pluginLinks
   .map((plugin) => `<li><a href="${plugin.url}">${plugin.name}</a></li>`)
@@ -199,7 +268,7 @@ document.addEventListener('click', (event) => {
 
 function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string) {
   syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
-  statusEl.style.display = 'none';
+  statusEl.classList.remove('is-visible');
   statusEl.textContent = '';
 
   switch (status) {
@@ -288,9 +357,9 @@ tokenEl.addEventListener('click', () => {
   if (sessionToken) {
     navigator.clipboard.writeText(sessionToken);
     statusEl.textContent = 'Copied';
-    statusEl.style.display = 'block';
+    statusEl.classList.add('is-visible');
     window.setTimeout(() => {
-      statusEl.style.display = 'none';
+      statusEl.classList.remove('is-visible');
       statusEl.textContent = '';
     }, 1500);
   }
