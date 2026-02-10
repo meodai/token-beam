@@ -10,4 +10,9 @@ export const pluginLinks: PluginLink[] = [
     name: 'Figma',
     url: 'https://example.com/figma-plugin',
   },
+  {
+    id: 'aseprite',
+    name: 'Aseprite',
+    url: 'https://www.aseprite.org/',
+  },
 ];

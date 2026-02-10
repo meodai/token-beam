@@ -42,6 +42,7 @@ interface TokenSyncPayload {
 Each consumer plugin owns its own adapter — a pure transform function that converts the generic `TokenSyncPayload` into the tool-specific format. The lib provides the `TargetAdapter<T>` interface, but the implementation lives in the plugin:
 
 - **Figma plugin** (`packages/figma-plugin/src/adapter.ts`): Maps `'color'` → `'COLOR'`, `'number'` → `'FLOAT'`, converts hex strings → 0–1 RGBA, transforms `tokens` → `variables`
+- **Aseprite plugin** (`packages/aseprite-plugin`): Filters color tokens only, applies to sprite palette via Lua API
 - Future plugins (Adobe XD, Sketch, Penpot, etc.) each implement their own adapter
 
 #### Communication
@@ -101,6 +102,53 @@ PORT=9000 npm run start:server
 3. Web updates color → Server forwards to Figma → Figma applies
 4. Both clients stay synced until disconnect or timeout
 
+## Aseprite Plugin
+
+The **`packages/aseprite-plugin`** package syncs color tokens to Aseprite palettes using Aseprite's native WebSocket API.
+
+### Quick Start
+
+1. **Install the Aseprite extension:**
+   
+   Quick install (macOS):
+   ```bash
+   npm run install:aseprite
+   ```
+   
+   Or manually link/copy `packages/aseprite-plugin` to Aseprite's scripts folder:
+   - **macOS**: `~/Library/Application Support/Aseprite/scripts/`
+   - **Windows**: `%APPDATA%\Aseprite\scripts\`
+   - **Linux**: `~/.config/aseprite/scripts/`
+
+   Example (macOS):
+   ```bash
+   ln -s "$(pwd)/packages/aseprite-plugin" ~/Library/Application\ Support/Aseprite/scripts/token-sync
+   ```
+
+2. **Start the sync server:**
+   ```bash
+   npm run start:server
+   ```
+
+3. **Use in Aseprite:**
+   - Open or create a sprite
+   - Go to **File → Scripts → Token Sync**
+   - Enter your session token
+   - Click **Connect**
+   - Colors sync to your palette automatically!
+
+### Architecture
+
+```
+Aseprite (Lua + WebSocket)
+    ↓ WebSocket
+Sync Server
+```
+
+Simple and direct! No bridge server needed thanks to Aseprite's native WebSocket support.
+
+See [packages/aseprite-plugin/README.md](packages/aseprite-plugin/README.md) for detailed documentation.
+
 ## Project Structure
 
 ```
@@ -115,13 +163,17 @@ token-sync/
 │   │   └── dist/token-sync.js
 │   │
 │   ├── sync-server/      # WebSocket server for real-time sync
-│   │   └── (coming soon)
+│   │   └── src/server.ts
 │   │
 │   ├── demo/             # Demo web app (sends generic TokenSyncPayload)
 │   │   └── vite.config.ts
 │   │
-│   └── figma-plugin/     # Figma plugin (owns its own adapter transform)
-│       └── src/adapter.ts  # Figma-specific adapter
+│   ├── figma-plugin/     # Figma plugin (owns its own adapter transform)
+│   │   └── src/adapter.ts  # Figma-specific adapter
+│   │
+│   └── aseprite-plugin/  # Aseprite extension
+       ├── token-sync.lua      # Lua script with WebSocket support
+       └── package.json        # Extension manifest
 │
 ├── package.json
 └── README.md
@@ -198,10 +250,22 @@ npm run build
 npm run build:lib
 
 # Build Figma plugin
-npm run build:plugin
+npm run build:figma
+
+# Build sync server
+npm run build:server
 
 # Run demo (with hot reload)
 npm run dev:demo
+
+# Run Figma plugin dev mode
+npm run dev:figma
+
+# Install Aseprite extension (macOS)
+npm run install:aseprite
+
+# Run sync server
+npm run start:server
 ```
 
 ## W3C DTCG Spec Reference

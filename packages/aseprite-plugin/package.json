@@ -1,0 +1,20 @@
+{
+  "name": "token-sync",
+  "displayName": "Token Sync",
+  "description": "Sync design tokens (colors) to Aseprite palette",
+  "version": "0.1.0",
+  "author": { "name": "Token Sync" },
+  "contributors": [],
+  "publisher": "token-sync",
+  "license": "MIT",
+  "categories": [ "Scripts" ],
+  "contributes": {
+    "scripts": [
+      { "path": "./token-sync.lua" }
+    ]
+  },
+  "scripts": {
+    "install:aseprite": "mkdir -p \"$HOME/Library/Application Support/Aseprite/scripts/token-sync\" && cp -f package.json token-sync.lua \"$HOME/Library/Application Support/Aseprite/scripts/token-sync/\"",
+    "uninstall:aseprite": "rm -rf \"$HOME/Library/Application Support/Aseprite/scripts/token-sync\""
+  }
+}
