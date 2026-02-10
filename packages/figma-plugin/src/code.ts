@@ -25,6 +25,7 @@ interface SyncMessage {
   type: 'sync';
   payload: SyncPayload;
   existingCollectionId?: string;
+  collectionName?: string;
 }
 
 interface RequestCollectionsMessage {
@@ -49,8 +50,8 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
 
   if (msg.type === 'sync') {
     try {
-      await syncVariables(msg);
-      figma.ui.postMessage({ type: 'sync-complete' });
+      const collectionId = await syncVariables(msg);
+      figma.ui.postMessage({ type: 'sync-complete', collectionId });
       figma.notify('Variables synced!');
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -60,8 +61,8 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
   }
 };
 
-async function syncVariables(msg: SyncMessage) {
-  const { payload, existingCollectionId } = msg;
+async function syncVariables(msg: SyncMessage): Promise<string> {
+  const { payload, existingCollectionId, collectionName } = msg;
 
   let collection: VariableCollection;
   const existingVars = new Map<string, Variable>();
@@ -76,7 +77,9 @@ async function syncVariables(msg: SyncMessage) {
       if (v) existingVars.set(v.name, v);
     }
   } else {
-    collection = figma.variables.createVariableCollection(payload.collectionName);
+    // Use custom name from UI, or fall back to payload name
+    const name = collectionName || payload.collectionName;
+    collection = figma.variables.createVariableCollection(name);
   }
 
   // Ensure correct modes exist
@@ -109,4 +112,6 @@ async function syncVariables(msg: SyncMessage) {
       variable.setValueForMode(modeId, varDef.value as VariableValue);
     }
   }
+
+  return collection.id;
 }
