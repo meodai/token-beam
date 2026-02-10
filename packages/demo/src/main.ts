@@ -184,6 +184,10 @@ function initSync() {
       updateSyncStatus('disconnected');
     },
     onError: (error) => {
+      if (error === 'Figma client disconnected') {
+        updateSyncStatus('ready', sessionToken ?? undefined);
+        return;
+      }
       updateSyncStatus('error', undefined, error);
     },
     onSync: (payload) => {
