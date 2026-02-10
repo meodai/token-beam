@@ -54,8 +54,7 @@
       color: var(--c-surface-on-alt);
     }
     .dts-widget {
-      margin-bottom: 1.5rem;
-      padding: .5rem;
+      padding: 0;
       border: var(--s-line) solid var(--c-border);
       border-radius: var(--s-radius);
       display: flex;
@@ -66,6 +65,7 @@
       display: flex;
       align-items: center;
       gap: 0;
+      margin: -1px;
     }
     .dts-widget__label {
       font-size: .65rem;
@@ -74,6 +74,7 @@
       letter-spacing: 0.08em;
       color: var(--c-surface-on-alt);
       white-space: nowrap;
+      padding: 0 1em;
     }
     .dts-widget__token {
       flex: 1;
@@ -165,7 +166,7 @@
       align-items: center;
     }
     .dts-widget__help-btn {
-      width: 20px;
+      width: 32px;
       height: 32px;
       padding: 0;
       border: var(--s-line-fat) solid var(--c-accent);
@@ -179,17 +180,17 @@
     .dts-widget__help-btn:hover,
     .dts-widget__help-btn:focus {
       border-color: var(--c-accent);
-      color: var(--c-surface-on);
+      color: var(--c-surface);
       transform: none;
       box-shadow: none;
     }
     .dts-widget__tooltip {
       position: absolute;
       right: 0;
-      top: calc(100% + 6px);
+      top: calc(100% - 1px);
       width: 240px;
       padding: .5rem .6rem;
-      border: var(--s-line) solid var(--c-border);
+      border: var(--s-line) solid var(--c-surface-on);
       background: var(--c-surface);
       color: var(--c-surface-on);
       font-size: .65rem;
@@ -207,7 +208,7 @@
     }
     .dts-widget__tooltip p {
       margin-bottom: .4rem;
-      color: var(--c-surface-on-alt);
+      color: var(--c-surface-on);
     }
     .dts-widget__plugins {
       list-style: none;
@@ -314,6 +315,9 @@
       font-weight: 400;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+    }
+    #payload-section {
+      margin-top: 2rem;
     }
   </style>
 </head>
