@@ -1,8 +1,15 @@
 import type { TokenSyncPayload } from 'token-sync';
-import { pluginLinks, SyncClient } from 'token-sync';
+import { SyncClient } from 'token-sync';
+
+type PluginLink = {
+  id: string;
+  name: string;
+  url: string;
+};
 
 const API_PATH = '/api/colors';
 const SYNC_SERVER_URL = 'ws://localhost:8080';
+const SYNC_SERVER_HTTP = SYNC_SERVER_URL.replace('ws://', 'http://').replace('wss://', 'https://');
 
 type DemoSyncStatus = 'connecting' | 'ready' | 'syncing' | 'disconnected' | 'error';
 
@@ -130,11 +137,19 @@ async function init() {
     unlink();
   });
 
-  pluginList.innerHTML = pluginLinks
-    .map((plugin) => {
-      return `<li><a href="${plugin.url}" target="_blank" rel="noreferrer">${plugin.name}</a></li>`;
+  // Fetch and render plugin links
+  fetch(`${SYNC_SERVER_HTTP}/plugins.json`)
+    .then((res) => res.json())
+    .then((pluginLinks: PluginLink[]) => {
+      pluginList.innerHTML = pluginLinks
+        .map((plugin) => {
+          return `<li><a href="${plugin.url}" target="_blank" rel="noreferrer">${plugin.name}</a></li>`;
+        })
+        .join('');
     })
-    .join('');
+    .catch(() => {
+      pluginList.innerHTML = '<li>Could not load plugin list</li>';
+    });
   const closeHelp = () => {
     helpWrap.classList.remove('is-open');
     helpBtn.setAttribute('aria-expanded', 'false');

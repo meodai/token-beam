@@ -29,6 +29,17 @@ export class TokenSyncServer {
 
   constructor(private port: number = 8080) {
     this.httpServer = createServer((req, res) => {
+      // Enable CORS
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+      if (req.method === 'OPTIONS') {
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+
       if (req.method === 'GET' && req.url === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(
@@ -37,6 +48,22 @@ export class TokenSyncServer {
             activeSessions: this.sessions.size,
             timestamp: new Date().toISOString(),
           }),
+        );
+      } else if (req.method === 'GET' && req.url === '/plugins.json') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify([
+            {
+              id: 'figma',
+              name: 'Figma',
+              url: 'https://example.com/figma-plugin',
+            },
+            {
+              id: 'aseprite',
+              name: 'Aseprite',
+              url: 'https://www.aseprite.org/',
+            },
+          ]),
         );
       } else {
         res.writeHead(404);
