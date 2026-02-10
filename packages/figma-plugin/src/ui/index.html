@@ -7,8 +7,22 @@
 </head>
 <body>
   <div id="app">
+    <section class="sync-section">
+      <label for="token-input">Live Sync</label>
+      <div class="input-row">
+        <input id="server-input" type="url" placeholder="ws://localhost:8080" value="ws://localhost:8080" />
+      </div>
+      <div class="input-row" style="margin-top: 6px;">
+        <input id="token-input" type="text" placeholder="Enter session token" />
+        <button id="connect-btn">Connect</button>
+      </div>
+      <div id="sync-status" class="sync-status hidden"></div>
+    </section>
+
+    <div class="divider"><span>or</span></div>
+
     <section class="input-section">
-      <label for="url-input">Data URL</label>
+      <label for="url-input">Fetch from URL</label>
       <div class="input-row">
         <input id="url-input" type="url" placeholder="http://localhost:5173/api/colors" />
         <button id="fetch-btn">Fetch</button>
