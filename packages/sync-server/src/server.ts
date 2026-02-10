@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { createServer, type Server as HTTPServer } from 'http';
+import { randomBytes } from 'crypto';
 
 export interface SyncSession {
   id: string;
@@ -26,6 +27,7 @@ export class TokenSyncServer {
   private sessions: Map<string, SyncSession> = new Map();
   private cleanupTimer?: ReturnType<typeof setInterval>;
   private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+  private readonly MAX_PAYLOAD_SIZE = 10 * 1024 * 1024; // 10MB - reasonable for design tokens with embedded assets
 
   constructor(private port: number = 8080) {
     this.httpServer = createServer((req, res) => {
@@ -79,7 +81,10 @@ export class TokenSyncServer {
       }
     });
 
-    this.wss = new WebSocketServer({ server: this.httpServer });
+    this.wss = new WebSocketServer({ 
+      server: this.httpServer,
+      maxPayload: this.MAX_PAYLOAD_SIZE,
+    });
     this.setupWebSocket();
     this.startCleanupInterval();
   }
@@ -89,6 +94,12 @@ export class TokenSyncServer {
       console.log('New WebSocket connection');
 
       ws.on('message', (data: Buffer) => {
+        // Check message size
+        if (data.length > this.MAX_PAYLOAD_SIZE) {
+          this.sendError(ws, 'Message too large');
+          return;
+        }
+
         try {
           const message: SyncMessage = JSON.parse(data.toString());
           this.handleMessage(ws, message);
@@ -291,11 +302,14 @@ export class TokenSyncServer {
   }
 
   private generateToken(): string {
-    return `dts://${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    // Generate 6 random bytes and convert to hex (12 chars)
+    // Format like a color: dts://XXXXXXXXXXXX
+    const hex = randomBytes(6).toString('hex').toUpperCase();
+    return `dts://${hex}`;
   }
 
   private generateSessionId(): string {
-    return `session-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    return `session-${Date.now()}-${randomBytes(4).toString('hex')}`;
   }
 
   private startCleanupInterval() {
