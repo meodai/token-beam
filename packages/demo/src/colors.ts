@@ -1,17 +1,16 @@
 export function generateRandomRamp(): { name: string; colors: Record<string, string> } {
   const hue = Math.floor(Math.random() * 360);
-  const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+  const steps = [100, 200, 300, 400, 500, 600, 700, 800, 900];
   const colors: Record<string, string> = {};
 
   for (const step of steps) {
     const lightness = 95 - (step / 900) * 85;
     const saturation = 70 + Math.sin((step / 900) * Math.PI) * 25;
     const hex = hslToHex(hue, saturation, lightness);
-    const padded = String(step).padStart(3, '0');
-    colors[`ramp/${padded}`] = hex;
+    colors[String(step)] = hex;
   }
 
-  return { name: `${getHueName(hue)} Ramp`, colors };
+  return { name: 'token-sync-demo', colors };
 }
 
 function hslToHex(h: number, s: number, l: number): string {

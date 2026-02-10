@@ -24,15 +24,9 @@ interface SyncPayload {
 interface SyncMessage {
   type: 'sync';
   payload: SyncPayload;
-  existingCollectionId?: string;
-  collectionName?: string;
 }
 
-interface RequestCollectionsMessage {
-  type: 'request-collections';
-}
-
-type PluginMessage = SyncMessage | RequestCollectionsMessage;
+type PluginMessage = SyncMessage;
 
 function isColorValue(value: unknown): value is FigmaColorValue {
   return (
@@ -54,25 +48,20 @@ function toVariableValue(varDef: SyncVariable): VariableValue {
   return varDef.value as VariableValue;
 }
 
-figma.showUI(__html__, { width: 320, height: 260, themeColors: true });
+figma.showUI(__html__, { width: 320, height: 180, themeColors: true });
 
 figma.ui.onmessage = async (msg: PluginMessage) => {
-  if (msg.type === 'request-collections') {
-    const collections = await figma.variables.getLocalVariableCollectionsAsync();
-    const list = collections.map((c) => ({
-      id: c.id,
-      name: c.name,
-      modes: c.modes.map((m) => ({ modeId: m.modeId, name: m.name })),
-    }));
-    figma.ui.postMessage({ type: 'collections-list', collections: list });
-    return;
-  }
-
   if (msg.type === 'sync') {
     try {
-      const collectionId = await syncVariables(msg);
-      figma.ui.postMessage({ type: 'sync-complete', collectionId });
-      figma.notify('Variables synced!');
+      const result = await syncVariables(msg);
+      figma.ui.postMessage({ 
+        type: 'sync-complete', 
+        collectionId: result.id,
+        collectionName: result.name,
+        isNew: result.isNew
+      });
+      const action = result.isNew ? 'Created' : 'Updated';
+      figma.notify(`${action} collection: ${result.name}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       figma.ui.postMessage({ type: 'sync-error', error: message });
@@ -81,24 +70,26 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
   }
 };
 
-async function syncVariables(msg: SyncMessage): Promise<string> {
-  const { payload, existingCollectionId, collectionName } = msg;
+async function syncVariables(msg: SyncMessage): Promise<{ id: string; name: string; isNew: boolean }> {
+  const { payload } = msg;
+  const collectionName = payload.collectionName;
 
-  let collection: VariableCollection;
+  // Find existing collection by name or create new one
+  const collections = await figma.variables.getLocalVariableCollectionsAsync();
+  let collection = collections.find((c) => c.name === collectionName);
+  
   const existingVars = new Map<string, Variable>();
+  const isNew = !collection;
 
-  if (existingCollectionId) {
-    const existing = await figma.variables.getVariableCollectionByIdAsync(existingCollectionId);
-    if (!existing) throw new Error('Collection not found');
-    collection = existing;
-
+  if (collection) {
+    // Update existing collection
     for (const varId of collection.variableIds) {
       const v = await figma.variables.getVariableByIdAsync(varId);
       if (v) existingVars.set(v.name, v);
     }
   } else {
-    const name = collectionName ?? payload.collectionName;
-    collection = figma.variables.createVariableCollection(name);
+    // Create new collection
+    collection = figma.variables.createVariableCollection(collectionName);
   }
 
   // Ensure correct modes exist
@@ -128,5 +119,5 @@ async function syncVariables(msg: SyncMessage): Promise<string> {
     }
   }
 
-  return collection.id;
+  return { id: collection.id, name: collection.name, isNew };
 }

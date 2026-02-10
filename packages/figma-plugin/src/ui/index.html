@@ -14,23 +14,9 @@
       </div>
     </section>
 
-    <section id="target-section">
-      <label for="collection-select">Target Collection</label>
-      <select id="collection-select">
-        <option value="__new__">Create new collection</option>
-      </select>
-      <div id="new-name-row" class="input-row" style="margin-top: 6px;">
-        <input
-          id="collection-name-input"
-          type="text"
-          placeholder="Collection name"
-          required
-          style="text-transform: none; letter-spacing: normal; text-align: left;"
-        />
-      </div>
-    </section>
-
-    <button id="connect-btn" class="primary" disabled>Connect &amp; Sync</button>
+    <div id="connect-wrap">
+      <button id="connect-btn" class="primary" disabled>Connect &amp; Sync</button>
+    </div>
     <div id="sync-status" class="sync-status hidden"></div>
     <div id="status"></div>
   </div>
