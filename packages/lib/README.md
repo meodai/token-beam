@@ -13,8 +13,17 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
     <button id="sync-token" class="dts-widget__token" type="button" title="Click to copy"></button>
     <button id="unlink-btn" class="dts-widget__unlink" type="button" title="Disconnect">Unlink</button>
     <div id="help-wrap" class="dts-widget__help">
-      <button id="help-btn" class="dts-widget__help-btn" type="button" aria-label="About Token Sync">?</button>
-      <div class="dts-widget__tooltip" role="tooltip">
+      <button
+        id="help-btn"
+        class="dts-widget__help-btn"
+        type="button"
+        aria-label="About Token Sync"
+        aria-expanded="false"
+        aria-controls="help-tooltip"
+      >
+        ?
+      </button>
+      <div id="help-tooltip" class="dts-widget__tooltip" role="tooltip">
         <p>
           This widget allows you to sync this website with your favorite design program.
         </p>
@@ -97,8 +106,7 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   transform: translateY(-4px);
   transition: all 0.2s ease;
 }
-.dts-widget__help:hover .dts-widget__tooltip,
-.dts-widget__help:focus-within .dts-widget__tooltip {
+.dts-widget__help.is-open .dts-widget__tooltip {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
@@ -145,11 +153,29 @@ const tokenEl = document.getElementById('sync-token') as HTMLButtonElement;
 const unlinkBtn = document.getElementById('unlink-btn') as HTMLButtonElement;
 const errorEl = document.getElementById('sync-error') as HTMLDivElement;
 const helpWrap = document.getElementById('help-wrap') as HTMLDivElement;
+const helpBtn = document.getElementById('help-btn') as HTMLButtonElement;
 const pluginList = document.getElementById('plugin-list') as HTMLUListElement;
 
 pluginList.innerHTML = pluginLinks
   .map((plugin) => `<li><a href="${plugin.url}">${plugin.name}</a></li>`)
   .join('');
+
+const closeHelp = () => {
+  helpWrap.classList.remove('is-open');
+  helpBtn.setAttribute('aria-expanded', 'false');
+};
+
+helpBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  const isOpen = helpWrap.classList.toggle('is-open');
+  helpBtn.setAttribute('aria-expanded', String(isOpen));
+});
+
+document.addEventListener('click', (event) => {
+  if (!helpWrap.contains(event.target as Node)) {
+    closeHelp();
+  }
+});
 
 function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string) {
   syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
@@ -177,6 +203,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = false;
       unlinkBtn.style.display = '';
       errorEl.style.display = 'none';
+      closeHelp();
       helpWrap.style.display = 'none';
       break;
     case 'disconnected':
@@ -184,6 +211,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.textContent = 'Disconnected';
       tokenEl.disabled = true;
       errorEl.style.display = 'none';
+      closeHelp();
       unlinkBtn.style.display = 'none';
       helpWrap.style.display = '';
       break;
@@ -192,6 +220,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.textContent = 'Error';
       tokenEl.disabled = true;
       unlinkBtn.style.display = 'none';
+      closeHelp();
       helpWrap.style.display = '';
       if (error) {
         errorEl.textContent = error;
