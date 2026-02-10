@@ -117,7 +117,7 @@ async function init() {
           <button
             class="dts-widget__help-btn"
             type="button"
-            aria-label="About Token Sync"
+            aria-label="About ↬ Token Sync"
             aria-expanded="false"
             data-dts="help-btn"
           >
@@ -222,7 +222,7 @@ function initSync() {
   syncClient = new SyncClient<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
-    origin: 'Token Sync Demo',
+    origin: '↬ Token Sync Demo',
     onPaired: (token) => {
       sessionToken = token;
       updateSyncStatus('ready', token);

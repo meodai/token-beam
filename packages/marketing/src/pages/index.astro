@@ -1,5 +1,5 @@
 ---
-const title = 'Token Sync - W3C Design Token Synchronization';
+const title = '↬ Token Sync - W3C Design Token Synchronization';
 const description = 'Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant. MIT-licensed plugins, enterprise sync server.';
 ---
 
@@ -20,7 +20,7 @@ const description = 'Real-time design token synchronization between web and desi
   <body>
     <header>
       <div class="container header-content">
-        <a href="/" class="logo">Token Sync</a>
+        <a href="/" class="logo"><span class="logo__icon" aria-hidden="true">↬</span> Token Sync</a>
         <nav>
           <a href="#features">Features</a>
           <a href="#pricing">Pricing</a>
@@ -75,7 +75,7 @@ const description = 'Real-time design token synchronization between web and desi
             <!-- Center: Protocol + Server -->
             <rect x="296" y="100" width="208" height="120" stroke="currentColor" stroke-width="2" fill="none"/>
 
-            <text x="400" y="92" text-anchor="middle" fill="currentColor" font-size="11" font-weight="600" letter-spacing="0.08em" opacity="0.5">TOKEN SYNC</text>
+            <text x="400" y="92" text-anchor="middle" fill="currentColor" font-size="11" font-weight="600" letter-spacing="0.08em" opacity="0.5">↬ TOKEN SYNC</text>
 
             <!-- dts:// protocol badge -->
             <rect x="320" y="118" width="160" height="30" fill="currentColor" opacity="1"/>
@@ -172,7 +172,7 @@ const description = 'Real-time design token synchronization between web and desi
 
       <section class="features" id="features">
         <div class="container">
-          <h2>Why Token Sync?</h2>
+          <h2>Why ↬ Token Sync?</h2>
           <div class="features__grid">
             <div class="features__card">
               <h3>W3C Spec Compliant</h3>
@@ -286,7 +286,7 @@ const description = 'Real-time design token synchronization between web and desi
 
     <footer>
       <div class="container">
-        <p>&copy; 2025 Token Sync by <a href="https://github.com/meodai">David Aerne (meodai)</a></p>
+        <p>&copy; 2025 ↬ Token Sync by <a href="https://github.com/meodai">David Aerne (meodai)</a></p>
         <p class="footer__links">
           <a href="mailto:sales@token-sync.dev">sales@token-sync.dev</a> &middot;
           <a href="mailto:opensource@token-sync.dev">opensource@token-sync.dev</a> &middot;
@@ -470,6 +470,12 @@ const description = 'Real-time design token synchronization between web and desi
       text-decoration: none;
       text-transform: uppercase;
       letter-spacing: 0.12em;
+    }
+
+    .logo__icon {
+      font-size: 1.3em;
+      line-height: 1;
+      vertical-align: -0.05em;
     }
 
     .logo:hover {

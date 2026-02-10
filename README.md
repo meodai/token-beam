@@ -1,4 +1,4 @@
-# Token Sync
+# ↬ Token Sync
 
 A tool-agnostic design token synchronization system aligned with the **W3C Design Tokens Community Group** specification.
 
@@ -164,7 +164,7 @@ The **`packages/aseprite-plugin`** package syncs color tokens to Aseprite palett
 
 3. **Use in Aseprite:**
    - Open or create a sprite
-   - Go to **File → Scripts → Token Sync**
+   - Go to **File → Scripts → ↬ Token Sync**
    - Enter your session token
    - Click **Connect**
    - Colors sync to your palette automatically!

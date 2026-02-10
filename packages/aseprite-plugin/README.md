@@ -1,4 +1,4 @@
-# Token Sync - Aseprite Plugin
+# ↬ Token Sync - Aseprite Plugin
 
 Sync design tokens (colors) to Aseprite palettes in real-time.
 
@@ -77,8 +77,8 @@ Restart Aseprite after installation.
 
 2. **Open or create a sprite in Aseprite**
 
-3. **Run Token Sync:**
-   - Go to **File → Scripts → Token Sync**
+3. **Run ↬ Token Sync:**
+   - Go to **File → Scripts → ↬ Token Sync**
    - Enter your session token (e.g., `dts://ABC123`)
    - Click **Connect**
    - Colors will automatically update your sprite's palette!
@@ -116,7 +116,7 @@ Default is `ws://localhost:8080`.
 
 ### "No active sprite" error
 
-Create or open a sprite before running Token Sync.
+Create or open a sprite before running ↬ Token Sync.
 
 ### "Connection failed" or immediate disconnect
 

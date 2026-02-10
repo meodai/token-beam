@@ -1,4 +1,4 @@
-# Token Sync Server
+# ↬ Token Sync Server
 
 WebSocket server for real-time token synchronization between web and Figma.
 

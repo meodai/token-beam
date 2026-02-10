@@ -1,4 +1,4 @@
-# Token Sync (lib)
+# ↬ Token Sync (lib)
 
 Core types and sync client for building design-token workflows.
 
