@@ -136,19 +136,19 @@ connectBtn.addEventListener('click', () => {
       }
     },
     onError: (error) => {
-      // Silently reset to initial state
+      console.warn('[token-sync]', error);
       unlockUI();
       syncClient = null;
     },
     onDisconnected: () => {
-      // Silently reset to initial state
+      console.warn('[token-sync] disconnected');
       unlockUI();
       syncClient = null;
     },
   });
 
   syncClient.connect().catch((err: unknown) => {
-    // Silently reset to initial state
+    console.warn('[token-sync] connection failed', err);
     unlockUI();
     syncClient = null;
   });
