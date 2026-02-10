@@ -25,7 +25,7 @@ function getElement<T extends HTMLElement>(id: string): T {
 const tokenInput = getElement<HTMLInputElement>('token-input');
 const connectBtn = getElement<HTMLButtonElement>('connect-btn');
 const syncStatusEl = getElement<HTMLDivElement>('sync-status');
-const statusEl = getElement<HTMLDivElement>('status');
+const resultEl = getElement<HTMLDivElement>('result');
 
 let syncClient: SyncClient<TokenSyncPayload> | null = null;
 let pairedOrigin: string | null = null;
@@ -50,12 +50,12 @@ window.onmessage = (event: MessageEvent) => {
   if (msg.type === 'sync-complete') {
     const action = msg.isNew ? 'Created' : 'Updated';
     const syncLabel = `${action} collection: ${msg.collectionName}`;
-    statusEl.textContent = syncLabel;
-    updateSyncStatus(syncLabel, 'connected');
+    showResult(syncLabel, true);
+    syncStatusEl.classList.add('hidden');
   }
   if (msg.type === 'sync-error') {
-    statusEl.textContent = `Error: ${msg.error}`;
-    updateSyncStatus(`Sync error: ${msg.error}`, 'error');
+    showResult(`Error: ${msg.error}`, false);
+    syncStatusEl.classList.add('hidden');
   }
 };
 
@@ -65,6 +65,12 @@ function updateSyncStatus(text: string, state: SyncStatusState) {
   syncStatusEl.classList.remove('hidden');
   syncStatusEl.textContent = text;
   syncStatusEl.className = `sync-status ${state}`;
+}
+
+function showResult(text: string, isSuccess: boolean) {
+  resultEl.classList.remove('hidden', 'success', 'error');
+  resultEl.classList.add(isSuccess ? 'success' : 'error');
+  resultEl.textContent = text;
 }
 
 // --- Transform & forward to Figma sandbox ---
@@ -94,6 +100,7 @@ connectBtn.addEventListener('click', () => {
   // Normalise: accept "dts://ABC123", "ABC123", or "dts://abc123"
   const token = raw.startsWith('dts://') ? raw : `dts://${raw.toUpperCase()}`;
 
+  resultEl.classList.add('hidden');
   updateSyncStatus('Connecting...', 'connecting');
   lockUI();
 
@@ -119,19 +126,22 @@ connectBtn.addEventListener('click', () => {
       }
     },
     onError: (error) => {
-      updateSyncStatus(error, 'error');
+      showResult(error, false);
+      syncStatusEl.classList.add('hidden');
       unlockUI();
       syncClient = null;
     },
     onDisconnected: () => {
-      updateSyncStatus('Disconnected', 'disconnected');
+      showResult('Disconnected', false);
+      syncStatusEl.classList.add('hidden');
       unlockUI();
       syncClient = null;
     },
   });
 
   syncClient.connect().catch((err: unknown) => {
-    updateSyncStatus(err instanceof Error ? err.message : 'Connection failed', 'error');
+    showResult(err instanceof Error ? err.message : 'Connection failed', false);
+    syncStatusEl.classList.add('hidden');
     unlockUI();
     syncClient = null;
   });

@@ -48,7 +48,7 @@ function toVariableValue(varDef: SyncVariable): VariableValue {
   return varDef.value as VariableValue;
 }
 
-figma.showUI(__html__, { width: 320, height: 180, themeColors: true });
+figma.showUI(__html__, { width: 320, height: 200, themeColors: true });
 
 figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === 'sync') {
