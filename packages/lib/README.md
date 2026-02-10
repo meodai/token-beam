@@ -55,9 +55,26 @@ const payload = createCollection('colors', {
 syncClient.send(payload);
 ```
 
-## Widget Example
+## Widget Implementation
 
-Use this as a compact, embeddable pairing widget. Clicking the token field copies the session token.
+For a complete, production-ready widget implementation, see the included **[`example-widget.html`](./example-widget.html)** file.
+
+This standalone HTML file includes:
+- ✨ Full widget UI with all states (waiting, connected, error)
+- 🎨 Complete CSS styling
+- ⚡ Interactive demo with live color syncing
+- 📝 Copy-pasteable integration code
+- 🔧 Working JavaScript examples
+
+**Quick start:**
+```bash
+# After installation, open in your browser:
+open node_modules/token-sync/example-widget.html
+
+# Or copy it to your project:
+cp node_modules/token-sync/example-widget.html ./my-widget.html
+```
+
 
 ```html
 <div class="dts-widget dts-widget--waiting" data-dts="widget">
