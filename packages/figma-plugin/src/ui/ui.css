@@ -113,6 +113,7 @@
 }
 
 .plugin__status {
+  margin-top: 8px;
   font-size: 0.6rem;
   padding: 4px 10px;
   border-radius: 0;
@@ -168,6 +169,16 @@
 
 .plugin__status--disconnected::before {
   background: var(--figma-color-text-secondary, #717979);
+}
+
+.plugin__result {
+  margin-top: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  padding: 6px 10px;
 }
 
 .plugin__result--success {

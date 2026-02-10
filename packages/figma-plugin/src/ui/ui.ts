@@ -60,14 +60,14 @@ window.onmessage = (event: MessageEvent) => {
 // --- Sync status UI ---
 
 function updateSyncStatus(text: string, state: SyncStatusState) {
-  syncStatusEl.classList.remove('hidden');
+  syncStatusEl.classList.remove('plugin__hidden');
   syncStatusEl.textContent = text;
-  syncStatusEl.className = `sync-status ${state}`;
+  syncStatusEl.className = `plugin__status plugin__status--${state}`;
 }
 
 function showResult(text: string, isSuccess: boolean) {
-  resultEl.classList.remove('hidden', 'success', 'error');
-  resultEl.classList.add(isSuccess ? 'success' : 'error');
+  resultEl.classList.remove('plugin__hidden', 'plugin__result--success', 'plugin__result--error');
+  resultEl.classList.add('plugin__result', isSuccess ? 'plugin__result--success' : 'plugin__result--error');
   resultEl.textContent = text;
 }
 
@@ -98,7 +98,7 @@ connectBtn.addEventListener('click', () => {
   // Normalise: accept "dts://ABC123", "ABC123", or "dts://abc123"
   const token = raw.startsWith('dts://') ? raw : `dts://${raw.toUpperCase()}`;
 
-  resultEl.classList.add('hidden');
+  resultEl.classList.add('plugin__hidden');
   updateSyncStatus('Connecting...', 'connecting');
   lockUI();
 
@@ -155,6 +155,6 @@ function unlockUI() {
   updateConnectEnabled();
   connectBtn.textContent = 'Connect & Sync';
   pairedOrigin = null;
-  syncStatusEl.classList.add('hidden');
-  resultEl.classList.add('hidden');
+  syncStatusEl.classList.add('plugin__hidden');
+  resultEl.classList.add('plugin__hidden');
 }
