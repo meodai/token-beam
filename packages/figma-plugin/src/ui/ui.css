@@ -5,107 +5,144 @@
 }
 
 body {
-  font-family: Inter, system-ui, -apple-system, sans-serif;
-  font-size: 12px;
-  color: var(--figma-color-text, #333);
+  font-family: "Iosevka Web", "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+  font-weight: 300;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--figma-color-text, #292f2f);
   background: var(--figma-color-bg, #fff);
   padding: 12px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 label {
   display: block;
+  font-size: .65rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   margin-bottom: 4px;
+  color: var(--figma-color-text-secondary, #717979);
 }
 
 .input-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 input[type="text"] {
   flex: 1;
-  padding: 6px 8px;
-  border: 1px solid var(--figma-color-border, #ccc);
-  border-radius: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--figma-color-border, #d4d8d8);
+  border-radius: 999px;
   font-size: 13px;
+  font-family: inherit;
+  font-weight: 400;
   background: var(--figma-color-bg, #fff);
-  color: var(--figma-color-text, #333);
+  color: var(--figma-color-text, #292f2f);
   text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-align: center;
 }
 
 input[type="text"]::placeholder {
   text-transform: none;
   letter-spacing: normal;
-  font-weight: 400;
-  font-size: 12px;
+  font-weight: 300;
+  font-size: 11px;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--figma-color-text, #292f2f);
 }
 
 input:disabled,
 select:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 button {
   padding: 6px 12px;
-  border: 1px solid var(--figma-color-border, #ccc);
-  border-radius: 6px;
+  border: 1px solid var(--figma-color-border, #d4d8d8);
+  border-radius: 999px;
   cursor: pointer;
-  font-size: 12px;
-  background: var(--figma-color-bg-secondary, #f5f5f5);
-  color: var(--figma-color-text, #333);
+  font-size: .6rem;
+  font-family: inherit;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  background: var(--figma-color-bg, #fff);
+  color: var(--figma-color-text, #292f2f);
+  transition: all 0.15s cubic-bezier(.3, .7, 0, 1);
 }
 
 button:hover {
-  background: var(--figma-color-bg-hover, #e8e8e8);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 0 0 var(--figma-color-text, #292f2f);
 }
 
 button.primary {
-  background: var(--figma-color-bg-brand, #18a0fb);
-  color: #fff;
-  border-color: var(--figma-color-bg-brand, #18a0fb);
+  background: var(--figma-color-text, #292f2f);
+  color: var(--figma-color-bg, #fff);
+  border-color: var(--figma-color-text, #292f2f);
   width: 100%;
-  margin-top: 12px;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 8px 12px;
 }
 
 button.primary:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 0 0 var(--figma-color-text-secondary, #717979);
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 select {
   width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--figma-color-border, #ccc);
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--figma-color-border, #d4d8d8);
+  border-radius: 999px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 300;
   background: var(--figma-color-bg, #fff);
-  color: var(--figma-color-text, #333);
+  color: var(--figma-color-text, #292f2f);
+  appearance: none;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--figma-color-text, #292f2f);
 }
 
 section {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .sync-status {
   margin-top: 8px;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  font-size: .6rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+  letter-spacing: 0.04em;
 }
 
 .sync-status::before {
   content: '';
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   margin-right: 6px;
   vertical-align: middle;
@@ -113,7 +150,8 @@ section {
 
 .sync-status.connected {
   color: #1b8a2d;
-  background: #e6f5e9;
+  border-color: #1b8a2d;
+  background: transparent;
 }
 
 .sync-status.connected::before {
@@ -122,7 +160,8 @@ section {
 
 .sync-status.connecting {
   color: #b07d16;
-  background: #fef7e0;
+  border-color: #b07d16;
+  background: transparent;
 }
 
 .sync-status.connecting::before {
@@ -131,7 +170,8 @@ section {
 
 .sync-status.error {
   color: #c4342d;
-  background: #fde8e8;
+  border-color: #c4342d;
+  background: transparent;
 }
 
 .sync-status.error::before {
@@ -139,12 +179,13 @@ section {
 }
 
 .sync-status.disconnected {
-  color: var(--figma-color-text-secondary, #999);
-  background: var(--figma-color-bg-secondary, #f5f5f5);
+  color: var(--figma-color-text-secondary, #717979);
+  border-color: var(--figma-color-border, #d4d8d8);
+  background: transparent;
 }
 
 .sync-status.disconnected::before {
-  background: var(--figma-color-text-secondary, #999);
+  background: var(--figma-color-text-secondary, #717979);
 }
 
 .hidden {
@@ -152,7 +193,8 @@ section {
 }
 
 #status {
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--figma-color-text-secondary, #666);
+  margin-top: 6px;
+  font-size: .6rem;
+  color: var(--figma-color-text-secondary, #717979);
+  letter-spacing: 0.02em;
 }
