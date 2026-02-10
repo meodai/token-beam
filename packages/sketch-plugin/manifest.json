@@ -1,0 +1,23 @@
+{
+  "name": "Token Sync",
+  "description": "Sync design tokens to Sketch color swatches",
+  "author": "Token Sync",
+  "version": "0.1.0",
+  "identifier": "com.tokensync.sketch",
+  "compatibleVersion": "3.0",
+  "bundleVersion": 1,
+  "commands": [
+    {
+      "name": "Token Sync",
+      "identifier": "token-sync",
+      "script": "plugin.js",
+      "handler": "openTokenSync"
+    }
+  ],
+  "menu": {
+    "title": "Token Sync",
+    "items": [
+      "token-sync"
+    ]
+  }
+}

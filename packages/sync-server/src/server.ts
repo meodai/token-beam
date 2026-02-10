@@ -14,7 +14,7 @@ export interface SyncSession {
 export interface SyncMessage {
   type: 'pair' | 'sync' | 'ping' | 'error';
   sessionToken?: string;
-  clientType?: 'web' | 'figma' | 'aseprite';
+  clientType?: string;
   origin?: string;
   payload?: unknown;
   error?: string;
@@ -57,6 +57,11 @@ export class TokenSyncServer {
               id: 'figma',
               name: 'Figma',
               url: 'https://example.com/figma-plugin',
+            },
+            {
+              id: 'sketch',
+              name: 'Sketch',
+              url: 'https://www.sketch.com/extensions/',
             },
             {
               id: 'aseprite',
@@ -118,8 +123,8 @@ export class TokenSyncServer {
   private handlePair(ws: WebSocket, message: SyncMessage) {
     const { sessionToken, clientType } = message;
 
-    if (!clientType || (clientType !== 'web' && clientType !== 'figma' && clientType !== 'aseprite')) {
-      this.sendError(ws, 'Invalid client type. Must be "web", "figma", or "aseprite"');
+    if (!clientType) {
+      this.sendError(ws, 'clientType is required');
       return;
     }
 
@@ -147,8 +152,8 @@ export class TokenSyncServer {
       return;
     }
 
-    // Target client (Figma, Aseprite, etc.) joins existing session
-    if ((clientType === 'figma' || clientType === 'aseprite') && sessionToken) {
+    // Target client (Figma, Aseprite, Sketch, etc.) joins existing session
+    if (clientType !== 'web' && sessionToken) {
       const session = Array.from(this.sessions.values()).find((s) => s.token === sessionToken);
 
       if (!session) {

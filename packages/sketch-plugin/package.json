@@ -1,0 +1,10 @@
+{
+  "name": "token-sync-sketch-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p 'Token Sync.sketchplugin/Contents/Sketch' && mkdir -p 'Token Sync.sketchplugin/Contents/Resources/ui' && cp manifest.json 'Token Sync.sketchplugin/Contents/Sketch/' && cp src/plugin.js 'Token Sync.sketchplugin/Contents/Sketch/' && cp ui/index.html 'Token Sync.sketchplugin/Contents/Resources/ui/' && cp ui/ui.js 'Token Sync.sketchplugin/Contents/Resources/ui/'",
+    "install:sketch": "npm run build && cp -r 'Token Sync.sketchplugin' ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/",
+    "uninstall:sketch": "rm -rf ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/'Token Sync.sketchplugin'"
+  }
+}

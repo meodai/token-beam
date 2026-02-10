@@ -1,0 +1,51 @@
+# Token Sync - Sketch Plugin
+
+Sync design tokens from your web app to Sketch color swatches in real-time.
+
+## Installation
+
+```bash
+npm run install:sketch
+```
+
+This will build and install the plugin to Sketch.
+
+## Usage
+
+1. Open Sketch
+2. Go to **Plugins → Token Sync → Token Sync**
+3. Enter your session token from the web demo (e.g., `dts://ABC123`)
+4. Click **Connect**
+5. Colors will sync automatically to your document's shared color swatches
+
+## Uninstall
+
+```bash
+npm run uninstall:sketch
+```
+
+## Requirements
+
+- Sketch 3.0 or later
+- macOS
+- Sync server running on `ws://localhost:8080`
+
+## How it Works
+
+The plugin creates a WebView window that connects to the sync server via WebSocket. When colors are synced from the web demo, they're automatically added to your document's shared color swatches.
+
+## Development
+
+The plugin is built using:
+- Native Sketch JavaScript API (CocoaScript)
+- WKWebView for the UI
+- WebSocket for real-time communication
+
+To rebuild after making changes:
+
+```bash
+npm run build
+npm run install:sketch
+```
+
+Then restart Sketch or use **Plugins → Custom Plugin → Reload Plugins**.
