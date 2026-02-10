@@ -303,7 +303,7 @@ export class TokenSyncServer {
 
   private generateToken(): string {
     // Generate 6 random bytes and convert to hex (12 chars)
-    // Format like a color: dts://XXXXXXXXXXXX
+    // Format: dts://XXXXXXXXXXXX
     const hex = randomBytes(6).toString('hex').toUpperCase();
     return `dts://${hex}`;
   }
