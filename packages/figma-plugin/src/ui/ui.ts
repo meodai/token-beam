@@ -41,6 +41,7 @@ const statusEl = getElement<HTMLDivElement>('status');
 let syncClient: SyncClient<TokenSyncPayload> | null = null;
 let selectedCollectionId: string | null = null;
 let createdCollectionId: string | null = null;
+let pairedOrigin: string | null = null;
 
 // --- Enable connect button when token has content ---
 
@@ -70,8 +71,9 @@ window.onmessage = (event: MessageEvent) => {
     if (msg.collectionId) {
       createdCollectionId = msg.collectionId as string;
     }
-    statusEl.textContent = 'Synced!';
-    updateSyncStatus('Synced!', 'connected');
+    const syncLabel = pairedOrigin ? `Synced with ${pairedOrigin}` : 'Synced!';
+    statusEl.textContent = syncLabel;
+    updateSyncStatus(syncLabel, 'connected');
   }
   if (msg.type === 'sync-error') {
     statusEl.textContent = `Error: ${msg.error}`;
@@ -144,13 +146,16 @@ connectBtn.addEventListener('click', () => {
     serverUrl: SYNC_SERVER_URL,
     clientType: 'figma',
     sessionToken: token,
-    onPaired: () => {
-      updateSyncStatus('Paired — waiting for data...', 'connected');
+    onPaired: (_token, origin) => {
+      pairedOrigin = origin ?? null;
+      const label = pairedOrigin ?? 'unknown source';
+      updateSyncStatus(`Paired with ${label} — waiting for data...`, 'connected');
       connectBtn.textContent = 'Disconnect';
       connectBtn.disabled = false;
     },
     onSync: (payload) => {
-      updateSyncStatus('Receiving data...', 'connected');
+      const recvLabel = pairedOrigin ? `Receiving from ${pairedOrigin}...` : 'Receiving data...';
+      updateSyncStatus(recvLabel, 'connected');
 
       const figmaCollections = figmaCollectionAdapter.transform(payload);
 
@@ -191,4 +196,5 @@ function unlockUI() {
   connectBtn.disabled = !tokenInput.value.trim();
   connectBtn.textContent = 'Connect & Sync';
   createdCollectionId = null;
+  pairedOrigin = null;
 }

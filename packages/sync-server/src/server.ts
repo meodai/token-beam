@@ -6,6 +6,8 @@ export interface SyncSession {
   token: string;
   webClient?: WebSocket;
   figmaClient?: WebSocket;
+  webOrigin?: string;
+  figmaOrigin?: string;
   createdAt: Date;
   lastActivity: Date;
 }
@@ -14,6 +16,7 @@ export interface SyncMessage {
   type: 'pair' | 'sync' | 'ping' | 'error';
   sessionToken?: string;
   clientType?: 'web' | 'figma';
+  origin?: string;
   payload?: unknown;
   error?: string;
 }
@@ -100,6 +103,7 @@ export class TokenSyncServer {
         id: this.generateSessionId(),
         token,
         webClient: ws,
+        webOrigin: message.origin,
         createdAt: new Date(),
         lastActivity: new Date(),
       };
@@ -130,12 +134,15 @@ export class TokenSyncServer {
       }
 
       session.figmaClient = ws;
+      session.figmaOrigin = message.origin;
       session.lastActivity = new Date();
 
+      // Send web origin to Figma so it knows who it's paired with
       this.send(ws, {
         type: 'pair',
         sessionToken,
         clientType: 'figma',
+        origin: session.webOrigin,
       });
 
       // Notify web client that Figma connected
@@ -143,6 +150,7 @@ export class TokenSyncServer {
         this.send(session.webClient, {
           type: 'pair',
           clientType: 'figma',
+          origin: session.figmaOrigin,
         });
       }
 

@@ -91,6 +91,7 @@ function initSync() {
   syncClient = new SyncClient<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
+    origin: 'Token Sync Demo',
     onPaired: (token) => {
       sessionToken = token;
       updateSyncStatus('ready', token);

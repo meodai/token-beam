@@ -2,6 +2,7 @@ export interface SyncMessage<T = unknown> {
   type: 'pair' | 'sync' | 'ping' | 'error';
   sessionToken?: string;
   clientType?: string;
+  origin?: string;
   payload?: T;
   error?: string;
 }
@@ -10,8 +11,10 @@ export interface SyncClientOptions<T = unknown> {
   serverUrl: string;
   clientType: string;
   sessionToken?: string;
-  onPaired?: (token: string) => void;
-  onTargetConnected?: (clientType: string) => void;
+  /** Display name for this client (e.g. "Token Sync Demo"). Defaults to location.hostname. */
+  origin?: string;
+  onPaired?: (token: string, origin?: string) => void;
+  onTargetConnected?: (clientType: string, origin?: string) => void;
   onSync?: (payload: T) => void;
   onError?: (error: string) => void;
   onDisconnected?: () => void;
@@ -35,10 +38,15 @@ export class SyncClient<T = unknown> {
         this.ws.onopen = () => {
           this.options.onConnected?.();
 
+          const resolvedOrigin =
+            this.options.origin ??
+            (typeof location !== 'undefined' ? location.hostname : undefined);
+
           this.send({
             type: 'pair',
             clientType: this.options.clientType,
             sessionToken: this.options.sessionToken,
+            origin: resolvedOrigin,
           });
 
           this.startPing();
@@ -71,11 +79,11 @@ export class SyncClient<T = unknown> {
     switch (message.type) {
       case 'pair':
         if (message.sessionToken) {
-          // We received our own session token (session creator)
-          this.options.onPaired?.(message.sessionToken);
+          // We received our session token (+ origin of paired client, if any)
+          this.options.onPaired?.(message.sessionToken, message.origin);
         } else if (message.clientType) {
           // Another client joined our session
-          this.options.onTargetConnected?.(message.clientType);
+          this.options.onTargetConnected?.(message.clientType, message.origin);
         }
         break;
 
