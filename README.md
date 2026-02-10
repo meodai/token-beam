@@ -307,8 +307,10 @@ npm run start:server
 
 **MIT License** for:
 - Core library (`token-sync` npm package)
-- Figma, Sketch, and Aseprite plugins
 - Documentation and examples
+
+**Proprietary License** for:
+- Figma, Sketch, and Aseprite plugins (free to use as-is, modification requires Enterprise)
 
 **AGPL-3.0 / Commercial License** for:
 - Sync server (`packages/sync-server`)
