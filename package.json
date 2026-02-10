@@ -5,7 +5,8 @@
     "packages/lib",
     "packages/figma-plugin",
     "packages/demo",
-    "packages/sync-server"
+    "packages/sync-server",
+    "packages/marketing"
   ],
   "scripts": {
     "build": "npm run build:lib && npm run build:figma && npm run build:server",
@@ -15,6 +16,8 @@
     "dev:demo": "npm run dev -w packages/demo",
     "dev:figma": "npm run dev -w packages/figma-plugin",
     "dev:server": "npm run dev -w packages/sync-server",
+    "dev:marketing": "npm run dev -w packages/marketing",
+    "build:marketing": "npm run build -w packages/marketing",
     "start:server": "npm run start -w packages/sync-server",
     "install:aseprite": "npm run install:aseprite -w packages/aseprite-plugin",
     "uninstall:aseprite": "npm run uninstall:aseprite -w packages/aseprite-plugin",

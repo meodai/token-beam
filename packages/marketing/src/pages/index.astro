@@ -1,0 +1,434 @@
+---
+const title = 'Token Sync - W3C Design Token Synchronization';
+const description = 'Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant. MIT-licensed plugins, enterprise sync server.';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <a href="/" class="logo">Token Sync</a>
+          <nav>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="https://github.com/meodai/token-sync">Docs</a>
+            <a href="mailto:sales@token-sync.dev">Contact</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="badge">W3C Design Tokens Community Group Specification</div>
+          <h1>Design Token Sync<br/>Made Simple</h1>
+          <p class="hero-text">
+            Real-time synchronization between your design system website and Figma, Sketch, Aseprite.
+            W3C DTCG spec-compliant. Open source plugins. Enterprise-ready server.
+          </p>
+          <div class="hero-buttons">
+            <a href="#pricing" class="btn btn-primary">Get Started</a>
+            <a href="https://github.com/meodai/token-sync" class="btn btn-secondary">View Docs</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="features" id="features">
+        <div class="container">
+          <h2>Why Token Sync?</h2>
+          <div class="feature-grid">
+            <div class="feature">
+              <div class="feature-icon">🎨</div>
+              <h3>W3C Spec Compliant</h3>
+              <p>
+                Built on the W3C Design Tokens Community Group specification. Generic, tool-agnostic token format
+                that works everywhere.
+              </p>
+            </div>
+
+            <div class="feature">
+              <div class="feature-icon">⚡</div>
+              <h3>Real-Time Sync</h3>
+              <p>
+                WebSocket-based synchronization. Changes on your website appear instantly in Figma.
+                No manual exports, no plugin updates required.
+              </p>
+            </div>
+
+            <div class="feature">
+              <div class="feature-icon">🔌</div>
+              <h3>Plugin Architecture</h3>
+              <p>
+                Clean adapter pattern. Each tool (Figma, Sketch, Aseprite) owns its transformation logic.
+                Fully type-safe end-to-end.
+              </p>
+            </div>
+
+            <div class="feature">
+              <div class="feature-icon">🎯</div>
+              <h3>Token-Based Pairing</h3>
+              <p>
+                Simple <code>dts://</code> tokens for connecting clients. No accounts, no OAuth, no complexity.
+                Just copy-paste and sync.
+              </p>
+            </div>
+
+            <div class="feature">
+              <div class="feature-icon">🛡️</div>
+              <h3>Enterprise Ready</h3>
+              <p>
+                Session management, auto-cleanup, reconnection with exponential backoff, 10MB payload limits.
+                Built for production.
+              </p>
+            </div>
+
+            <div class="feature">
+              <div class="feature-icon">🚀</div>
+              <h3>Self-Hosted</h3>
+              <p>
+                Run your own sync server. Complete control over your infrastructure. AGPL-3.0 for open source,
+                commercial license available.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pricing" id="pricing">
+        <div class="container">
+          <h2>Pricing</h2>
+          <div class="pricing-grid">
+            <div class="pricing-card">
+              <h3>Open Source</h3>
+              <div class="price">Free</div>
+              <div class="price-detail">Forever</div>
+              <ul>
+                <li>MIT-licensed plugins (Figma, Sketch, Aseprite)</li>
+                <li>MIT-licensed core library (<code>token-sync</code> npm)</li>
+                <li>Self-hosted sync server (AGPL-3.0)</li>
+                <li>Full documentation</li>
+                <li>Community support</li>
+              </ul>
+              <a href="https://github.com/meodai/token-sync" class="btn btn-secondary btn-block">Get Started</a>
+            </div>
+
+            <div class="pricing-card featured">
+              <h3>Enterprise</h3>
+              <div class="price">$4,999</div>
+              <div class="price-detail">per year</div>
+              <ul>
+                <li>Commercial license for sync server</li>
+                <li>Self-host unlimited instances</li>
+                <li>Use in closed-source applications</li>
+                <li>White-label & rebrand</li>
+                <li>Source code access with modifications</li>
+                <li>Priority support (24h SLA)</li>
+                <li>Custom integrations available</li>
+              </ul>
+              <a href="mailto:sales@token-sync.dev" class="btn btn-primary btn-block">Contact Sales</a>
+            </div>
+          </div>
+
+          <div class="pricing-note">
+            <p><strong>Open Source Exception:</strong> OSI-approved open source projects get enterprise license free.</p>
+            <p>Email <a href="mailto:opensource@token-sync.dev">opensource@token-sync.dev</a> to apply.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2026 Token Sync by <a href="https://github.com/meodai">Daniel Stutz (meodai)</a></p>
+        <p class="footer-links">
+          <a href="mailto:sales@token-sync.dev">sales@token-sync.dev</a> •
+          <a href="mailto:opensource@token-sync.dev">opensource@token-sync.dev</a> •
+          <a href="https://github.com/meodai/token-sync">GitHub</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+
+  <style is:global>
+    :root {
+      --color-primary: #0066cc;
+      --color-dark: #1a1a1a;
+      --color-gray: #6b7280;
+      --color-light-gray: #f3f4f6;
+      --color-border: #e5e7eb;
+      --color-success: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--color-dark);
+      background: #fff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Header */
+    header {
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    nav a {
+      margin-left: 2rem;
+      color: var(--color-dark);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      color: var(--color-primary);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 6rem 0;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .hero-text {
+      font-size: 1.25rem;
+      color: var(--color-gray);
+      max-width: 650px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--color-light-gray);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      color: var(--color-gray);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 0.875rem 2rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0052a3;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--color-dark);
+      border-color: var(--color-border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .btn-block {
+      margin-top: 1rem;
+    }
+
+    /* Features */
+    .features {
+      padding: 6rem 0;
+      background: var(--color-light-gray);
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 3rem;
+    }
+
+    .feature {
+      background: white;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--color-border);
+    }
+
+    .feature h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--color-dark);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Pricing */
+    .pricing {
+      padding: 6rem 0;
+      background: white;
+    }
+
+    .pricing h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: white;
+      padding: 3rem 2rem;
+      border-radius: 1rem;
+      border: 2px solid var(--color-border);
+      text-align: center;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--color-primary);
+    }
+
+    .pricing-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .price {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      margin: 1rem 0;
+    }
+
+    .price-detail {
+      color: var(--color-gray);
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .pricing-card ul {
+      list-style: none;
+      margin: 2rem 0;
+      text-align: left;
+    }
+
+    .pricing-card li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .pricing-card li:before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--color-success);
+      font-weight: bold;
+    }
+
+    .pricing-note {
+      text-align: center;
+      margin-top: 3rem;
+      color: var(--color-gray);
+    }
+
+    /* Footer */
+    footer {
+      padding: 4rem 0;
+      background: var(--color-dark);
+      color: white;
+      text-align: center;
+    }
+
+    footer a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-links {
+      margin-top: 1rem;
+    }
+
+    /* Code */
+    code {
+      background: var(--color-light-gray);
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+  </style>
+</html>
