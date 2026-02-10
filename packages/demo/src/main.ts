@@ -10,6 +10,7 @@ let syncClient: SyncClient<TokenSyncPayload> | null = null;
 let currentPayload: TokenSyncPayload | null = null;
 let sessionToken: string | null = null;
 let isPaired = false;
+let copyStatusTimer: number | null = null;
 
 // --- DOM helpers ---
 
@@ -64,6 +65,7 @@ async function init() {
         </div>
       </div>
       <div class="dts-widget__error" style="display: none;" data-dts="error"></div>
+      <div class="dts-widget__status" style="display: none;" data-dts="status"></div>
     </div>
 
     <div id="payload-section"></div>
@@ -79,8 +81,9 @@ async function init() {
   const pluginList = syncStatus.querySelector<HTMLUListElement>('[data-dts="plugin-list"]');
   const helpWrap = syncStatus.querySelector<HTMLDivElement>('[data-dts="help-wrap"]');
   const helpBtn = syncStatus.querySelector<HTMLButtonElement>('[data-dts="help-btn"]');
+  const statusEl = syncStatus.querySelector<HTMLDivElement>('[data-dts="status"]');
 
-  if (!tokenEl || !unlinkBtn || !pluginList || !helpWrap || !helpBtn) return;
+  if (!tokenEl || !unlinkBtn || !pluginList || !helpWrap || !helpBtn || !statusEl) return;
 
   unlinkBtn.addEventListener('click', () => {
     unlink();
@@ -111,6 +114,16 @@ async function init() {
   tokenEl.addEventListener('click', () => {
     if (sessionToken) {
       navigator.clipboard.writeText(sessionToken);
+      statusEl.textContent = 'Copied';
+      statusEl.style.display = 'block';
+      if (copyStatusTimer) {
+        window.clearTimeout(copyStatusTimer);
+      }
+      copyStatusTimer = window.setTimeout(() => {
+        statusEl.style.display = 'none';
+        statusEl.textContent = '';
+        copyStatusTimer = null;
+      }, 1500);
     }
   });
 
@@ -187,10 +200,13 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
   const unlinkBtn = queryElement<HTMLButtonElement>(syncStatus, '[data-dts="unlink"]');
   const helpWrap = queryElement<HTMLDivElement>(syncStatus, '[data-dts="help-wrap"]');
   const helpBtn = queryElement<HTMLButtonElement>(syncStatus, '[data-dts="help-btn"]');
+  const statusEl = queryElement<HTMLDivElement>(syncStatus, '[data-dts="status"]');
 
-  if (!tokenEl || !errorEl || !unlinkBtn || !helpWrap || !helpBtn) return;
+  if (!tokenEl || !errorEl || !unlinkBtn || !helpWrap || !helpBtn || !statusEl) return;
 
   syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
+  statusEl.style.display = 'none';
+  statusEl.textContent = '';
 
   switch (status) {
     case 'connecting':

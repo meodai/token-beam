@@ -43,6 +43,7 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
     </div>
   </div>
   <div class="dts-widget__error" style="display: none;" data-dts="error"></div>
+  <div class="dts-widget__status" style="display: none;" data-dts="status"></div>
 </div>
 ```
 
@@ -143,6 +144,13 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   color: #c4342d;
   font-size: 0.65rem;
 }
+.dts-widget__status {
+  padding: 0.2rem 0.35rem;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #717979;
+}
 .dts-widget--waiting { border-color: #b07d16; }
 .dts-widget--connected { border-color: #1b8a2d; }
 .dts-widget--error { border-color: #c4342d; }
@@ -166,6 +174,7 @@ const errorEl = syncStatus.querySelector('[data-dts="error"]') as HTMLDivElement
 const helpWrap = syncStatus.querySelector('[data-dts="help-wrap"]') as HTMLDivElement;
 const helpBtn = syncStatus.querySelector('[data-dts="help-btn"]') as HTMLButtonElement;
 const pluginList = syncStatus.querySelector('[data-dts="plugin-list"]') as HTMLUListElement;
+const statusEl = syncStatus.querySelector('[data-dts="status"]') as HTMLDivElement;
 
 pluginList.innerHTML = pluginLinks
   .map((plugin) => `<li><a href="${plugin.url}">${plugin.name}</a></li>`)
@@ -190,6 +199,8 @@ document.addEventListener('click', (event) => {
 
 function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string) {
   syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
+  statusEl.style.display = 'none';
+  statusEl.textContent = '';
 
   switch (status) {
     case 'connecting':
@@ -274,7 +285,15 @@ function initSync() {
 }
 
 tokenEl.addEventListener('click', () => {
-  if (sessionToken) navigator.clipboard.writeText(sessionToken);
+  if (sessionToken) {
+    navigator.clipboard.writeText(sessionToken);
+    statusEl.textContent = 'Copied';
+    statusEl.style.display = 'block';
+    window.setTimeout(() => {
+      statusEl.style.display = 'none';
+      statusEl.textContent = '';
+    }, 1500);
+  }
 });
 
 unlinkBtn.addEventListener('click', () => {
