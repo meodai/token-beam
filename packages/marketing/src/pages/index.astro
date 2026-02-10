@@ -108,38 +108,53 @@ const description = 'Real-time design token synchronization between web and desi
           <h2>Pricing</h2>
           <div class="pricing-grid">
             <div class="pricing-card">
-              <h3>Open Source</h3>
-              <div class="price">Free</div>
+              <h3>Free</h3>
+              <div class="price">$0</div>
               <div class="price-detail">Forever</div>
               <ul>
-                <li>MIT-licensed plugins (Figma, Sketch, Aseprite)</li>
-                <li>MIT-licensed core library (<code>token-sync</code> npm)</li>
-                <li>Self-hosted sync server (AGPL-3.0)</li>
-                <li>Full documentation</li>
+                <li>Personal projects only</li>
+                <li>Limited sessions</li>
+                <li>Self-hosted (AGPL-3.0)</li>
+                <li>MIT-licensed plugins</li>
                 <li>Community support</li>
               </ul>
               <a href="https://github.com/meodai/token-sync" class="btn btn-secondary btn-block">Get Started</a>
             </div>
 
             <div class="pricing-card featured">
-              <h3>Enterprise</h3>
-              <div class="price">$4,999</div>
-              <div class="price-detail">per year</div>
+              <h3>Pro</h3>
+              <div class="price">$29</div>
+              <div class="price-detail">per month</div>
               <ul>
-                <li>Commercial license for sync server</li>
-                <li>Self-host unlimited instances</li>
-                <li>Use in closed-source applications</li>
-                <li>White-label & rebrand</li>
-                <li>Source code access with modifications</li>
+                <li>Commercial use allowed</li>
+                <li>Hosted by us (no setup required)</li>
+                <li>Unlimited sessions</li>
+                <li>99.9% uptime SLA</li>
+                <li>Email support</li>
+                <li>Standard plugins (no modifications)</li>
+              </ul>
+              <a href="mailto:sales@token-sync.dev" class="btn btn-primary btn-block">Get Started</a>
+            </div>
+
+            <div class="pricing-card">
+              <h3>Enterprise</h3>
+              <div class="price">$299</div>
+              <div class="price-detail">per month</div>
+              <ul>
+                <li>Everything in Pro</li>
+                <li>Self-hosting with commercial license</li>
+                <li>Modify plugins for your needs</li>
+                <li>Source code access</li>
+                <li>SSO & SAML authentication</li>
                 <li>Priority support (24h SLA)</li>
-                <li>Custom integrations available</li>
+                <li>Custom integrations</li>
               </ul>
               <a href="mailto:sales@token-sync.dev" class="btn btn-primary btn-block">Contact Sales</a>
             </div>
           </div>
 
           <div class="pricing-note">
-            <p><strong>Open Source Exception:</strong> OSI-approved open source projects get enterprise license free.</p>
+            <p><strong>Open Source Exception:</strong> OSI-approved open source projects get Pro license free.</p>
             <p>Email <a href="mailto:opensource@token-sync.dev">opensource@token-sync.dev</a> to apply.</p>
           </div>
         </div>
@@ -339,9 +354,9 @@ const description = 'Real-time design token synchronization between web and desi
 
     .pricing-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
-      max-width: 900px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 

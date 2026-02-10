@@ -40,12 +40,19 @@ For commercial, proprietary, or closed-source applications, you must obtain a co
 
 ### Pricing
 
-**Enterprise License: $4,999/year**
-- Unlimited deployments
-- Unlimited users
-- Priority support (24h SLA)
+**Pro: $29/month**
+- Hosted service (we manage the infrastructure)
+- Unlimited sessions
+- Commercial use allowed
+- Standard plugins only
+
+**Enterprise: $299/month**
+- Self-hosting with commercial license
+- Modify plugins for your needs
 - Source code access
-- Custom integrations available
+- SSO & SAML
+- Priority support (24h SLA)
+- Custom integrations
 
 ### Open Source Exception
 

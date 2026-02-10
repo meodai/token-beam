@@ -313,9 +313,14 @@ npm run start:server
 **AGPL-3.0 / Commercial License** for:
 - Sync server (`packages/sync-server`)
 
-The sync server is free for open source projects but requires a commercial license for proprietary/commercial use. See [packages/sync-server/LICENSE.md](packages/sync-server/LICENSE.md) for details.
+The sync server is free for personal/open source projects. Commercial use requires a paid plan.
 
-**Commercial License:** $4,999/year for enterprise self-hosting  
+**Pricing:**
+- Free: Personal projects, self-hosted (AGPL-3.0)
+- Pro: $29/month - Hosted service, unlimited sessions, commercial use
+- Enterprise: $299/month - Self-hosting allowed, modify plugins, SSO, priority support
+
+See [packages/sync-server/LICENSE.md](packages/sync-server/LICENSE.md) for details.  
 **Contact:** sales@token-sync.dev
 
 ---
