@@ -5,9 +5,8 @@ export interface SyncSession {
   id: string;
   token: string;
   webClient?: WebSocket;
-  figmaClient?: WebSocket;
+  targetClients: Array<{ ws: WebSocket; type: string; origin?: string }>;
   webOrigin?: string;
-  figmaOrigin?: string;
   createdAt: Date;
   lastActivity: Date;
 }
@@ -15,7 +14,7 @@ export interface SyncSession {
 export interface SyncMessage {
   type: 'pair' | 'sync' | 'ping' | 'error';
   sessionToken?: string;
-  clientType?: 'web' | 'figma';
+  clientType?: 'web' | 'figma' | 'aseprite';
   origin?: string;
   payload?: unknown;
   error?: string;
@@ -92,8 +91,8 @@ export class TokenSyncServer {
   private handlePair(ws: WebSocket, message: SyncMessage) {
     const { sessionToken, clientType } = message;
 
-    if (!clientType || (clientType !== 'web' && clientType !== 'figma')) {
-      this.sendError(ws, 'Invalid client type. Must be "web" or "figma"');
+    if (!clientType || (clientType !== 'web' && clientType !== 'figma' && clientType !== 'aseprite')) {
+      this.sendError(ws, 'Invalid client type. Must be "web", "figma", or "aseprite"');
       return;
     }
 
@@ -104,6 +103,7 @@ export class TokenSyncServer {
         id: this.generateSessionId(),
         token,
         webClient: ws,
+        targetClients: [],
         webOrigin: message.origin,
         createdAt: new Date(),
         lastActivity: new Date(),
@@ -120,8 +120,8 @@ export class TokenSyncServer {
       return;
     }
 
-    // Figma client joins existing session
-    if (clientType === 'figma' && sessionToken) {
+    // Target client (Figma, Aseprite, etc.) joins existing session
+    if ((clientType === 'figma' || clientType === 'aseprite') && sessionToken) {
       const session = Array.from(this.sessions.values()).find((s) => s.token === sessionToken);
 
       if (!session) {
@@ -129,33 +129,32 @@ export class TokenSyncServer {
         return;
       }
 
-      if (session.figmaClient) {
-        this.sendError(ws, 'Session already has a Figma client connected');
-        return;
-      }
-
-      session.figmaClient = ws;
-      session.figmaOrigin = message.origin;
+      // Add to target clients
+      session.targetClients.push({
+        ws,
+        type: clientType,
+        origin: message.origin,
+      });
       session.lastActivity = new Date();
 
-      // Send web origin to Figma so it knows who it's paired with
+      // Send web origin to target client so it knows who it's paired with
       this.send(ws, {
         type: 'pair',
         sessionToken,
-        clientType: 'figma',
+        clientType,
         origin: session.webOrigin,
       });
 
-      // Notify web client that Figma connected
+      // Notify web client that a new target connected
       if (session.webClient && session.webClient.readyState === WebSocket.OPEN) {
         this.send(session.webClient, {
           type: 'pair',
-          clientType: 'figma',
-          origin: session.figmaOrigin,
+          clientType,
+          origin: message.origin,
         });
       }
 
-      console.log(`Figma client joined session: ${sessionToken}`);
+      console.log(`${clientType} client joined session: ${sessionToken} (${session.targetClients.length} target clients)`);
       return;
     }
 
@@ -172,22 +171,34 @@ export class TokenSyncServer {
 
     session.lastActivity = new Date();
 
-    // Determine target client
     const isFromWeb = ws === session.webClient;
-    const targetClient = isFromWeb ? session.figmaClient : session.webClient;
 
-    if (!targetClient || targetClient.readyState !== WebSocket.OPEN) {
-      this.sendError(ws, 'Target client not connected');
-      return;
+    if (isFromWeb) {
+      // Broadcast to all target clients
+      let sentCount = 0;
+      for (const target of session.targetClients) {
+        if (target.ws.readyState === WebSocket.OPEN) {
+          this.send(target.ws, {
+            type: 'sync',
+            payload: message.payload,
+          });
+          sentCount++;
+        }
+      }
+      console.log(`Synced from web to ${sentCount} target client(s)`);
+    } else {
+      // Send to web client
+      if (session.webClient && session.webClient.readyState === WebSocket.OPEN) {
+        this.send(session.webClient, {
+          type: 'sync',
+          payload: message.payload,
+        });
+        const targetType = session.targetClients.find(t => t.ws === ws)?.type || 'unknown';
+        console.log(`Synced from ${targetType} to web`);
+      } else {
+        this.sendError(ws, 'Web client not connected');
+      }
     }
-
-    // Forward the sync message
-    this.send(targetClient, {
-      type: 'sync',
-      payload: message.payload,
-    });
-
-    console.log(`Synced from ${isFromWeb ? 'web' : 'figma'} to ${isFromWeb ? 'figma' : 'web'}`);
   }
 
   private handlePing(ws: WebSocket, _message: SyncMessage) {
@@ -205,28 +216,32 @@ export class TokenSyncServer {
 
     if (ws === session.webClient) {
       // Web client disconnected - clean up session
-      if (session.figmaClient && session.figmaClient.readyState === WebSocket.OPEN) {
-        this.sendError(session.figmaClient, 'Web client disconnected');
-        session.figmaClient.close();
+      for (const target of session.targetClients) {
+        if (target.ws.readyState === WebSocket.OPEN) {
+          this.sendError(target.ws, 'Web client disconnected');
+          target.ws.close();
+        }
       }
       this.sessions.delete(session.id);
       console.log(`Session ${session.token} ended (web disconnect)`);
-    } else if (ws === session.figmaClient) {
-      // Figma client disconnected - keep session alive for reconnection
-      session.figmaClient = undefined;
-      if (session.webClient && session.webClient.readyState === WebSocket.OPEN) {
+    } else {
+      // Target client disconnected - remove from array
+      const disconnectedTarget = session.targetClients.find(t => t.ws === ws);
+      session.targetClients = session.targetClients.filter(t => t.ws !== ws);
+      
+      if (disconnectedTarget && session.webClient?.readyState === WebSocket.OPEN) {
         this.send(session.webClient, {
           type: 'error',
-          error: 'Figma client disconnected',
+          error: `${disconnectedTarget.type} client disconnected`,
         });
       }
-      console.log(`Figma client disconnected from session ${session.token}`);
+      console.log(`${disconnectedTarget?.type || 'Target'} client disconnected from session ${session.token}`);
     }
   }
 
   private findSessionByClient(ws: WebSocket): SyncSession | undefined {
     return Array.from(this.sessions.values()).find(
-      (s) => s.webClient === ws || s.figmaClient === ws,
+      (s) => s.webClient === ws || s.targetClients.some(t => t.ws === ws),
     );
   }
 
@@ -260,9 +275,11 @@ export class TokenSyncServer {
             this.sendError(session.webClient, 'Session expired');
             session.webClient.close();
           }
-          if (session.figmaClient?.readyState === WebSocket.OPEN) {
-            this.sendError(session.figmaClient, 'Session expired');
-            session.figmaClient.close();
+          for (const target of session.targetClients) {
+            if (target.ws.readyState === WebSocket.OPEN) {
+              this.sendError(target.ws, 'Session expired');
+              target.ws.close();
+            }
           }
         }
       }
@@ -298,8 +315,10 @@ export class TokenSyncServer {
       if (session.webClient?.readyState === WebSocket.OPEN) {
         session.webClient.close();
       }
-      if (session.figmaClient?.readyState === WebSocket.OPEN) {
-        session.figmaClient.close();
+      for (const target of session.targetClients) {
+        if (target.ws.readyState === WebSocket.OPEN) {
+          target.ws.close();
+        }
       }
     }
     this.sessions.clear();
