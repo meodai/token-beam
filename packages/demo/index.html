@@ -112,14 +112,14 @@
       display: inline-flex;
       align-items: center;
       gap: .3rem;
-      background: none;
+      background: var(--c-accent);
       border: var(--s-line-fat) solid var(--c-accent);
       border-left: 0;
       border-radius: var(--s-radius);
       padding: .3rem .5rem;
       cursor: pointer;
       font-size: .6rem;
-      color: var(--c-surface-on-alt);
+      color: var(--c-surface);
       line-height: 1;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -145,7 +145,8 @@
     }
     .dts-widget__unlink:hover {
       border-color: #c4342d;
-      color: #c4342d;
+      background: #c4342d;
+      color: #fff;
       transform: translateY(-1px);
     }
     .dts-widget__unlink:hover .dts-widget__unlink-icon--linked {

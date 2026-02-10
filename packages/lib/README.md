@@ -109,7 +109,7 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  background: none;
+  background: #292f2f;
   border: 2px solid #292f2f;
   border-left: 0;
   padding: 0.3rem 0.5rem;
@@ -117,6 +117,7 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
+  color: #fff;
   height: 32px;
 }
 .dts-widget__unlink-icon {
