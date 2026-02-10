@@ -1,4 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
+import type { IncomingMessage } from 'http';
 import { createServer, type Server as HTTPServer } from 'http';
 import { randomBytes } from 'crypto';
 
@@ -90,7 +91,7 @@ export class TokenSyncServer {
     this.wss = new WebSocketServer({ 
       server: this.httpServer,
       maxPayload: this.MAX_PAYLOAD_SIZE,
-      verifyClient: (info) => {
+      verifyClient: (info: { origin: string; req: IncomingMessage }) => {
         // Check HTTP Origin header (set by browser, harder to fake)
         const origin = info.origin || info.req.headers.origin;
         if (origin && this.isOriginBlocked(origin)) {
