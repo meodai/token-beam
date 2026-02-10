@@ -25,6 +25,7 @@ export class SyncClient<T = unknown> {
   private ws?: WebSocket;
   private reconnectTimer?: ReturnType<typeof setTimeout>;
   private pingTimer?: ReturnType<typeof setInterval>;
+  private manualDisconnect = false;
   private readonly RECONNECT_DELAY = 3000;
   private readonly PING_INTERVAL = 30000;
 
@@ -33,6 +34,7 @@ export class SyncClient<T = unknown> {
   public connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
+        this.manualDisconnect = false;
         this.ws = new WebSocket(this.options.serverUrl);
 
         this.ws.onopen = () => {
@@ -67,7 +69,9 @@ export class SyncClient<T = unknown> {
         this.ws.onclose = () => {
           this.options.onDisconnected?.();
           this.stopPing();
-          this.scheduleReconnect();
+          if (!this.manualDisconnect) {
+            this.scheduleReconnect();
+          }
         };
       } catch (error) {
         reject(error);
@@ -137,6 +141,7 @@ export class SyncClient<T = unknown> {
   }
 
   public disconnect() {
+    this.manualDisconnect = true;
     this.stopPing();
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
