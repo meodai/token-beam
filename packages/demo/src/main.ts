@@ -31,7 +31,7 @@ async function init() {
   app.innerHTML = `
     <div class="dts-widget dts-widget--waiting" data-dts="widget">
       <div class="dts-widget__row">
-        <div class="dts-widget__label">Token Sync</div>
+        <h3 class="dts-widget__label">Token Sync</h3>
         <div class="dts-widget__token-wrap" data-dts="token-wrap">
           <button
             class="dts-widget__token"
