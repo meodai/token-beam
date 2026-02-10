@@ -1013,7 +1013,7 @@ const description = 'Real-time design token synchronization between web and desi
       if (statusDot) statusDot.classList.add('syncing');
       if (statusText) statusText.textContent = 'Syncing...';
 
-      // Update design tool after delay
+      // Update design tool almost instantly
       setTimeout(() => {
         if (designBtn instanceof HTMLElement) {
           designBtn.style.backgroundColor = color;
@@ -1032,7 +1032,7 @@ const description = 'Real-time design token synchronization between web and desi
           if (statusDot) statusDot.classList.remove('synced');
           if (statusText) statusText.textContent = 'Waiting for changes...';
         }, 2000);
-      }, 1200);
+      }, 50);
     }
 
     // Button click handler
