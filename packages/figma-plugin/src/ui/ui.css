@@ -31,6 +31,14 @@ label {
   gap: 6px;
 }
 
+section {
+  margin-bottom: 0;
+}
+
+#connect-wrap {
+  margin-top: 0;
+}
+
 input[type='text'] {
   flex: 1;
   padding: 6px 10px;
@@ -88,7 +96,6 @@ button.primary {
   color: var(--figma-color-bg, #fff);
   border-color: var(--figma-color-text, #292f2f);
   width: 100%;
-  margin-top: 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 8px 12px;
@@ -123,10 +130,6 @@ select {
 select:focus {
   outline: none;
   border-color: var(--figma-color-text, #292f2f);
-}
-
-section {
-  margin-bottom: 10px;
 }
 
 .sync-status {
@@ -191,15 +194,6 @@ section {
   display: none;
 }
 
-#result {
-  margin-top: 6px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  text-align: center;
-  padding: 6px 10px;
-}
 
 #result.success {
   color: #1b8a2d;

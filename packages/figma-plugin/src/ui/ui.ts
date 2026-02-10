@@ -51,11 +51,9 @@ window.onmessage = (event: MessageEvent) => {
     const action = msg.isNew ? 'Created' : 'Updated';
     const syncLabel = `${action} collection: ${msg.collectionName}`;
     showResult(syncLabel, true);
-    syncStatusEl.classList.add('hidden');
   }
   if (msg.type === 'sync-error') {
     showResult(`Error: ${msg.error}`, false);
-    syncStatusEl.classList.add('hidden');
   }
 };
 
@@ -127,13 +125,13 @@ connectBtn.addEventListener('click', () => {
     },
     onError: (error) => {
       showResult(error, false);
-      syncStatusEl.classList.add('hidden');
+      updateSyncStatus('Error', 'error');
       unlockUI();
       syncClient = null;
     },
     onDisconnected: () => {
       showResult('Disconnected', false);
-      syncStatusEl.classList.add('hidden');
+      updateSyncStatus('Disconnected', 'disconnected');
       unlockUI();
       syncClient = null;
     },
@@ -141,7 +139,7 @@ connectBtn.addEventListener('click', () => {
 
   syncClient.connect().catch((err: unknown) => {
     showResult(err instanceof Error ? err.message : 'Connection failed', false);
-    syncStatusEl.classList.add('hidden');
+    updateSyncStatus('Error', 'error');
     unlockUI();
     syncClient = null;
   });
@@ -157,4 +155,6 @@ function unlockUI() {
   updateConnectEnabled();
   connectBtn.textContent = 'Connect & Sync';
   pairedOrigin = null;
+  syncStatusEl.classList.add('hidden');
+  resultEl.classList.add('hidden');
 }
