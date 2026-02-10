@@ -65,7 +65,7 @@
     .dts-widget__row {
       display: flex;
       align-items: center;
-      gap: .5rem;
+      gap: 0;
     }
     .dts-widget__label {
       font-size: .65rem;
@@ -87,6 +87,7 @@
       font-family: inherit;
       text-align: left;
       cursor: pointer;
+      height: 32px;
     }
     .dts-widget__token-wrap {
       position: relative;
@@ -112,7 +113,8 @@
       align-items: center;
       gap: .3rem;
       background: none;
-      border: var(--s-line) solid var(--c-border);
+      border: var(--s-line-fat) solid var(--c-accent);
+      border-left: 0;
       border-radius: var(--s-radius);
       padding: .3rem .5rem;
       cursor: pointer;
@@ -122,6 +124,7 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       transition: all 0.2s var(--ease);
+      height: 32px;
     }
     .dts-widget__unlink-icon {
       display: inline-flex;
@@ -162,11 +165,12 @@
     }
     .dts-widget__help-btn {
       width: 20px;
-      height: 20px;
+      height: 32px;
       padding: 0;
-      border: var(--s-line) solid var(--c-border);
-      background: var(--c-surface);
-      color: var(--c-surface-on-alt);
+      border: var(--s-line-fat) solid var(--c-accent);
+      border-left: 0;
+      background: var(--c-accent);
+      color: var(--c-surface);
       font-size: .65rem;
       line-height: 1;
       cursor: pointer;

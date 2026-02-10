@@ -74,7 +74,7 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
 .dts-widget__row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0;
 }
 .dts-widget__label {
   font-size: 0.65rem;
@@ -93,6 +93,7 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   letter-spacing: 0.18em;
   text-align: left;
   cursor: pointer;
+  height: 32px;
 }
 .dts-widget__token-wrap {
   position: relative;
@@ -109,12 +110,14 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   align-items: center;
   gap: 0.3rem;
   background: none;
-  border: 1px solid #d4d8d8;
+  border: 2px solid #292f2f;
+  border-left: 0;
   padding: 0.3rem 0.5rem;
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
+  height: 32px;
 }
 .dts-widget__unlink-icon {
   display: inline-flex;
@@ -150,11 +153,12 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
 }
 .dts-widget__help-btn {
   width: 20px;
-  height: 20px;
+  height: 32px;
   padding: 0;
-  border: 1px solid #d4d8d8;
-  background: #fff;
-  color: #717979;
+  border: 2px solid #292f2f;
+  border-left: 0;
+  background: #292f2f;
+  color: #fff;
   font-size: 0.65rem;
   line-height: 1;
   cursor: pointer;
