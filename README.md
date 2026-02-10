@@ -101,6 +101,16 @@ The server runs on `ws://localhost:8080` by default. Set `PORT` environment vari
 PORT=9000 npm run start:server
 ```
 
+### Commercial Use Monitoring
+
+The sync server tracks connection origins to enforce licensing:
+
+- **Browser Origin Header**: Automatically captured (can't be spoofed)
+- **Blocklist**: Manually curate domains requiring commercial licenses
+- **Logs**: Monitor usage patterns to identify commercial users
+
+See [packages/sync-server/README.md](packages/sync-server/README.md) for implementation details.
+
 ### Architecture
 
 ```

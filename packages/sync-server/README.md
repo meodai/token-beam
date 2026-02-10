@@ -106,6 +106,42 @@ await client.connect();
 - **Reconnection handling**: Automatic reconnection with exponential backoff
 - **Health checks**: HTTP endpoint at `/health`
 - **Heartbeat ping**: Keeps connections alive
+- **Origin blocking**: Monitor and block commercial usage based on HTTP Origin header
+
+## Commercial Use Monitoring
+
+The server tracks connection origins to enforce licensing. Origins can be blocked to require commercial licensing.
+
+### How it works
+
+1. **Browser Origin Header**: Automatically captured from WebSocket upgrade (can't be spoofed)
+2. **User-provided Origin**: Sent in pairing message for logging/monitoring
+3. **Blocklist**: Manually curate domains requiring commercial licenses
+
+### Blocking Origins
+
+Edit `BLOCKED_ORIGINS` in `src/server.ts`:
+
+```typescript
+private readonly BLOCKED_ORIGINS = [
+  'acme-design-system.com',
+  'bigcorp-ui.io',
+];
+```
+
+### Monitoring Logs
+
+Watch for commercial usage patterns:
+
+```
+New WebSocket connection { origin: 'https://startup-design.io' }
+Session paired with origin: Startup Design System
+```
+
+When you identify commercial use:
+1. Add domain to blocklist
+2. Contact them: sales@token-sync.dev
+3. Server will reject future connections with upgrade message
 
 ## API
 
@@ -149,6 +185,42 @@ Session Lifecycle:
 
 - `PORT`: Server port (default: `8080`)
 
-## License
+## Pricing & Licensing
 
-MIT
+**Free (AGPL-3.0)**: Personal projects, self-hosted
+
+**Pro: $29/month**
+- Hosted service (we manage the infrastructure)
+- Unlimited sessions
+- Commercial use allowed
+- Standard plugins only
+
+**Enterprise: $299/month**
+- Self-hosting with commercial license
+- Modify plugins for your needs
+- Source code access
+- SSO & SAML
+- Priority support (24h SLA)
+- Custom integrations
+
+### Open Source Exception
+
+Open source projects with an OSI-approved license can request a **free commercial license**.
+
+**Requirements:**
+- Project must be publicly available (e.g., GitHub)
+- Must use an OSI-approved open source license
+- Must not be a commercial/proprietary product
+
+To apply, email: opensource@token-sync.dev
+
+## Contact
+
+For commercial licensing inquiries:
+- Email: sales@token-sync.dev
+- Website: https://token-sync.dev
+
+---
+
+Copyright (c) 2026 David Aerne (meodai)
+All rights reserved.
