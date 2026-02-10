@@ -4,12 +4,19 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including dev for build)
+RUN npm ci
 
-# Copy built files
-COPY dist ./dist
+# Copy source files
+COPY src ./src
+
+# Build TypeScript
+RUN npm run build
+
+# Remove dev dependencies
+RUN npm prune --production
 
 # Expose port (Fly.io will inject PORT env var)
 EXPOSE 8080
