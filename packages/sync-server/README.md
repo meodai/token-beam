@@ -86,7 +86,7 @@ await client.connect();
 ```json
 {
   "type": "sync",
-  "payload": { /* FigmaCollectionPayload */ }
+  "payload": { /* TokenSyncPayload - generic, tool-agnostic */ }
 }
 ```
 
@@ -121,12 +121,13 @@ await server.start();
 ### Client
 
 ```typescript
-interface SyncClientOptions {
+interface SyncClientOptions<T = unknown> {
   serverUrl: string;
-  clientType: 'web' | 'figma';
-  sessionToken?: string; // Required for 'figma' type
-  onPaired?: (token: string) => void;
-  onSync?: (payload: FigmaCollectionPayload) => void;
+  clientType: string; // e.g., 'web', 'figma', 'sketch', 'aseprite'
+  sessionToken?: string; // Required for target clients (not 'web')
+  onPaired?: (token: string, origin?: string) => void;
+  onTargetConnected?: (clientType: string, origin?: string) => void;
+  onSync?: (payload: T) => void; // Generic payload (e.g., TokenSyncPayload)
   onError?: (error: string) => void;
   onConnected?: () => void;
   onDisconnected?: () => void;

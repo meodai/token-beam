@@ -45,6 +45,28 @@ Each consumer plugin owns its own adapter — a pure transform function that con
 - **Aseprite plugin** (`packages/aseprite-plugin`): Filters color tokens only, applies to sprite palette via Lua API
 - Future plugins (Adobe XD, Sketch, Penpot, etc.) each implement their own adapter
 
+**How it works (Figma example):**
+
+```typescript
+// 1. Web sends W3C-compliant generic payload via WebSocket
+TokenSyncPayload { collections: [...] }
+
+// 2. Figma UI receives generic payload
+onSync: (payload: TokenSyncPayload) => { ... }
+
+// 3. Adapter transforms to Figma-specific format
+const figmaPayloads = figmaCollectionAdapter.transform(payload);
+// → FigmaCollectionPayload[] { collectionName, modes, variables }
+
+// 4. Sandbox code receives transformed payload
+figma.ui.onmessage = (msg: { payload: FigmaCollectionPayload }) => { ... }
+
+// 5. Applies to Figma API
+figma.variables.createVariable(...)
+```
+
+This ensures type safety end-to-end while keeping the core library tool-agnostic.
+
 #### Communication
 
 - **HTTP-based**: REST API serving JSON payloads (one-time fetch)
