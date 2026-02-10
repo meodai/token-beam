@@ -1,5 +1,5 @@
 import type { TokenSyncPayload } from 'token-sync';
-import { SyncClient } from 'token-sync';
+import { pluginLinks, SyncClient } from 'token-sync';
 
 const API_PATH = '/api/colors';
 const SYNC_SERVER_URL = 'ws://localhost:8080';
@@ -33,6 +33,15 @@ async function init() {
         <div class="dts-widget__label">Token Sync</div>
         <button id="sync-token" class="dts-widget__token" type="button" title="Click to copy"></button>
         <button id="unlink-btn" class="dts-widget__unlink" type="button" title="Disconnect and generate new token">Unlink</button>
+        <div id="help-wrap" class="dts-widget__help">
+          <button id="help-btn" class="dts-widget__help-btn" type="button" aria-label="About Token Sync">?</button>
+          <div class="dts-widget__tooltip" role="tooltip">
+            <p>
+              This widget allows you to sync this website with your favorite design program.
+            </p>
+            <ul id="plugin-list" class="dts-widget__plugins"></ul>
+          </div>
+        </div>
       </div>
       <div id="sync-error" class="dts-widget__error" style="display: none;"></div>
     </div>
@@ -43,6 +52,13 @@ async function init() {
   getElement('unlink-btn').addEventListener('click', () => {
     unlink();
   });
+
+  const pluginList = getElement<HTMLUListElement>('plugin-list');
+  pluginList.innerHTML = pluginLinks
+    .map((plugin) => {
+      return `<li><a href="${plugin.url}" target="_blank" rel="noreferrer">${plugin.name}</a></li>`;
+    })
+    .join('');
 
   getElement('sync-token').addEventListener('click', () => {
     if (sessionToken) {
@@ -121,8 +137,9 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
   const tokenEl = queryElement<HTMLButtonElement>(syncStatus, '#sync-token');
   const errorEl = queryElement<HTMLDivElement>(syncStatus, '#sync-error');
   const unlinkBtn = queryElement<HTMLButtonElement>(syncStatus, '#unlink-btn');
+  const helpWrap = queryElement<HTMLDivElement>(syncStatus, '#help-wrap');
 
-  if (!tokenEl || !errorEl || !unlinkBtn) return;
+  if (!tokenEl || !errorEl || !unlinkBtn || !helpWrap) return;
 
   syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
 
@@ -133,6 +150,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = true;
       errorEl.style.display = 'none';
       unlinkBtn.style.display = 'none';
+      helpWrap.style.display = '';
       break;
     case 'ready':
       if (token) {
@@ -142,6 +160,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = false;
       unlinkBtn.style.display = 'none';
       errorEl.style.display = 'none';
+      helpWrap.style.display = '';
       break;
     case 'syncing':
       syncStatus.classList.add('dts-widget--connected');
@@ -151,6 +170,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = false;
       unlinkBtn.style.display = '';
       errorEl.style.display = 'none';
+      helpWrap.style.display = 'none';
       break;
     case 'disconnected':
       syncStatus.classList.add('dts-widget--waiting');
@@ -158,12 +178,14 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = true;
       errorEl.style.display = 'none';
       unlinkBtn.style.display = 'none';
+      helpWrap.style.display = '';
       break;
     case 'error':
       syncStatus.classList.add('dts-widget--error');
       tokenEl.textContent = 'Error';
       tokenEl.disabled = true;
       unlinkBtn.style.display = 'none';
+      helpWrap.style.display = '';
       if (error) {
         errorEl.textContent = error;
         errorEl.style.display = 'block';

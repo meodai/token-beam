@@ -115,6 +115,71 @@
       color: #c4342d;
       transform: translateY(-1px);
     }
+    .dts-widget__help {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    .dts-widget__help-btn {
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      border: var(--s-line) solid var(--c-border);
+      background: var(--c-surface);
+      color: var(--c-surface-on-alt);
+      font-size: .65rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .dts-widget__help-btn:hover,
+    .dts-widget__help-btn:focus {
+      border-color: var(--c-accent);
+      color: var(--c-surface-on);
+      transform: none;
+      box-shadow: none;
+    }
+    .dts-widget__tooltip {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      width: 240px;
+      padding: .5rem .6rem;
+      border: var(--s-line) solid var(--c-border);
+      background: var(--c-surface);
+      color: var(--c-surface-on);
+      font-size: .65rem;
+      line-height: 1.45;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      transition: all 0.2s var(--ease);
+      z-index: 5;
+    }
+    .dts-widget__help:hover .dts-widget__tooltip,
+    .dts-widget__help:focus-within .dts-widget__tooltip {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .dts-widget__tooltip p {
+      margin-bottom: .4rem;
+      color: var(--c-surface-on-alt);
+    }
+    .dts-widget__plugins {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+    }
+    .dts-widget__plugins a {
+      color: var(--c-surface-on);
+      text-decoration: none;
+      border-bottom: var(--s-line) dotted var(--c-border);
+    }
+    .dts-widget__plugins a:hover {
+      color: var(--c-accent);
+      border-bottom-color: var(--c-accent);
+    }
     .dts-widget__error {
       padding: .35rem .5rem;
       border: var(--s-line) solid #c4342d;
@@ -148,6 +213,11 @@
     button:hover {
       transform: translateY(-2px);
       box-shadow: 0 var(--s-line-fat) 0 0 var(--c-surface-on);
+    }
+    button.dts-widget__help-btn:hover,
+    button.dts-widget__help-btn:focus {
+      transform: none;
+      box-shadow: none;
     }
     .swatches {
       display: grid;

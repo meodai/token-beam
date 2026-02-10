@@ -12,6 +12,15 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
     <div class="dts-widget__label">Token Sync</div>
     <button id="sync-token" class="dts-widget__token" type="button" title="Click to copy"></button>
     <button id="unlink-btn" class="dts-widget__unlink" type="button" title="Disconnect">Unlink</button>
+    <div id="help-wrap" class="dts-widget__help">
+      <button id="help-btn" class="dts-widget__help-btn" type="button" aria-label="About Token Sync">?</button>
+      <div class="dts-widget__tooltip" role="tooltip">
+        <p>
+          This widget allows you to sync this website with your favorite design program.
+        </p>
+        <ul id="plugin-list" class="dts-widget__plugins"></ul>
+      </div>
+    </div>
   </div>
   <div id="sync-error" class="dts-widget__error" style="display: none;"></div>
 </div>
@@ -57,6 +66,58 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
   letter-spacing: 0.08em;
   cursor: pointer;
 }
+.dts-widget__help {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.dts-widget__help-btn {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid #d4d8d8;
+  background: #fff;
+  color: #717979;
+  font-size: 0.65rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.dts-widget__tooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  width: 240px;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #d4d8d8;
+  background: #fff;
+  font-size: 0.65rem;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: all 0.2s ease;
+}
+.dts-widget__help:hover .dts-widget__tooltip,
+.dts-widget__help:focus-within .dts-widget__tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.dts-widget__tooltip p {
+  margin-bottom: 0.4rem;
+  color: #717979;
+}
+.dts-widget__plugins {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.dts-widget__plugins a {
+  color: #292f2f;
+  text-decoration: none;
+  border-bottom: 1px dotted #d4d8d8;
+}
 .dts-widget__error {
   padding: 0.35rem 0.5rem;
   border: 1px solid #c4342d;
@@ -70,7 +131,7 @@ Use this as a compact, embeddable pairing widget. Clicking the token field copie
 
 ```ts
 import type { TokenSyncPayload } from 'token-sync';
-import { SyncClient } from 'token-sync';
+import { pluginLinks, SyncClient } from 'token-sync';
 
 const SYNC_SERVER_URL = 'ws://localhost:8080';
 
@@ -83,6 +144,12 @@ const syncStatus = document.getElementById('sync-status') as HTMLDivElement;
 const tokenEl = document.getElementById('sync-token') as HTMLButtonElement;
 const unlinkBtn = document.getElementById('unlink-btn') as HTMLButtonElement;
 const errorEl = document.getElementById('sync-error') as HTMLDivElement;
+const helpWrap = document.getElementById('help-wrap') as HTMLDivElement;
+const pluginList = document.getElementById('plugin-list') as HTMLUListElement;
+
+pluginList.innerHTML = pluginLinks
+  .map((plugin) => `<li><a href="${plugin.url}">${plugin.name}</a></li>`)
+  .join('');
 
 function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string) {
   syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
@@ -94,6 +161,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = true;
       errorEl.style.display = 'none';
       unlinkBtn.style.display = 'none';
+      helpWrap.style.display = '';
       break;
     case 'ready':
       if (token) tokenEl.textContent = token;
@@ -101,6 +169,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = false;
       unlinkBtn.style.display = 'none';
       errorEl.style.display = 'none';
+      helpWrap.style.display = '';
       break;
     case 'syncing':
       syncStatus.classList.add('dts-widget--connected');
@@ -108,6 +177,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = false;
       unlinkBtn.style.display = '';
       errorEl.style.display = 'none';
+      helpWrap.style.display = 'none';
       break;
     case 'disconnected':
       syncStatus.classList.add('dts-widget--waiting');
@@ -115,12 +185,14 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
       tokenEl.disabled = true;
       errorEl.style.display = 'none';
       unlinkBtn.style.display = 'none';
+      helpWrap.style.display = '';
       break;
     case 'error':
       syncStatus.classList.add('dts-widget--error');
       tokenEl.textContent = 'Error';
       tokenEl.disabled = true;
       unlinkBtn.style.display = 'none';
+      helpWrap.style.display = '';
       if (error) {
         errorEl.textContent = error;
         errorEl.style.display = 'block';
