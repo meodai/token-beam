@@ -1,29 +1,8 @@
-interface FigmaColorValue {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-}
-
-type FigmaVariableType = 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN';
-
-interface SyncVariable {
-  name: string;
-  type: FigmaVariableType;
-  value: FigmaColorValue | number | string | boolean;
-}
-
-interface SyncPayload {
-  collectionName: string;
-  modes: Array<{
-    name: string;
-    variables: SyncVariable[];
-  }>;
-}
+import type { FigmaCollectionPayload, FigmaSyncVariable, FigmaColorValue } from './adapter';
 
 interface SyncMessage {
   type: 'sync';
-  payload: SyncPayload;
+  payload: FigmaCollectionPayload;
 }
 
 type PluginMessage = SyncMessage;
@@ -39,7 +18,7 @@ function isColorValue(value: unknown): value is FigmaColorValue {
   );
 }
 
-function toVariableValue(varDef: SyncVariable): VariableValue {
+function toVariableValue(varDef: FigmaSyncVariable): VariableValue {
   if (varDef.type === 'COLOR' && isColorValue(varDef.value)) {
     const { r, g, b, a } = varDef.value;
     return { r, g, b, a } satisfies RGBA;
@@ -48,10 +27,10 @@ function toVariableValue(varDef: SyncVariable): VariableValue {
   return varDef.value as VariableValue;
 }
 
-function validatePayload(payload: unknown): payload is SyncPayload {
+function validatePayload(payload: unknown): payload is FigmaCollectionPayload {
   if (!payload || typeof payload !== 'object') return false;
   
-  const p = payload as Partial<SyncPayload>;
+  const p = payload as Partial<FigmaCollectionPayload>;
   
   if (typeof p.collectionName !== 'string' || !p.collectionName) return false;
   if (!Array.isArray(p.modes) || p.modes.length === 0) return false;
