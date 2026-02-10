@@ -192,11 +192,6 @@ function onConnect()
 end
 
 -- Build dialog
-dlg:label{ 
-  id="title",
-  text="Token Sync",
-  label=""
-}
 dlg:separator{ text="Session Token" }
 dlg:entry{ 
   id="token", 
