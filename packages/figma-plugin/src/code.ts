@@ -48,11 +48,38 @@ function toVariableValue(varDef: SyncVariable): VariableValue {
   return varDef.value as VariableValue;
 }
 
+function validatePayload(payload: unknown): payload is SyncPayload {
+  if (!payload || typeof payload !== 'object') return false;
+  
+  const p = payload as Partial<SyncPayload>;
+  
+  if (typeof p.collectionName !== 'string' || !p.collectionName) return false;
+  if (!Array.isArray(p.modes) || p.modes.length === 0) return false;
+  
+  for (const mode of p.modes) {
+    if (!mode || typeof mode !== 'object') return false;
+    if (typeof mode.name !== 'string' || !mode.name) return false;
+    if (!Array.isArray(mode.variables)) return false;
+    
+    for (const variable of mode.variables) {
+      if (!variable || typeof variable !== 'object') return false;
+      if (typeof variable.name !== 'string' || !variable.name) return false;
+      if (!['COLOR', 'FLOAT', 'STRING', 'BOOLEAN'].includes(variable.type)) return false;
+      if (variable.value === undefined || variable.value === null) return false;
+    }
+  }
+  
+  return true;
+}
+
 figma.showUI(__html__, { width: 320, height: 200, themeColors: true });
 
 figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === 'sync') {
     try {
+      if (!validatePayload(msg.payload)) {
+        throw new Error('Invalid payload structure');
+      }
       const result = await syncVariables(msg);
       figma.ui.postMessage({ 
         type: 'sync-complete', 

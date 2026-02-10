@@ -25,9 +25,13 @@ export class SyncClient<T = unknown> {
   private ws?: WebSocket;
   private reconnectTimer?: ReturnType<typeof setTimeout>;
   private pingTimer?: ReturnType<typeof setInterval>;
+  private connectionTimeout?: ReturnType<typeof setTimeout>;
   private manualDisconnect = false;
-  private readonly RECONNECT_DELAY = 3000;
+  private reconnectAttempts = 0;
+  private readonly INITIAL_RECONNECT_DELAY = 1000;
+  private readonly MAX_RECONNECT_DELAY = 30000;
   private readonly PING_INTERVAL = 30000;
+  private readonly CONNECTION_TIMEOUT = 10000;
 
   constructor(private readonly options: SyncClientOptions<T>) {}
 
@@ -35,9 +39,35 @@ export class SyncClient<T = unknown> {
     return new Promise((resolve, reject) => {
       try {
         this.manualDisconnect = false;
+        
+        // Clean up existing connection if any
+        if (this.ws) {
+          this.ws.onclose = null;
+          this.ws.onerror = null;
+          this.ws.onmessage = null;
+          this.ws.close();
+          this.ws = undefined;
+        }
+        
         this.ws = new WebSocket(this.options.serverUrl);
+        
+        // Set connection timeout
+        this.connectionTimeout = setTimeout(() => {
+          if (this.ws?.readyState !== WebSocket.OPEN) {
+            this.ws?.close();
+            reject(new Error('Connection timeout'));
+          }
+        }, this.CONNECTION_TIMEOUT);
 
         this.ws.onopen = () => {
+          if (this.connectionTimeout) {
+            clearTimeout(this.connectionTimeout);
+            this.connectionTimeout = undefined;
+          }
+          
+          // Reset reconnect attempts on successful connection
+          this.reconnectAttempts = 0;
+          
           this.options.onConnected?.();
 
           const resolvedOrigin =
@@ -64,9 +94,19 @@ export class SyncClient<T = unknown> {
           }
         };
 
-        this.ws.onerror = () => reject(new Error('WebSocket connection failed'));
+        this.ws.onerror = () => {
+          if (this.connectionTimeout) {
+            clearTimeout(this.connectionTimeout);
+            this.connectionTimeout = undefined;
+          }
+          reject(new Error('WebSocket connection failed'));
+        };
 
         this.ws.onclose = () => {
+          if (this.connectionTimeout) {
+            clearTimeout(this.connectionTimeout);
+            this.connectionTimeout = undefined;
+          }
           this.options.onDisconnected?.();
           this.stopPing();
           if (!this.manualDisconnect) {
@@ -74,6 +114,10 @@ export class SyncClient<T = unknown> {
           }
         };
       } catch (error) {
+        if (this.connectionTimeout) {
+          clearTimeout(this.connectionTimeout);
+          this.connectionTimeout = undefined;
+        }
         reject(error);
       }
     });
@@ -134,18 +178,33 @@ export class SyncClient<T = unknown> {
   private scheduleReconnect() {
     if (this.reconnectTimer) return;
 
+    this.reconnectAttempts++;
+    
+    // Exponential backoff: min(1000 * 2^attempts, 30000)
+    const delay = Math.min(
+      this.INITIAL_RECONNECT_DELAY * Math.pow(2, this.reconnectAttempts - 1),
+      this.MAX_RECONNECT_DELAY
+    );
+
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = undefined;
-      this.connect().catch(() => {});
-    }, this.RECONNECT_DELAY);
+      this.connect().catch(() => {
+        // Will schedule another reconnect via onclose handler
+      });
+    }, delay);
   }
 
   public disconnect() {
     this.manualDisconnect = true;
+    this.reconnectAttempts = 0;
     this.stopPing();
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = undefined;
+    }
+    if (this.connectionTimeout) {
+      clearTimeout(this.connectionTimeout);
+      this.connectionTimeout = undefined;
     }
     if (this.ws) {
       this.ws.close();
