@@ -60,6 +60,7 @@
       display: flex;
       flex-direction: column;
       gap: .4rem;
+      position: relative;
     }
     .dts-widget--message {
       gap: 0;
@@ -244,6 +245,11 @@
       color: var(--c-surface-on);
       border-radius: var(--s-radius);
       font-size: .65rem;
+      position: absolute;
+      left: -1px;
+      right: -1px;
+      top: 100%;
+      z-index: 2;
     }
     .dts-widget__error--error {
       border-color: #c4342d;
