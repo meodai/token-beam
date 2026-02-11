@@ -3,7 +3,7 @@
 var webviewWindow = null;
 var webView = null;
 
-function openTokenSync() {
+function openTokenBeam() {
   if (webviewWindow && webView) {
     webviewWindow.makeKeyAndOrderFront(null);
     return;
@@ -20,7 +20,7 @@ function openTokenSync() {
     false
   );
   
-  webviewWindow.setTitle('Token Sync');
+  webviewWindow.setTitle('Token Beam');
   webviewWindow.center();
   webviewWindow.setLevel(NSFloatingWindowLevel);
   

@@ -1,5 +1,5 @@
-import type { TokenSyncPayload } from 'token-sync';
-import { SyncClient } from 'token-sync';
+import type { TokenSyncPayload } from 'token-beam';
+import { SyncClient } from 'token-beam';
 import { figmaCollectionAdapter } from '../adapter';
 import type { FigmaCollectionPayload } from '../adapter';
 
@@ -107,8 +107,8 @@ connectBtn.addEventListener('click', () => {
   const raw = tokenInput.value.trim();
   if (!raw) return;
 
-  // Normalise: accept "dts://ABC123", "ABC123", or "dts://abc123"
-  const token = raw.startsWith('dts://') ? raw : `dts://${raw.toUpperCase()}`;
+  // Normalise: accept "beam://ABC123", "ABC123", or "beam://abc123"
+  const token = raw.startsWith('beam://') ? raw : `beam://${raw.toUpperCase()}`;
 
   resultEl.classList.add('plugin__hidden');
   updateSyncStatus('Connecting...', 'connecting');
@@ -136,19 +136,19 @@ connectBtn.addEventListener('click', () => {
       }
     },
     onError: (error) => {
-      console.warn('[token-sync]', error);
+      console.warn('[token-beam]', error);
       unlockUI();
       syncClient = null;
     },
     onDisconnected: () => {
-      console.warn('[token-sync] disconnected');
+      console.warn('[token-beam] disconnected');
       unlockUI();
       syncClient = null;
     },
   });
 
   syncClient.connect().catch((err: unknown) => {
-    console.warn('[token-sync] connection failed', err);
+    console.warn('[token-beam] connection failed', err);
     unlockUI();
     syncClient = null;
   });

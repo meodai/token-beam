@@ -1,4 +1,4 @@
-# ↬ Token Sync (lib)
+# ↬ Token Beam (lib)
 
 Core types and sync client for building design-token workflows.
 
@@ -7,7 +7,7 @@ Core types and sync client for building design-token workflows.
 ### Installation
 
 ```bash
-npm install token-sync
+npm install token-beam
 ```
 
 ### Try the Example Widget
@@ -15,7 +15,7 @@ npm install token-sync
 The package includes a complete, working example widget (`example-widget.html`). After installing the package, you can find it in:
 
 ```
-node_modules/token-sync/example-widget.html
+node_modules/token-beam/example-widget.html
 ```
 
 Open it in your browser to see a fully functional sync widget with demo controls. The file includes:
@@ -29,8 +29,8 @@ You can copy and paste from this example directly into your project!
 ### Basic Usage
 
 ```ts
-import { SyncClient, createCollection } from 'token-sync';
-import type { TokenSyncPayload } from 'token-sync';
+import { SyncClient, createCollection } from 'token-beam';
+import type { TokenSyncPayload } from 'token-beam';
 
 const syncClient = new SyncClient<TokenSyncPayload>({
   serverUrl: 'ws://localhost:8080',
@@ -69,9 +69,9 @@ This standalone HTML file includes:
 **Quick start:**
 ```bash
 # After installation, open in your browser:
-open node_modules/token-sync/example-widget.html
+open node_modules/token-beam/example-widget.html
 
 # Or copy it to your project:
-cp node_modules/token-sync/example-widget.html ./my-widget.html
+cp node_modules/token-beam/example-widget.html ./my-widget.html
 ```
 

@@ -1,5 +1,5 @@
 {
-  "name": "token-sync-demo",
+  "name": "token-beam-demo",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,7 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "token-sync": "*"
+    "token-beam": "*"
   },
   "devDependencies": {
     "vite": "^6.0.0"

@@ -1,20 +1,20 @@
 {
-  "name": "token-sync",
-  "displayName": "Token Sync",
+  "name": "token-beam",
+  "displayName": "Token Beam",
   "description": "Sync design tokens (colors) to Aseprite palette",
   "version": "0.1.0",
-  "author": { "name": "Token Sync" },
+  "author": { "name": "Token Beam" },
   "contributors": [],
-  "publisher": "token-sync",
+  "publisher": "token-beam",
   "license": "MIT",
   "categories": [ "Scripts" ],
   "contributes": {
     "scripts": [
-      { "path": "./token-sync.lua" }
+      { "path": "./token-beam.lua" }
     ]
   },
   "scripts": {
-    "install:aseprite": "mkdir -p \"$HOME/Library/Application Support/Aseprite/scripts/token-sync\" && cp -f package.json token-sync.lua \"$HOME/Library/Application Support/Aseprite/scripts/token-sync/\"",
-    "uninstall:aseprite": "rm -rf \"$HOME/Library/Application Support/Aseprite/scripts/token-sync\""
+    "install:aseprite": "mkdir -p \"$HOME/Library/Application Support/Aseprite/scripts/token-beam\" && cp -f package.json token-beam.lua \"$HOME/Library/Application Support/Aseprite/scripts/token-beam/\"",
+    "uninstall:aseprite": "rm -rf \"$HOME/Library/Application Support/Aseprite/scripts/token-beam\""
   }
 }

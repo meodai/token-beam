@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import { createCollection } from 'token-sync';
+import { createCollection } from '../lib/dist/token-beam.js';
 import { generateRandomRamp } from './src/colors';
 
 export default defineConfig({
@@ -8,7 +8,7 @@ export default defineConfig({
   },
   plugins: [
     {
-      name: 'token-sync-api',
+      name: 'token-beam-api',
       configureServer(server) {
         server.middlewares.use('/api/colors', (_req, res) => {
           const { colors } = generateRandomRamp();

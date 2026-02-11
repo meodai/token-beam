@@ -1,5 +1,5 @@
 {
-  "name": "token-sync",
+  "name": "token-beam",
   "id": "figma-sync-dev",
   "api": "1.0.0",
   "main": "dist/code.js",

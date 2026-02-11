@@ -1,5 +1,5 @@
-import type { TokenSyncPayload } from 'token-sync';
-import { SyncClient } from 'token-sync';
+import type { TokenSyncPayload } from 'token-beam';
+import { SyncClient } from 'token-beam';
 
 type PluginLink = {
   id: string;
@@ -222,7 +222,7 @@ function initSync() {
   syncClient = new SyncClient<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
-    origin: '↬ Token Sync Demo',
+    origin: '↬ Token Beam Demo',
     onPaired: (token) => {
       sessionToken = token;
       updateSyncStatus('ready', token);

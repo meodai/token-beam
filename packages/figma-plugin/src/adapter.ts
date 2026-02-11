@@ -1,4 +1,4 @@
-import type { TokenSyncPayload, TokenType, DesignToken, TargetAdapter } from 'token-sync';
+import type { TokenSyncPayload, TokenType, DesignToken, TargetAdapter } from 'token-beam';
 
 // Figma-specific color type (0–1 range RGBA)
 export interface FigmaColorValue {

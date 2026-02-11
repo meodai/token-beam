@@ -7,7 +7,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        'token-sync': resolve(__dirname, 'src/index.ts'),
+        'token-beam': resolve(__dirname, 'src/index.ts'),
         'node': resolve(__dirname, 'src/node.ts'),
       },
       formats: ['es'],

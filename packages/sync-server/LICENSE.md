@@ -1,4 +1,4 @@
-# Token Sync Server License
+# Token Beam Server License
 
 This software is dual-licensed under the AGPL-3.0 and a Commercial License.
 
@@ -63,13 +63,13 @@ Open source projects with an OSI-approved license can request a **free commercia
 - Must use an OSI-approved open source license
 - Must not be a commercial/proprietary product
 
-To apply, email: opensource@token-sync.dev
+To apply, email: opensource@token-beam.dev
 
 ## Contact
 
 For commercial licensing inquiries:
-- Email: sales@token-sync.dev
-- Website: https://token-sync.dev
+- Email: sales@token-beam.dev
+- Website: https://token-beam.dev
 
 ---
 

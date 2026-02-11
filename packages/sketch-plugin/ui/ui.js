@@ -26,7 +26,7 @@ function connect() {
   if (!raw) return;
 
   // Normalize token
-  sessionToken = raw.startsWith('dts://') ? raw : `dts://${raw.toUpperCase()}`;
+  sessionToken = raw.startsWith('beam://') ? raw : `beam://${raw.toUpperCase()}`;
 
   showStatus('Connecting...', 'connecting');
   connectBtn.disabled = true;

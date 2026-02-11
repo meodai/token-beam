@@ -1,4 +1,4 @@
-# ↬ Token Sync
+# ↬ Token Beam
 
 A tool-agnostic design token synchronization system aligned with the **W3C Design Tokens Community Group** specification.
 
@@ -78,7 +78,7 @@ The **`packages/sync-server`** package provides a WebSocket server for real-time
 
 ### How It Works
 
-1. **Web client** connects to sync server and receives a prefixed token (e.g., `dts://A3F9K2`)
+1. **Web client** connects to sync server and receives a prefixed token (e.g., `beam://A3F9K2`)
 2. **User** copies the token and pastes it into the Figma plugin
 3. **Figma plugin** connects using the token and gets paired with the web session
 4. **Changes** made on the website are instantly synced to Figma in real-time
@@ -115,12 +115,12 @@ See [packages/sync-server/README.md](packages/sync-server/README.md) for impleme
 
 ```
 ┌─────────────┐         WebSocket          ┌──────────────────┐
-│  Web Demo   │ ◄────── Token: dts://A3F9K2 ──── │  Sync Server     │
+│  Web Demo   │ ◄────── Token: beam://A3F9K2 ──── │  Sync Server     │
 │  (Browser)  │                             │  (Node.js + WS)  │
 └─────────────┘                             └──────────────────┘
                                                      ▲
                                                      │ WebSocket
-                                                     │ Token: dts://A3F9K2
+                                                     │ Token: beam://A3F9K2
                                             ┌────────┴────────┐
                                             │ Figma Plugin    │
                                             │ (Plugin UI)     │
@@ -154,7 +154,7 @@ The **`packages/aseprite-plugin`** package syncs color tokens to Aseprite palett
 
    Example (macOS):
    ```bash
-   ln -s "$(pwd)/packages/aseprite-plugin" ~/Library/Application\ Support/Aseprite/scripts/token-sync
+   ln -s "$(pwd)/packages/aseprite-plugin" ~/Library/Application\ Support/Aseprite/scripts/token-beam
    ```
 
 2. **Start the sync server:**
@@ -164,7 +164,7 @@ The **`packages/aseprite-plugin`** package syncs color tokens to Aseprite palett
 
 3. **Use in Aseprite:**
    - Open or create a sprite
-   - Go to **File → Scripts → ↬ Token Sync**
+   - Go to **File → Scripts → ↬ Token Beam**
    - Enter your session token
    - Click **Connect**
    - Colors sync to your palette automatically!
@@ -184,7 +184,7 @@ See [packages/aseprite-plugin/README.md](packages/aseprite-plugin/README.md) for
 ## Project Structure
 
 ```
-token-sync/
+token-beam/
 ├── packages/
 │   ├── lib/              # Core generic token library
 │   │   ├── src/
@@ -192,7 +192,7 @@ token-sync/
 │   │   │   ├── format.ts         # Token creation utilities
 │   │   │   ├── sync-client.ts    # Generic WebSocket SyncClient
 │   │   │   └── index.ts
-│   │   └── dist/token-sync.js
+│   │   └── dist/token-beam.js
 │   │
 │   ├── sync-server/      # WebSocket server for real-time sync
 │   │   └── src/server.ts
@@ -204,7 +204,7 @@ token-sync/
 │   │   └── src/adapter.ts  # Figma-specific adapter
 │   │
 │   └── aseprite-plugin/  # Aseprite extension
-       ├── token-sync.lua      # Lua script with WebSocket support
+       ├── token-beam.lua      # Lua script with WebSocket support
        └── package.json        # Extension manifest
 │
 ├── package.json
@@ -216,7 +216,7 @@ token-sync/
 ### Creating Tokens (W3C DTCG Format)
 
 ```typescript
-import { createCollection } from 'token-sync';
+import { createCollection } from 'token-beam';
 
 const payload = createCollection('My Colors', {
   'color/primary': '#0066cc',
@@ -245,7 +245,7 @@ const payload = createCollection('My Colors', {
 Each consumer implements its own adapter using the `TargetAdapter<T>` interface from the lib:
 
 ```typescript
-import type { TargetAdapter, TokenSyncPayload } from 'token-sync';
+import type { TargetAdapter, TokenSyncPayload } from 'token-beam';
 
 interface MyToolPayload {
   /* tool-specific shape */
@@ -262,7 +262,7 @@ const myToolAdapter: TargetAdapter<MyToolPayload> = {
 ### Serving Tokens
 
 ```typescript
-import { servePayload } from 'token-sync/node';
+import { servePayload } from 'token-beam/node';
 
 const payload = createCollection('Colors', { primary: '#0066cc' });
 const { server, url } = await servePayload(payload, { port: 3333 });
@@ -316,7 +316,7 @@ npm run start:server
 ## License
 
 **MIT License** for:
-- Core library (`token-sync` npm package)
+- Core library (`token-beam` npm package)
 - Documentation and examples
 
 **Proprietary License** for:
@@ -333,7 +333,7 @@ The sync server is free for personal/open source projects. Commercial use requir
 - Enterprise: $299/month - Self-hosting allowed, modify plugins, SSO, priority support
 
 See [packages/sync-server/LICENSE.md](packages/sync-server/LICENSE.md) for details.  
-**Contact:** sales@token-sync.dev
+**Contact:** sales@token-beam.dev
 
 ---
 

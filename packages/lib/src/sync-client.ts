@@ -11,7 +11,7 @@ export interface SyncClientOptions<T = unknown> {
   serverUrl: string;
   clientType: string;
   sessionToken?: string;
-  /** Display name for this client (e.g. "Token Sync Demo"). Defaults to location.hostname. */
+  /** Display name for this client (e.g. "Token Beam Demo"). Defaults to location.hostname. */
   origin?: string;
   onPaired?: (token: string, origin?: string) => void;
   onTargetConnected?: (clientType: string, origin?: string) => void;

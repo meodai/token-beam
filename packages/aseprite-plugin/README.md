@@ -1,4 +1,4 @@
-# ↬ Token Sync - Aseprite Plugin
+# ↬ Token Beam - Aseprite Plugin
 
 Sync design tokens (colors) to Aseprite palettes in real-time.
 
@@ -33,7 +33,7 @@ Run the install script from the root of the project:
 npm run install:aseprite
 ```
 
-This copies the Lua script and package.json to `~/Library/Application Support/Aseprite/scripts/token-sync/`.
+This copies the Lua script and package.json to `~/Library/Application Support/Aseprite/scripts/token-beam/`.
 
 **Note:** This script is currently macOS-specific. For Windows/Linux, use Option B or C below.
 
@@ -55,15 +55,15 @@ Create a symlink to this directory in Aseprite's scripts folder:
 
 ```bash
 # macOS/Linux
-ln -s "$(pwd)" ~/Library/Application\ Support/Aseprite/scripts/token-sync
+ln -s "$(pwd)" ~/Library/Application\ Support/Aseprite/scripts/token-beam
 
 # Windows (PowerShell as Admin)
-New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Aseprite\scripts\token-sync" -Target "$(pwd)"
+New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Aseprite\scripts\token-beam" -Target "$(pwd)"
 ```
 
 **Option C: Manual Copy**
 
-Copy `token-sync.lua` and `package.json` to Aseprite's scripts directory.
+Copy `token-beam.lua` and `package.json` to Aseprite's scripts directory.
 
 Restart Aseprite after installation.
 
@@ -77,9 +77,9 @@ Restart Aseprite after installation.
 
 2. **Open or create a sprite in Aseprite**
 
-3. **Run ↬ Token Sync:**
-   - Go to **File → Scripts → ↬ Token Sync**
-   - Enter your session token (e.g., `dts://ABC123`)
+3. **Run ↬ Token Beam:**
+   - Go to **File → Scripts → ↬ Token Beam**
+   - Enter your session token (e.g., `beam://ABC123`)
    - Click **Connect**
    - Colors will automatically update your sprite's palette!
 
@@ -104,7 +104,7 @@ Restart Aseprite after installation.
 
 ### Sync Server URL
 
-Edit `token-sync.lua` and change:
+Edit `token-beam.lua` and change:
 
 ```lua
 local syncServerUrl = "ws://localhost:8080"
@@ -116,7 +116,7 @@ Default is `ws://localhost:8080`.
 
 ### "No active sprite" error
 
-Create or open a sprite before running ↬ Token Sync.
+Create or open a sprite before running ↬ Token Beam.
 
 ### "Connection failed" or immediate disconnect
 
@@ -132,7 +132,7 @@ Create or open a sprite before running ↬ Token Sync.
 
 ## Development
 
-Edit `token-sync.lua` and reload the script in Aseprite:
+Edit `token-beam.lua` and reload the script in Aseprite:
 - **File → Scripts → Rescan Scripts Folder**
 
 Or restart Aseprite to reload the script.
@@ -142,7 +142,7 @@ Or restart Aseprite to reload the script.
 ```
 aseprite-plugin/
 ├── package.json           # Aseprite extension manifest
-├── token-sync.lua         # Main Lua script with WebSocket support
+├── token-beam.lua         # Main Lua script with WebSocket support
 └── README.md
 ```
 

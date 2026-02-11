@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-02-11
 
 ### Added
-- Initial release of token-sync library
+- Initial release of token-beam library
 - `SyncClient` for WebSocket-based real-time synchronization
 - W3C Design Tokens Community Group (DTCG) spec compliance
 - `createCollection` and `createMultiModeCollection` helpers
@@ -21,4 +21,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Complete example widget** (`example-widget.html`) with interactive demo
 - Comprehensive README with widget implementation guide
 
-[0.1.0]: https://github.com/meodai/token-sync/releases/tag/v0.1.0
+[0.1.0]: https://github.com/meodai/token-beam/releases/tag/v0.1.0

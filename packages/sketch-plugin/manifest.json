@@ -1,23 +1,23 @@
 {
-  "name": "Token Sync",
+  "name": "Token Beam",
   "description": "Sync design tokens to Sketch color swatches",
-  "author": "Token Sync",
+  "author": "Token Beam",
   "version": "0.1.0",
-  "identifier": "com.tokensync.sketch",
+  "identifier": "com.tokenbeam.sketch",
   "compatibleVersion": "3.0",
   "bundleVersion": 1,
   "commands": [
     {
-      "name": "Token Sync",
-      "identifier": "token-sync",
+      "name": "Token Beam",
+      "identifier": "token-beam",
       "script": "plugin.js",
-      "handler": "openTokenSync"
+      "handler": "openTokenBeam"
     }
   ],
   "menu": {
-    "title": "Token Sync",
+    "title": "Token Beam",
     "items": [
-      "token-sync"
+      "token-beam"
     ]
   }
 }

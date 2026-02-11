@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>↬ Token Sync - Example Widget</title>
+  <title>↬ Token Beam - Example Widget</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -368,8 +368,8 @@
   </div>
 
   <h2>Integration Code</h2>
-  <pre><code>import { SyncClient, pluginLinks, createCollection } from 'token-sync';
-import type { TokenSyncPayload } from 'token-sync';
+  <pre><code>import { SyncClient, pluginLinks, createCollection } from 'token-beam';
+import type { TokenSyncPayload } from 'token-beam';
 
 const SYNC_SERVER_URL = 'ws://localhost:8080';
 
@@ -414,13 +414,13 @@ function syncTokens(color: string) {
 initSync();</code></pre>
 
   <script type="module">
-    // Simulated Token Sync Client for demo purposes
-    // In production, import from 'token-sync' package
+    // Simulated Token Beam Client for demo purposes
+    // In production, import from 'token-beam' package
     
     const pluginLinks = [
-      { id: 'figma', name: 'Figma Plugin', url: 'https://github.com/meodai/token-sync' },
-      { id: 'sketch', name: 'Sketch Plugin', url: 'https://github.com/meodai/token-sync' },
-      { id: 'aseprite', name: 'Aseprite Plugin', url: 'https://github.com/meodai/token-sync' },
+      { id: 'figma', name: 'Figma Plugin', url: 'https://github.com/meodai/token-beam' },
+      { id: 'sketch', name: 'Sketch Plugin', url: 'https://github.com/meodai/token-beam' },
+      { id: 'aseprite', name: 'Aseprite Plugin', url: 'https://github.com/meodai/token-beam' },
     ];
 
     const syncStatus = document.querySelector('[data-dts="widget"]');
@@ -520,7 +520,7 @@ initSync();</code></pre>
 
     // Simulate connection (in real app, this would be your SyncClient)
     setTimeout(() => {
-      sessionToken = 'dts://k8x9m2p4n7q5';
+      sessionToken = 'beam://k8x9m2p4n7q5';
       updateWidgetStatus('ready', sessionToken);
     }, 1000);
 
@@ -540,7 +540,7 @@ initSync();</code></pre>
     // Unlink handler
     unlinkBtn.addEventListener('click', () => {
       sessionToken = null;
-      updateWidgetStatus('ready', 'dts://k8x9m2p4n7q5');
+      updateWidgetStatus('ready', 'beam://k8x9m2p4n7q5');
     });
 
     // Color picker

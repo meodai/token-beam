@@ -1,5 +1,5 @@
 {
-  "name": "token-sync-figma-plugin",
+  "name": "token-beam-figma-plugin",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -11,7 +11,7 @@
     "dev:ui": "vite build --config vite.config.ui.ts --watch"
   },
   "dependencies": {
-    "token-sync": "*"
+    "token-beam": "*"
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.100.0",

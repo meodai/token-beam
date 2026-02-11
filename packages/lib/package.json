@@ -1,5 +1,5 @@
 {
-  "name": "token-sync",
+  "name": "token-beam",
   "version": "0.1.0",
   "description": "Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant.",
   "type": "module",
@@ -7,12 +7,12 @@
   "author": "David Aerne (meodai)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/meodai/token-sync.git",
+    "url": "https://github.com/meodai/token-beam.git",
     "directory": "packages/lib"
   },
-  "homepage": "https://github.com/meodai/token-sync#readme",
+  "homepage": "https://github.com/meodai/token-beam#readme",
   "bugs": {
-    "url": "https://github.com/meodai/token-sync/issues"
+    "url": "https://github.com/meodai/token-beam/issues"
   },
   "keywords": [
     "design-tokens",
@@ -25,12 +25,12 @@
     "real-time",
     "websocket"
   ],
-  "main": "./dist/token-sync.js",
-  "module": "./dist/token-sync.js",
+  "main": "./dist/token-beam.js",
+  "module": "./dist/token-beam.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/token-sync.js",
+      "import": "./dist/token-beam.js",
       "types": "./dist/index.d.ts"
     },
     "./node": {

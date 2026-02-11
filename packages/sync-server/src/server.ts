@@ -173,7 +173,7 @@ export class TokenSyncServer {
     // Also check user-provided origin (can be spoofed but good for logging)
     if (message.origin && this.isOriginBlocked(message.origin)) {
       console.log(`Blocked pairing from reported origin: ${message.origin}`);
-      this.sendError(ws, 'Commercial use detected. Contact sales@token-sync.dev for licensing.');
+      this.sendError(ws, 'Commercial use detected. Contact sales@token-beam.dev for licensing.');
       ws.close();
       return;
     }
@@ -344,9 +344,9 @@ export class TokenSyncServer {
 
   private generateToken(): string {
     // Generate 6 random bytes and convert to hex (12 chars)
-    // Format: dts://XXXXXXXXXXXX
+    // Format: beam://XXXXXXXXXXXX
     const hex = randomBytes(6).toString('hex').toUpperCase();
-    return `dts://${hex}`;
+    return `beam://${hex}`;
   }
 
   private generateSessionId(): string {
@@ -385,7 +385,7 @@ export class TokenSyncServer {
   public start(): Promise<void> {
     return new Promise((resolve) => {
       this.httpServer.listen(this.port, () => {
-        console.log(`Token Sync Server running on port ${this.port}`);
+        console.log(`Token Beam Server running on port ${this.port}`);
         console.log(`WebSocket: ws://localhost:${this.port}`);
         console.log(`Health check: http://localhost:${this.port}/health`);
         resolve();
@@ -421,7 +421,7 @@ export class TokenSyncServer {
     return new Promise((resolve) => {
       this.wss.close(() => {
         this.httpServer.close(() => {
-          console.log('Token Sync Server stopped');
+          console.log('Token Beam Server stopped');
           resolve();
         });
       });
