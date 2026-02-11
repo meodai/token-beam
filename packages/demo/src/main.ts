@@ -36,6 +36,7 @@ let currentPayload: TokenSyncPayload | null = null;
 let sessionToken: string | null = null;
 let isPaired = false;
 const connectedTargets = new Set<string>();
+let suppressOfflineNotice = false;
 let copyStatusTimer: number | null = null;
 let messageTimer: number | null = null;
 
@@ -75,6 +76,16 @@ function showTemporaryMessage(message: string, duration: number = 3000) {
     syncStatus.classList.remove('dts-widget--message');
     messageTimer = null;
   }, duration);
+}
+
+function setOfflineState(isOffline: boolean) {
+  const syncStatus = document.querySelector<HTMLDivElement>('[data-dts="widget"]');
+  if (!syncStatus) return;
+  if (isOffline) {
+    syncStatus.classList.add('dts-widget--offline');
+  } else {
+    syncStatus.classList.remove('dts-widget--offline');
+  }
 }
 
 // --- Init ---
@@ -122,6 +133,9 @@ async function init() {
         </div>
       </div>
       <div class="dts-widget__error" style="display: none;" data-dts="error" aria-live="polite" role="status"></div>
+      <div class="dts-widget__offline" data-dts="offline" aria-live="polite" role="status">
+        Beam Server Offline
+      </div>
     </div>
 
     <div id="payload-section"></div>
@@ -206,11 +220,13 @@ async function fetchAndRender() {
 
 function initSync() {
   if (syncClient) {
+    suppressOfflineNotice = true;
     syncClient.disconnect();
   }
 
   connectedTargets.clear();
   isPaired = false;
+  setOfflineState(false);
 
   syncClient = new SyncClient<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
@@ -219,23 +235,31 @@ function initSync() {
     icon: { type: 'unicode', value: '⊷' },
     onPaired: (token) => {
       sessionToken = token;
+      setOfflineState(false);
       updateSyncStatus('ready', token);
     },
     onTargetConnected: (clientType) => {
       connectedTargets.add(clientType);
       isPaired = connectedTargets.size > 0;
+      setOfflineState(false);
       updateSyncStatus('syncing');
       if (currentPayload) {
         syncClient?.sync(currentPayload);
       }
     },
     onConnected: () => {
+      setOfflineState(false);
       updateSyncStatus('connecting');
     },
     onDisconnected: () => {
+      if (suppressOfflineNotice) {
+        suppressOfflineNotice = false;
+        return;
+      }
       connectedTargets.clear();
       isPaired = false;
       updateSyncStatus('ready', sessionToken ?? undefined);
+      setOfflineState(true);
     },
     onError: (error) => {
       // Non-fatal warnings (e.g. icon rejected) — log but don't break UI
@@ -263,7 +287,7 @@ function initSync() {
   syncClient.connect().catch((error: unknown) => {
     console.error('Failed to connect to sync server:', error);
     updateSyncStatus('ready', sessionToken ?? undefined);
-    showTemporaryMessage('Sync sever offline');
+    setOfflineState(true);
   });
 }
 
@@ -271,9 +295,11 @@ function unlink() {
   isPaired = false;
   connectedTargets.clear();
   if (syncClient) {
+    suppressOfflineNotice = true;
     syncClient.disconnect();
     syncClient = null;
   }
+  setOfflineState(false);
   sessionToken = null;
   initSync();
 }

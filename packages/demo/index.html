@@ -65,6 +65,9 @@
     .dts-widget--message {
       gap: 0;
     }
+    .dts-widget--offline .dts-widget__offline {
+      display: flex;
+    }
     .dts-widget__row {
       display: flex;
       align-items: center;
@@ -258,6 +261,21 @@
     .dts-widget__error--info {
       border-color: var(--c-border);
       color: var(--c-surface-on-alt);
+    }
+    .dts-widget__offline {
+      display: none;
+      position: absolute;
+      inset: -1px;
+      z-index: 6;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: .65rem;
+      color: var(--c-surface-on);
+      background: var(--c-surface);
+      border: var(--s-line) solid var(--c-border);
+      pointer-events: auto;
     }
     .dts-widget__status {
       position: absolute;
