@@ -56,6 +56,15 @@ const payload = createCollection('colors', {
 syncClient.sync(payload);
 ```
 
+### Token Support Depends on Target
+
+Token Beam transports DTCG-style tokens, but each target plugin or program decides which token types it can apply. For example:
+
+- Aseprite: colors only.
+- Figma: colors, booleans, strings, and sizes.
+
+If a target does not support a token type, it will ignore it or map it differently.
+
 ### App Icon
 
 Source apps can provide an icon that gets displayed in the paired design tool plugin. Two formats are supported:
