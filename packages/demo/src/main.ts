@@ -97,20 +97,7 @@ async function init() {
           title="Disconnect and generate new token"
           data-dts="unlink"
         >
-          <span class="dts-widget__unlink-icon dts-widget__unlink-icon--linked" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter">
-              <path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-2 2" />
-              <path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l2-2" />
-            </svg>
-          </span>
-          <span class="dts-widget__unlink-icon dts-widget__unlink-icon--broken" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter">
-              <path d="M8 8l2-2a5 5 0 0 1 7 7l-2 2" />
-              <path d="M16 16l-2 2a5 5 0 0 1-7-7l2-2" />
-              <path d="M7 17l-2 2" />
-              <path d="M17 7l2-2" />
-            </svg>
-          </span>
+          <span class="dts-widget__dot" aria-hidden="true"></span>
           <span class="dts-widget__unlink-label">Unlink</span>
         </button>
         <div class="dts-widget__help" data-dts="help-wrap">
