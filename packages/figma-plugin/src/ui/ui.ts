@@ -1,4 +1,4 @@
-import type { TokenSyncPayload } from 'token-beam';
+import type { TokenSyncPayload, SyncIcon } from 'token-beam';
 import { SyncClient } from 'token-beam';
 import { figmaCollectionAdapter } from '../adapter';
 import type { FigmaCollectionPayload } from '../adapter';
@@ -118,10 +118,11 @@ connectBtn.addEventListener('click', () => {
     serverUrl: SYNC_SERVER_URL,
     clientType: 'figma',
     sessionToken: token,
-    onPaired: (_token, origin) => {
+    onPaired: (_token, origin, icon?: SyncIcon) => {
       pairedOrigin = origin ?? null;
       const label = pairedOrigin ?? 'unknown source';
-      updateSyncStatus(`Paired with ${label} — waiting for data...`, 'connected');
+      const iconPrefix = icon?.type === 'unicode' ? `${icon.value} ` : '';
+      updateSyncStatus(`Paired with ${iconPrefix}${label} — waiting for data...`, 'connected');
       connectBtn.textContent = 'Disconnect';
       connectBtn.disabled = false;
     },
@@ -136,6 +137,11 @@ connectBtn.addEventListener('click', () => {
       }
     },
     onError: (error) => {
+      // Non-fatal warnings — log but stay connected
+      if (error.startsWith('[warn]')) {
+        console.warn('[token-beam]', error.slice(7));
+        return;
+      }
       console.warn('[token-beam]', error);
       unlockUI();
       syncClient = null;

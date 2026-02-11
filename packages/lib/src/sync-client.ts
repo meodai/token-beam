@@ -1,8 +1,12 @@
+/** Icon provided by the source app — either a single unicode character or an SVG string. */
+export type SyncIcon = { type: 'unicode'; value: string } | { type: 'svg'; value: string };
+
 export interface SyncMessage<T = unknown> {
   type: 'pair' | 'sync' | 'ping' | 'error';
   sessionToken?: string;
   clientType?: string;
   origin?: string;
+  icon?: SyncIcon;
   payload?: T;
   error?: string;
 }
@@ -13,7 +17,9 @@ export interface SyncClientOptions<T = unknown> {
   sessionToken?: string;
   /** Display name for this client (e.g. "Token Beam Demo"). Defaults to location.hostname. */
   origin?: string;
-  onPaired?: (token: string, origin?: string) => void;
+  /** Optional icon for this client — shown in paired design tool plugins. */
+  icon?: SyncIcon;
+  onPaired?: (token: string, origin?: string, icon?: SyncIcon) => void;
   onTargetConnected?: (clientType: string, origin?: string) => void;
   onSync?: (payload: T) => void;
   onError?: (error: string) => void;
@@ -79,6 +85,7 @@ export class SyncClient<T = unknown> {
             clientType: this.options.clientType,
             sessionToken: this.options.sessionToken,
             origin: resolvedOrigin,
+            icon: this.options.icon,
           });
 
           this.startPing();
@@ -127,8 +134,8 @@ export class SyncClient<T = unknown> {
     switch (message.type) {
       case 'pair':
         if (message.sessionToken) {
-          // We received our session token (+ origin of paired client, if any)
-          this.options.onPaired?.(message.sessionToken, message.origin);
+          // We received our session token (+ origin & icon of paired client, if any)
+          this.options.onPaired?.(message.sessionToken, message.origin, message.icon);
         } else if (message.clientType) {
           // Another client joined our session
           this.options.onTargetConnected?.(message.clientType, message.origin);

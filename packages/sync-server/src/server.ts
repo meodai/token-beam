@@ -3,12 +3,16 @@ import type { IncomingMessage } from 'http';
 import { createServer, type Server as HTTPServer } from 'http';
 import { randomBytes } from 'crypto';
 
+/** Icon provided by the source app — either a single unicode character or an SVG string. */
+export type SyncIcon = { type: 'unicode'; value: string } | { type: 'svg'; value: string };
+
 export interface SyncSession {
   id: string;
   token: string;
   webClient?: WebSocket;
   targetClients: Array<{ ws: WebSocket; type: string; origin?: string }>;
   webOrigin?: string;
+  webIcon?: SyncIcon;
   createdAt: Date;
   lastActivity: Date;
 }
@@ -18,6 +22,7 @@ export interface SyncMessage {
   sessionToken?: string;
   clientType?: string;
   origin?: string;
+  icon?: SyncIcon;
   payload?: unknown;
   error?: string;
 }
@@ -186,12 +191,27 @@ export class TokenSyncServer {
     // Web client creates new session
     if (clientType === 'web') {
       const token = this.generateToken();
+
+      // Sanitize icon — warn client if it was rejected
+      let webIcon: SyncIcon | undefined;
+      if (message.icon) {
+        webIcon = this.sanitizeIcon(message.icon);
+        if (!webIcon) {
+          console.log(`Rejected invalid icon from ${message.origin ?? 'unknown'}: type=${(message.icon as Record<string, unknown>).type}`);
+          this.send(ws, {
+            type: 'error',
+            error: '[warn] Icon rejected: invalid or unsafe content. Unicode icons must be 1–3 visible characters. SVG icons must be under 10KB with no scripts or event handlers.',
+          });
+        }
+      }
+
       const session: SyncSession = {
         id: this.generateSessionId(),
         token,
         webClient: ws,
         targetClients: [],
         webOrigin: message.origin,
+        webIcon,
         createdAt: new Date(),
         lastActivity: new Date(),
       };
@@ -224,12 +244,13 @@ export class TokenSyncServer {
       });
       session.lastActivity = new Date();
 
-      // Send web origin to target client so it knows who it's paired with
+      // Send web origin + icon to target client so it knows who it's paired with
       this.send(ws, {
         type: 'pair',
         sessionToken,
         clientType,
         origin: session.webOrigin,
+        icon: session.webIcon,
       });
 
       // Notify web client that a new target connected
@@ -340,6 +361,53 @@ export class TokenSyncServer {
 
   private sendError(ws: WebSocket, error: string) {
     this.send(ws, { type: 'error', error });
+  }
+
+  /** Sanitize a client-provided icon, returning undefined if invalid. */
+  private sanitizeIcon(icon: unknown): SyncIcon | undefined {
+    if (!icon || typeof icon !== 'object') return undefined;
+    const { type, value } = icon as Record<string, unknown>;
+    if (typeof value !== 'string') return undefined;
+
+    if (type === 'unicode') {
+      // Allow at most a few codepoints (single grapheme cluster)
+      const trimmed = value.trim();
+      if (trimmed.length === 0 || [...trimmed].length > 3) return undefined;
+
+      // Reject dangerous unicode: control chars, bidi overrides, zero-width chars, tag chars
+      const forbidden = /[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF\uFFF9-\uFFFB]|\uDB40[\uDC01-\uDC7F]/;
+      if (forbidden.test(trimmed)) return undefined;
+
+      return { type: 'unicode', value: trimmed };
+    }
+
+    if (type === 'svg') {
+      // Must look like an SVG element
+      if (!value.trim().startsWith('<svg')) return undefined;
+
+      // Strip anything dangerous: <script>, on* attributes, javascript: URLs,
+      // <foreignObject>, <iframe>, <embed>, <object>, data: URIs, <use> with external hrefs
+      let clean = value;
+      // Remove <script>…</script> blocks
+      clean = clean.replace(/<script[\s\S]*?<\/script\s*>/gi, '');
+      // Remove standalone <script.../> or unclosed <script
+      clean = clean.replace(/<script[^>]*\/?>/gi, '');
+      // Remove on* event attributes (onclick, onload, onerror, etc.)
+      clean = clean.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+      // Remove javascript: / data: in attribute values
+      clean = clean.replace(/(?:href|xlink:href|src|action)\s*=\s*(?:"(?:javascript|data):[^"]*"|'(?:javascript|data):[^']*')/gi, '');
+      // Remove <foreignObject>, <iframe>, <embed>, <object> elements
+      clean = clean.replace(/<\/?(foreignObject|iframe|embed|object)[^>]*>/gi, '');
+      // Remove <set>, <animate*> that can trigger JS via attributeName="href" etc.
+      clean = clean.replace(/<\/?(set|animate\w*)[^>]*>/gi, '');
+
+      // Cap size at 10KB for an icon
+      if (clean.length > 10240) return undefined;
+
+      return { type: 'svg', value: clean };
+    }
+
+    return undefined;
   }
 
   private generateToken(): string {

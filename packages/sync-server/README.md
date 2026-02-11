@@ -69,17 +69,24 @@ await client.connect();
 {
   "type": "pair",
   "clientType": "web" | "figma",
-  "sessionToken": "beam://A1B2C3D4E5F6" // Only for Figma
+  "sessionToken": "beam://A1B2C3D4E5F6",
+  "icon": { "type": "unicode", "value": "🎨" }
 }
 ```
+
+The `sessionToken` field is only required for target clients (not `web`). The `icon` field is optional — web clients can provide it so design tool plugins can display the source app's branding.
 
 #### Pair Response (Server → Client)
 ```json
 {
   "type": "pair",
   "sessionToken": "beam://A1B2C3D4E5F6",
-  "clientType": "web" | "figma"
+  "clientType": "web" | "figma",
+  "icon": { "type": "unicode", "value": "🎨" }
 }
+```
+
+Target clients receive the web client's `origin` and `icon` (if provided) in the pair response.
 ```
 
 #### Sync Message (Client ↔ Server ↔ Client)
@@ -106,6 +113,7 @@ await client.connect();
 - **Reconnection handling**: Automatic reconnection with exponential backoff
 - **Health checks**: HTTP endpoint at `/health`
 - **Heartbeat ping**: Keeps connections alive
+- **App icons**: Source apps can provide a unicode or SVG icon, sanitized server-side (no scripts, event handlers, or dangerous unicode)
 - **Origin blocking**: Monitor and block commercial usage based on HTTP Origin header
 
 ## Commercial Use Monitoring
@@ -161,7 +169,9 @@ interface SyncClientOptions<T = unknown> {
   serverUrl: string;
   clientType: string; // e.g., 'web', 'figma', 'sketch', 'aseprite'
   sessionToken?: string; // Required for target clients (not 'web')
-  onPaired?: (token: string, origin?: string) => void;
+  origin?: string; // Display name for this client
+  icon?: SyncIcon; // Icon shown in paired plugins (unicode or SVG)
+  onPaired?: (token: string, origin?: string, icon?: SyncIcon) => void;
   onTargetConnected?: (clientType: string, origin?: string) => void;
   onSync?: (payload: T) => void; // Generic payload (e.g., TokenSyncPayload)
   onError?: (error: string) => void;

@@ -223,6 +223,7 @@ function initSync() {
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
     origin: '⊷ Token Beam Demo',
+    icon: { type: 'unicode', value: '⊷' },
     onPaired: (token) => {
       sessionToken = token;
       updateSyncStatus('ready', token);
@@ -242,6 +243,11 @@ function initSync() {
       updateSyncStatus('ready', sessionToken ?? undefined);
     },
     onError: (error) => {
+      // Non-fatal warnings (e.g. icon rejected) — log but don't break UI
+      if (error.startsWith('[warn]')) {
+        console.warn('[token-beam]', error.slice(7));
+        return;
+      }
       if (error.includes('client disconnected')) {
         isPaired = false;
         updateSyncStatus('ready', sessionToken ?? undefined);

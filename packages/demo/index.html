@@ -68,20 +68,23 @@
       margin: -1px;
     }
     .dts-widget__label {
+      position: relative;
       font-size: .65rem;
       font-weight: 200;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--c-surface-on);
       white-space: nowrap;
-      padding: .15em 1em 0;
+      padding: .15em 1.5em 0 3em;
       line-height: 1;
     }
     .dts-widget__label::before {
       content: '⊷';
-      font-size: 1.3em;
-      margin-right: 0.25em;
-      vertical-align: -0.05em;
+      font-size: 2em;
+      transform: translateY(-50%) rotate(45deg);
+      position: absolute;
+      top: 50%;
+      left: 0.5em;
     }
     .dts-widget__token {
       flex: 1;

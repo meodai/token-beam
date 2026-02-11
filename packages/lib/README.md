@@ -36,6 +36,7 @@ const syncClient = new SyncClient<TokenSyncPayload>({
   serverUrl: 'ws://localhost:8080',
   clientType: 'web',
   origin: 'My Design System',
+  icon: { type: 'unicode', value: '🎨' },
   onPaired: (token) => {
     console.log('Pairing token:', token);
   },
@@ -54,6 +55,20 @@ const payload = createCollection('colors', {
 
 syncClient.send(payload);
 ```
+
+### App Icon
+
+Source apps can provide an icon that gets displayed in the paired design tool plugin. Two formats are supported:
+
+```ts
+// Unicode character (emoji, symbol, etc.)
+icon: { type: 'unicode', value: '🎨' }
+
+// SVG string (max 10KB, sanitized server-side)
+icon: { type: 'svg', value: '<svg viewBox="0 0 24 24">...</svg>' }
+```
+
+The server sanitizes icons before relaying them to target clients. Invalid icons are rejected with a `[warn]` error message (non-fatal — the connection still proceeds).
 
 ## Widget Implementation
 
