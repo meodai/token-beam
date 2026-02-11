@@ -65,11 +65,13 @@ function showTemporaryMessage(message: string, duration: number = 3000) {
   errorEl.style.display = 'block';
   errorEl.classList.remove('dts-widget__error--error');
   errorEl.classList.add('dts-widget__error--info');
+  syncStatus.classList.add('dts-widget--message');
 
   messageTimer = window.setTimeout(() => {
     errorEl.style.display = 'none';
     errorEl.classList.remove('dts-widget__error--info');
     errorEl.textContent = '';
+    syncStatus.classList.remove('dts-widget--message');
     messageTimer = null;
   }, duration);
 }
@@ -118,7 +120,7 @@ async function init() {
           </div>
         </div>
       </div>
-      <div class="dts-widget__error" style="display: none;" data-dts="error"></div>
+      <div class="dts-widget__error" style="display: none;" data-dts="error" aria-live="polite" role="status"></div>
     </div>
 
     <div id="payload-section"></div>
@@ -280,7 +282,12 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
 
   if (!tokenEl || !errorEl || !unlinkBtn || !helpWrap || !helpBtn || !statusEl) return;
 
-  syncStatus.classList.remove('dts-widget--waiting', 'dts-widget--connected', 'dts-widget--error');
+  syncStatus.classList.remove(
+    'dts-widget--waiting',
+    'dts-widget--connected',
+    'dts-widget--error',
+    'dts-widget--message'
+  );
   statusEl.classList.remove('is-visible');
   statusEl.textContent = '';
 
@@ -341,6 +348,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
         errorEl.style.display = 'block';
         errorEl.classList.remove('dts-widget__error--info');
         errorEl.classList.add('dts-widget__error--error');
+        syncStatus.classList.add('dts-widget--message');
       } else {
         errorEl.style.display = 'none';
         errorEl.classList.remove('dts-widget__error--error', 'dts-widget__error--info');
