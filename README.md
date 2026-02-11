@@ -1,4 +1,4 @@
-# ↬ Token Beam
+# ⊷ Token Beam
 
 A tool-agnostic design token synchronization system aligned with the **W3C Design Tokens Community Group** specification.
 
@@ -164,7 +164,7 @@ The **`packages/aseprite-plugin`** package syncs color tokens to Aseprite palett
 
 3. **Use in Aseprite:**
    - Open or create a sprite
-   - Go to **File → Scripts → ↬ Token Beam**
+   - Go to **File → Scripts → ⊷ Token Beam**
    - Enter your session token
    - Click **Connect**
    - Colors sync to your palette automatically!

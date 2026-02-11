@@ -81,7 +81,7 @@ async function init() {
   app.innerHTML = `
     <div class="dts-widget dts-widget--waiting" data-dts="widget">
       <div class="dts-widget__row">
-        <h3 class="dts-widget__label">Token Sync</h3>
+        <h3 class="dts-widget__label">Token Beam</h3>
         <div class="dts-widget__token-wrap" data-dts="token-wrap">
           <button
             class="dts-widget__token"
@@ -117,7 +117,7 @@ async function init() {
           <button
             class="dts-widget__help-btn"
             type="button"
-            aria-label="About ↬ Token Sync"
+            aria-label="About ⊷ Token Beam"
             aria-expanded="false"
             data-dts="help-btn"
           >
@@ -222,7 +222,7 @@ function initSync() {
   syncClient = new SyncClient<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
-    origin: '↬ Token Beam Demo',
+    origin: '⊷ Token Beam Demo',
     onPaired: (token) => {
       sessionToken = token;
       updateSyncStatus('ready', token);

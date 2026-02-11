@@ -1,4 +1,4 @@
-# ↬ Token Beam Server
+# ⊷ Token Beam Server
 
 WebSocket server for real-time token synchronization between web and Figma.
 

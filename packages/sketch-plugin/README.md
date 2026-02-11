@@ -1,4 +1,4 @@
-# ↬ Token Beam - Sketch Plugin
+# ⊷ Token Beam - Sketch Plugin
 
 Sync design tokens from your web app to Sketch color swatches in real-time.
 
@@ -13,7 +13,7 @@ This will build and install the plugin to Sketch.
 ## Usage
 
 1. Open Sketch
-2. Go to **Plugins → ↬ Token Beam → ↬ Token Beam**
+2. Go to **Plugins → ⊷ Token Beam → ⊷ Token Beam**
 3. Enter your session token from the web demo (e.g., `beam://ABC123`)
 4. Click **Connect**
 5. Colors will sync automatically to your document's shared color swatches

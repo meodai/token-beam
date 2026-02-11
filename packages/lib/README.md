@@ -1,4 +1,4 @@
-# ↬ Token Beam (lib)
+# ⊷ Token Beam (lib)
 
 Core types and sync client for building design-token workflows.
 

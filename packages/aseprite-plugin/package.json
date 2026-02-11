@@ -1,6 +1,6 @@
 {
   "name": "token-beam",
-  "displayName": "Token Beam",
+  "displayName": "⊷ Token Beam",
   "description": "Sync design tokens (colors) to Aseprite palette",
   "version": "0.1.0",
   "author": { "name": "Token Beam" },
