@@ -237,11 +237,6 @@ dlg:label{
   text=statusText,
   label=""
 }
-dlg:separator{}
-dlg:label{
-  text="Server: " .. syncServerUrl,
-  label=""
-}
 dlg:button{ text="Close" }
 
 -- Show dialog

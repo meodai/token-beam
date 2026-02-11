@@ -25,6 +25,7 @@
     "format:check": "prettier --check \"packages/*/src/**/*.{ts,css}\" \"*.{json,md}\""
   },
   "devDependencies": {
+    "esbuild": "0.27.3",
     "prettier": "^3.8.1",
     "typescript": "^5.7.0"
   }
