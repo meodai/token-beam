@@ -112,6 +112,12 @@ local syncServerUrl = "ws://localhost:8080"
 
 Default is `ws://localhost:8080`.
 
+You can also set it during install:
+
+```bash
+SYNC_SERVER_URL="wss://your-server.example" npm run install:aseprite
+```
+
 ## Troubleshooting
 
 ### "No active sprite" error

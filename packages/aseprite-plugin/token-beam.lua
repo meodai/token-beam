@@ -241,3 +241,5 @@ dlg:button{ text="Close" }
 
 -- Show dialog
 dlg:show{ wait=false }
+local bounds = dlg.bounds
+dlg.bounds = Rectangle(bounds.x, bounds.y, math.max(bounds.width, 420), bounds.height)
