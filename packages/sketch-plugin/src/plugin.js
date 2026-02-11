@@ -61,7 +61,7 @@ function applySyncedColors(collections) {
   var document = context.document;
   
   if (!document) {
-    NSApplication.sharedApplication().displayDialog_withTitle('No document open', 'Token Sync');
+    NSApplication.sharedApplication().displayDialog_withTitle('No document open', 'Token Beam');
     return;
   }
 
