@@ -93,10 +93,10 @@ function handleWebSocketMessage(messageType, data)
     statusText = "Connected - pairing..."
     dlg:modify{ id="status", text=statusText }
     
-    -- Send pair message with token (use 'figma' as clientType since we join existing sessions)
+    -- Send pair message with token
     local pairMsg = json.encode({
       type = "pair",
-      clientType = "figma",
+      clientType = "aseprite",
       sessionToken = tokenValue
     })
     ws:sendText(pairMsg)
@@ -126,8 +126,23 @@ function handleWebSocketMessage(messageType, data)
       end
       
     elseif msg.type == "error" then
-      statusText = "Error: " .. (msg.error or "Unknown error")
-      dlg:modify{ id="status", text=statusText }
+      local err = msg.error or "Unknown error"
+
+      -- Non-fatal warnings — just update status, don't disconnect
+      if err:sub(1, 6) == "[warn]" then
+        statusText = err:sub(8)
+        dlg:modify{ id="status", text=statusText }
+      elseif err == "Invalid session token" then
+        statusText = "Session not found"
+        dlg:modify{ id="status", text=statusText }
+        app.alert("Session not found — check the token or start a new session from the web app")
+        if ws then ws:close() end
+        ws = nil
+        dlg:modify{ id="connectBtn", text="Connect" }
+      else
+        statusText = "Error: " .. err
+        dlg:modify{ id="status", text=statusText }
+      end
     end
     
   elseif messageType == WebSocketMessageType.CLOSE then
@@ -162,7 +177,16 @@ function onConnect()
     app.alert("Please enter a session token")
     return
   end
-  
+
+  -- Validate: strip beam:// prefix and check for hex chars only
+  local stripped = tokenValue:gsub("^beam://", "")
+  if not stripped:match("^[0-9a-fA-F]+$") then
+    statusText = "Invalid token format"
+    dlg:modify{ id="status", text=statusText }
+    app.alert("Invalid token format — paste the token from the web app")
+    return
+  end
+
   -- Normalize token
   if not tokenValue:match("^beam://") then
     tokenValue = "beam://" .. tokenValue:upper()

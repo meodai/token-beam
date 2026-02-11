@@ -15,7 +15,7 @@ tokenInput.addEventListener('input', () => {
 
 connectBtn.addEventListener('click', () => {
   if (isConnected) {
-    disconnect();
+    disconnect(true);
   } else {
     connect();
   }
@@ -24,6 +24,13 @@ connectBtn.addEventListener('click', () => {
 function connect() {
   const raw = tokenInput.value.trim();
   if (!raw) return;
+
+  // Validate: must be hex chars (with optional beam:// prefix)
+  const stripped = raw.replace(/^beam:\/\//i, '');
+  if (!/^[0-9a-f]+$/i.test(stripped)) {
+    showStatus('Invalid token format — paste the token from the web app', 'error');
+    return;
+  }
 
   // Normalize token
   sessionToken = raw.startsWith('beam://') ? raw : `beam://${raw.toUpperCase()}`;
@@ -71,16 +78,19 @@ function connect() {
   }
 }
 
-function disconnect() {
+function disconnect(clearStatus) {
   if (ws) {
     ws.close();
     ws = null;
   }
-  
+
   isConnected = false;
   connectBtn.textContent = 'Connect';
   connectBtn.disabled = false;
   tokenInput.disabled = false;
+  if (clearStatus) {
+    statusEl.className = 'status';
+  }
 }
 
 function handleMessage(message) {
@@ -120,7 +130,17 @@ function handleMessage(message) {
       break;
 
     case 'error':
-      showStatus(message.error || 'Unknown error', 'error');
+      // Non-fatal warnings — log but stay connected
+      if (message.error && message.error.startsWith('[warn]')) {
+        console.warn('[token-beam]', message.error.slice(7));
+        break;
+      }
+      if (message.error === 'Invalid session token') {
+        showStatus('Session not found — check the token or start a new session from the web app', 'error');
+      } else {
+        showStatus(message.error || 'Unknown error', 'error');
+      }
+      disconnect();
       break;
 
     case 'ping':
