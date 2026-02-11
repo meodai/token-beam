@@ -19,6 +19,7 @@ node_modules/token-beam/example-widget.html
 ```
 
 Open it in your browser to see a fully functional sync widget with demo controls. The file includes:
+
 - Complete HTML markup
 - All necessary CSS styling
 - Interactive JavaScript demo
@@ -84,6 +85,7 @@ The server sanitizes icons before relaying them to target clients. Invalid icons
 For a complete, production-ready widget implementation, see the included **[`example-widget.html`](./example-widget.html)** file.
 
 This standalone HTML file includes:
+
 - ✨ Full widget UI with all states (waiting, connected, error)
 - 🎨 Complete CSS styling
 - ⚡ Interactive demo with live color syncing
@@ -91,6 +93,7 @@ This standalone HTML file includes:
 - 🔧 Working JavaScript examples
 
 **Quick start:**
+
 ```bash
 # After installation, open in your browser:
 open node_modules/token-beam/example-widget.html
