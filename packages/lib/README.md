@@ -33,7 +33,7 @@ import { SyncClient, createCollection } from 'token-beam';
 import type { TokenSyncPayload } from 'token-beam';
 
 const syncClient = new SyncClient<TokenSyncPayload>({
-  serverUrl: 'ws://localhost:8080',
+  serverUrl: location.hostname === 'localhost' ? 'ws://localhost:8080' : `wss://${location.host}`,
   clientType: 'web',
   origin: 'My Design System',
   icon: { type: 'unicode', value: '🎨' },
@@ -53,7 +53,7 @@ const payload = createCollection('colors', {
   secondary: '#6b7280',
 });
 
-syncClient.send(payload);
+syncClient.sync(payload);
 ```
 
 ### App Icon

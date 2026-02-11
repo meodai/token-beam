@@ -359,17 +359,28 @@
   <pre><code>import { SyncClient, pluginLinks, createCollection } from 'token-beam';
 import type { TokenSyncPayload } from 'token-beam';
 
-const SYNC_SERVER_URL = 'ws://localhost:8080';
+function getSyncServerUrl() {
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    return 'ws://localhost:8080';
+  }
+  return `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}`;
+}
+
+const SYNC_SERVER_URL = getSyncServerUrl();
 
 let syncClient: SyncClient&lt;TokenSyncPayload&gt; | null = null;
 let sessionToken: string | null = null;
 
-// Initialize the sync client
 function initSync() {
+  if (syncClient) {
+    syncClient.disconnect();
+  }
+
   syncClient = new SyncClient&lt;TokenSyncPayload&gt;({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
-    origin: 'My Design System',
+    origin: 'Token Beam Widget',
+    icon: { type: 'unicode', value: '⊷' },
     onPaired: (token) => {
       sessionToken = token;
       updateWidgetStatus('ready', token);
@@ -381,6 +392,10 @@ function initSync() {
       updateWidgetStatus('disconnected');
     },
     onError: (error) => {
+      if (error.includes('client disconnected')) {
+        updateWidgetStatus('ready', sessionToken ?? undefined);
+        return;
+      }
       updateWidgetStatus('error', undefined, error);
     },
   });
@@ -388,15 +403,14 @@ function initSync() {
   syncClient.connect();
 }
 
-// Sync tokens to design tools
 function syncTokens(color: string) {
   if (!syncClient) return;
-  
+
   const payload = createCollection('colors', {
     primary: color,
   });
-  
-  syncClient.send(payload);
+
+  syncClient.sync(payload);
 }
 
 initSync();</code></pre>
@@ -547,7 +561,7 @@ initSync();</code></pre>
       updateWidgetStatus('syncing', sessionToken);
       
       console.log('Syncing color:', colorInput.value);
-      // In real app: syncClient.send(createCollection('colors', { primary: colorInput.value }));
+      // In real app: syncClient.sync(createCollection('colors', { primary: colorInput.value }));
       
       setTimeout(() => {
         alert(`Color ${colorInput.value} synced to design tool!`);
