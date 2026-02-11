@@ -17,6 +17,7 @@ local tokenValue = ""
 local ws = nil
 local statusText = "Disconnected"
 local syncServerUrl = "ws://localhost:8080"
+local generation = 0
 
 -- Convert hex color to Aseprite Color
 function hexToColor(hex)
@@ -88,93 +89,94 @@ function applyColorsToPalette(colors)
 end
 
 -- WebSocket message handler
-function handleWebSocketMessage(messageType, data)
-  if messageType == WebSocketMessageType.OPEN then
-    if not ws then return end
-    statusText = "Connected - pairing..."
-    dlg:modify{ id="status", text=statusText }
+function createMessageHandler(gen)
+  return function(messageType, data)
+    -- Ignore callbacks from stale connections
+    if gen ~= generation then return end
 
-    -- Send pair message with token
-    local pairMsg = json.encode({
-      type = "pair",
-      clientType = "aseprite",
-      sessionToken = tokenValue
-    })
-    ws:sendText(pairMsg)
-
-  elseif messageType == WebSocketMessageType.TEXT then
-    if not ws then return end
-    -- Parse message
-    local msg = json.decode(data)
-    
-    if msg.type == "pair" then
-      local origin = msg.origin or "unknown"
-      statusText = "Paired with " .. origin .. " - waiting for data..."
+    if messageType == WebSocketMessageType.OPEN then
+      if not ws then return end
+      statusText = "Connected - pairing..."
       dlg:modify{ id="status", text=statusText }
-      
-    elseif msg.type == "sync" then
-      statusText = "Receiving colors..."
-      dlg:modify{ id="status", text=statusText }
-      
-      local colors = extractColors(msg.payload)
-      
-      if #colors > 0 then
-        local count = applyColorsToPalette(colors)
-        statusText = "Applied " .. count .. " colors"
-        dlg:modify{ id="status", text=statusText }
-      else
-        statusText = "No colors found in payload"
-        dlg:modify{ id="status", text=statusText }
-      end
-      
-    elseif msg.type == "error" then
-      local err = msg.error or "Unknown error"
 
-      -- Non-fatal warnings — just update status, don't disconnect
-      if err:sub(1, 6) == "[warn]" then
-        statusText = err:sub(8)
+      -- Send pair message with token
+      local pairMsg = json.encode({
+        type = "pair",
+        clientType = "aseprite",
+        sessionToken = tokenValue
+      })
+      ws:sendText(pairMsg)
+
+    elseif messageType == WebSocketMessageType.TEXT then
+      if not ws then return end
+      -- Parse message
+      local msg = json.decode(data)
+
+      if msg.type == "pair" then
+        local origin = msg.origin or "unknown"
+        statusText = "Paired with " .. origin .. " - waiting for data..."
         dlg:modify{ id="status", text=statusText }
-      elseif err == "Invalid session token" then
-        statusText = "Session not found"
+
+      elseif msg.type == "sync" then
+        statusText = "Receiving colors..."
         dlg:modify{ id="status", text=statusText }
-        app.alert("Session not found — check the token or start a new session from the web app")
-        if ws then ws:close() end
-        ws = nil
-        dlg:modify{ id="connectBtn", text="Connect" }
-      else
-        statusText = "Error: " .. err
-        dlg:modify{ id="status", text=statusText }
+
+        local colors = extractColors(msg.payload)
+
+        if #colors > 0 then
+          local count = applyColorsToPalette(colors)
+          statusText = "Applied " .. count .. " colors"
+          dlg:modify{ id="status", text=statusText }
+        else
+          statusText = "No colors found in payload"
+          dlg:modify{ id="status", text=statusText }
+        end
+
+      elseif msg.type == "error" then
+        local err = msg.error or "Unknown error"
+
+        -- Non-fatal warnings — just update status, don't disconnect
+        if err:sub(1, 6) == "[warn]" then
+          statusText = err:sub(8)
+          dlg:modify{ id="status", text=statusText }
+        elseif err == "Invalid session token" then
+          statusText = "Session not found"
+          dlg:modify{ id="status", text=statusText }
+          app.alert("Session not found — check the token or start a new session from the web app")
+          if ws then ws:close() end
+          ws = nil
+          dlg:modify{ id="connectBtn", text="Connect" }
+        else
+          statusText = "Error: " .. err
+          dlg:modify{ id="status", text=statusText }
+        end
       end
+
+    elseif messageType == WebSocketMessageType.CLOSE then
+      -- Only update UI if this is still the active connection
+      if gen ~= generation then return end
+      statusText = "Disconnected"
+      dlg:modify{ id="status", text="Disconnected" }
+      dlg:modify{ id="connectBtn", text="Connect" }
+      ws = nil
     end
-    
-  elseif messageType == WebSocketMessageType.CLOSE then
-    statusText = "Disconnected"
-    dlg:modify{ 
-      id="status", 
-      text=statusText,
-      id="connectBtn",
-      text="Connect"
-    }
-    ws = nil
   end
 end
 
 -- Connect button handler
 function onConnect()
   if ws then
-    -- Disconnect
-    ws:close()
+    -- Disconnect: bump generation so old callbacks are ignored
+    generation = generation + 1
+    local oldWs = ws
     ws = nil
+    oldWs:close()
     statusText = "Disconnected"
-    dlg:modify{ 
-      id="status", 
-      text=statusText,
-      id="connectBtn",
-      text="Connect"
-    }
+    dlg:modify{ id="status", text="Disconnected" }
+    dlg:modify{ id="connectBtn", text="Connect" }
     return
   end
-  
+
   if tokenValue == "" then
     app.alert("Please enter a session token")
     return
@@ -193,28 +195,24 @@ function onConnect()
   if not tokenValue:match("^beam://") then
     tokenValue = "beam://" .. tokenValue:upper()
   end
-  
+
+  -- Bump generation for the new connection
+  generation = generation + 1
+
   -- Create WebSocket connection
   statusText = "Connecting..."
-  dlg:modify{ 
-    id="status", 
-    text=statusText,
-    id="connectBtn",
-    text="Connecting..."
-  }
-  
+  dlg:modify{ id="status", text="Connecting..." }
+  dlg:modify{ id="connectBtn", text="Connecting..." }
+
   ws = WebSocket{
     url = syncServerUrl,
-    onreceive = handleWebSocketMessage,
+    onreceive = createMessageHandler(generation),
     deflate = false
   }
-  
+
   ws:connect()
-  
-  dlg:modify{ 
-    id="connectBtn",
-    text="Disconnect"
-  }
+
+  dlg:modify{ id="connectBtn", text="Disconnect" }
 end
 
 -- Build dialog
@@ -242,4 +240,4 @@ dlg:button{ text="Close" }
 -- Show dialog
 dlg:show{ wait=false }
 local bounds = dlg.bounds
-dlg.bounds = Rectangle(bounds.x, bounds.y, math.max(bounds.width, 420), bounds.height)
+dlg.bounds = Rectangle(bounds.x, bounds.y, math.max(bounds.width, 320), bounds.height)
