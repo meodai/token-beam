@@ -35,6 +35,7 @@ let syncClient: SyncClient<TokenSyncPayload> | null = null;
 let currentPayload: TokenSyncPayload | null = null;
 let sessionToken: string | null = null;
 let isPaired = false;
+const connectedTargets = new Set<string>();
 let copyStatusTimer: number | null = null;
 let messageTimer: number | null = null;
 
@@ -208,6 +209,9 @@ function initSync() {
     syncClient.disconnect();
   }
 
+  connectedTargets.clear();
+  isPaired = false;
+
   syncClient = new SyncClient<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
@@ -217,8 +221,9 @@ function initSync() {
       sessionToken = token;
       updateSyncStatus('ready', token);
     },
-    onTargetConnected: () => {
-      isPaired = true;
+    onTargetConnected: (clientType) => {
+      connectedTargets.add(clientType);
+      isPaired = connectedTargets.size > 0;
       updateSyncStatus('syncing');
       if (currentPayload) {
         syncClient?.sync(currentPayload);
@@ -228,6 +233,7 @@ function initSync() {
       updateSyncStatus('connecting');
     },
     onDisconnected: () => {
+      connectedTargets.clear();
       isPaired = false;
       updateSyncStatus('ready', sessionToken ?? undefined);
     },
@@ -238,10 +244,11 @@ function initSync() {
         return;
       }
       if (error.includes('client disconnected')) {
-        isPaired = false;
-        updateSyncStatus('ready', sessionToken ?? undefined);
         // Extract client type from message like "figma client disconnected"
         const clientType = error.split(' ')[0];
+        connectedTargets.delete(clientType);
+        isPaired = connectedTargets.size > 0;
+        updateSyncStatus(isPaired ? 'syncing' : 'ready', sessionToken ?? undefined);
         const capitalizedType = clientType.charAt(0).toUpperCase() + clientType.slice(1);
         showTemporaryMessage(`${capitalizedType} disconnected`);
         return;
@@ -255,12 +262,14 @@ function initSync() {
 
   syncClient.connect().catch((error: unknown) => {
     console.error('Failed to connect to sync server:', error);
-    updateSyncStatus('error', undefined, 'Could not connect to sync server');
+    updateSyncStatus('ready', sessionToken ?? undefined);
+    showTemporaryMessage('Sync sever offline');
   });
 }
 
 function unlink() {
   isPaired = false;
+  connectedTargets.clear();
   if (syncClient) {
     syncClient.disconnect();
     syncClient = null;

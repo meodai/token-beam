@@ -323,15 +323,20 @@ export class TokenSyncServer {
     if (!session) return;
 
     if (ws === session.webClient) {
-      // Web client disconnected - clean up session
+      // Web client disconnected - keep session until all targets disconnect
+      session.webClient = undefined;
       for (const target of session.targetClients) {
         if (target.ws.readyState === WebSocket.OPEN) {
           this.sendError(target.ws, 'Web client disconnected');
-          target.ws.close();
         }
       }
-      this.sessions.delete(session.id);
-      console.log(`Session ${session.token} ended (web disconnect)`);
+
+      if (session.targetClients.length === 0) {
+        this.sessions.delete(session.id);
+        console.log(`Session ${session.token} ended (web disconnect)`);
+      } else {
+        console.log(`Web client disconnected from session ${session.token}`);
+      }
     } else {
       // Target client disconnected - remove from array
       const disconnectedTarget = session.targetClients.find(t => t.ws === ws);
@@ -343,7 +348,12 @@ export class TokenSyncServer {
           error: `${disconnectedTarget.type} client disconnected`,
         });
       }
-      console.log(`${disconnectedTarget?.type || 'Target'} client disconnected from session ${session.token}`);
+      if (!session.webClient && session.targetClients.length === 0) {
+        this.sessions.delete(session.id);
+        console.log(`Session ${session.token} ended (last target disconnect)`);
+      } else {
+        console.log(`${disconnectedTarget?.type || 'Target'} client disconnected from session ${session.token}`);
+      }
     }
   }
 
