@@ -37,10 +37,16 @@ function getElement<T extends HTMLElement>(id: string): T {
 const tokenInput = getElement<HTMLInputElement>('token-input');
 const connectBtn = getElement<HTMLButtonElement>('connect-btn');
 const syncStatusEl = getElement<HTMLDivElement>('sync-status');
+const syncStatusTextEl = getElement<HTMLSpanElement>('sync-status-text');
 const resultEl = getElement<HTMLDivElement>('result');
+const resultTextEl = getElement<HTMLSpanElement>('result-text');
+const resultTimeEl = getElement<HTMLSpanElement>('result-time');
 
 let syncClient: SyncClient<TokenSyncPayload> | null = null;
 let pairedOrigin: string | null = null;
+let lastResultAt: number | null = null;
+let resultTimer: number | null = null;
+const resultRtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
 
 // --- Enable connect button when token has content ---
 
@@ -72,15 +78,56 @@ window.onmessage = (event: MessageEvent) => {
 // --- Sync status UI ---
 
 function updateSyncStatus(text: string, state: SyncStatusState) {
+  if (!text) {
+    syncStatusEl.classList.add('plugin__hidden');
+    syncStatusTextEl.textContent = '';
+    return;
+  }
+
   syncStatusEl.classList.remove('plugin__hidden');
-  syncStatusEl.textContent = text;
+  syncStatusTextEl.textContent = text;
   syncStatusEl.className = `plugin__status plugin__status--${state}`;
 }
 
 function showResult(text: string, isSuccess: boolean) {
   resultEl.classList.remove('plugin__hidden', 'plugin__result--success', 'plugin__result--error');
   resultEl.classList.add('plugin__result', isSuccess ? 'plugin__result--success' : 'plugin__result--error');
-  resultEl.textContent = text;
+  resultTextEl.textContent = text;
+  lastResultAt = Date.now();
+  resultTimeEl.textContent = formatRelativeResultTime(lastResultAt);
+  ensureResultTimer();
+}
+
+function clearResultTime() {
+  lastResultAt = null;
+  resultTimeEl.textContent = '';
+  resultTextEl.textContent = '';
+}
+
+function formatRelativeResultTime(timestamp: number): string {
+  const diffSeconds = Math.max(0, Math.round((Date.now() - timestamp) / 1000));
+  if (diffSeconds < 5) return 'just now';
+  if (diffSeconds < 60) return resultRtf.format(-diffSeconds, 'second');
+
+  const diffMinutes = Math.round(diffSeconds / 60);
+  if (diffMinutes < 60) return resultRtf.format(-diffMinutes, 'minute');
+
+  const diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) return resultRtf.format(-diffHours, 'hour');
+
+  const diffDays = Math.round(diffHours / 24);
+  return resultRtf.format(-diffDays, 'day');
+}
+
+function updateResultTime() {
+  if (!lastResultAt) return;
+  if (resultEl.classList.contains('plugin__hidden')) return;
+  resultTimeEl.textContent = formatRelativeResultTime(lastResultAt);
+}
+
+function ensureResultTimer() {
+  if (resultTimer) return;
+  resultTimer = window.setInterval(updateResultTime, 10000);
 }
 
 // --- Transform & forward to Figma sandbox ---
@@ -118,6 +165,7 @@ connectBtn.addEventListener('click', () => {
   const token = raw.startsWith('beam://') ? raw : `beam://${raw.toUpperCase()}`;
 
   resultEl.classList.add('plugin__hidden');
+  clearResultTime();
   updateSyncStatus('Connecting...', 'connecting');
   lockUI();
 
@@ -188,6 +236,10 @@ function unlockUI(clearResult = false) {
   connectBtn.textContent = 'Connect & Sync';
   pairedOrigin = null;
   syncStatusEl.classList.add('plugin__hidden');
+  syncStatusTextEl.textContent = '';
+  if (clearResult) {
+    clearResultTime();
+  }
   if (clearResult) {
     tokenInput.value = '';
     resultEl.classList.add('plugin__hidden');

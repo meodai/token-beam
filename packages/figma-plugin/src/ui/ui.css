@@ -120,6 +120,9 @@
   border: 1px solid;
   letter-spacing: 0.04em;
 }
+.plugin__status-text {
+  display: inline-block;
+}
 
 .plugin__status::before {
   content: '';
@@ -173,12 +176,27 @@
 
 .plugin__result {
   margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   text-align: center;
   padding: 6px 10px;
+}
+
+.plugin__result-text {
+  flex: 1;
+  text-align: left;
+}
+
+.plugin__result-time {
+  font-size: 0.55rem;
+  opacity: 0.7;
+  white-space: nowrap;
 }
 
 .plugin__result--success {

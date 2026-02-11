@@ -83,7 +83,10 @@
     }
     
     .status.visible {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
     
     .status.connecting {
@@ -100,6 +103,32 @@
       background: #f8d7da;
       color: #721c24;
     }
+
+    .result {
+      font-size: 11px;
+      padding: 8px;
+      border-radius: 4px;
+      display: none;
+      background: #e7f3ff;
+      color: #0b4f9c;
+    }
+
+    .result.visible {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .result__text {
+      flex: 1;
+    }
+
+    .result__time {
+      font-size: 10px;
+      opacity: 0.7;
+      white-space: nowrap;
+    }
     
     .button-group {
       display: flex;
@@ -115,6 +144,11 @@
     </div>
     
     <div class="status" id="status"></div>
+
+    <div class="result" id="result">
+      <span class="result__text" id="result-text"></span>
+      <span class="result__time" id="result-time"></span>
+    </div>
     
     <div class="button-group">
       <button class="primary" id="connect-btn" disabled>Connect</button>

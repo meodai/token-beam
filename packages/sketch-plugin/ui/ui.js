@@ -3,10 +3,16 @@ const SYNC_SERVER_URL = 'ws://localhost:8080';
 const tokenInput = document.getElementById('token-input');
 const connectBtn = document.getElementById('connect-btn');
 const statusEl = document.getElementById('status');
+const resultEl = document.getElementById('result');
+const resultTextEl = document.getElementById('result-text');
+const resultTimeEl = document.getElementById('result-time');
 
 let ws = null;
 let isConnected = false;
 let sessionToken = null;
+let lastResultAt = null;
+let resultTimer = null;
+const resultRtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
 
 // Enable/disable connect button based on token input
 tokenInput.addEventListener('input', () => {
@@ -90,6 +96,10 @@ function disconnect(clearStatus) {
   tokenInput.disabled = false;
   if (clearStatus) {
     statusEl.className = 'status';
+    if (resultEl) resultEl.className = 'result';
+    if (resultTextEl) resultTextEl.textContent = '';
+    if (resultTimeEl) resultTimeEl.textContent = '';
+    lastResultAt = null;
   }
 }
 
@@ -122,6 +132,9 @@ function handleMessage(message) {
             data: collections
           });
         }
+
+        const collectionName = collections[0]?.name || 'Unknown';
+        showResult(`Updated collection: ${collectionName}`);
         
         setTimeout(() => {
           showStatus('Paired with ' + (message.origin || 'web'), 'connected');
@@ -164,8 +177,43 @@ function transformPayload(payload) {
 }
 
 function showStatus(text, state) {
-  statusEl.textContent = text;
   statusEl.className = `status visible ${state}`;
+  statusEl.textContent = text;
+}
+
+function showResult(text) {
+  if (!resultEl || !resultTextEl || !resultTimeEl) return;
+  resultTextEl.textContent = text;
+  resultEl.className = 'result visible';
+  lastResultAt = Date.now();
+  resultTimeEl.textContent = formatRelativeResultTime(lastResultAt);
+  ensureResultTimer();
+}
+
+function formatRelativeResultTime(timestamp) {
+  const diffSeconds = Math.max(0, Math.round((Date.now() - timestamp) / 1000));
+  if (diffSeconds < 5) return 'just now';
+  if (diffSeconds < 60) return resultRtf.format(-diffSeconds, 'second');
+
+  const diffMinutes = Math.round(diffSeconds / 60);
+  if (diffMinutes < 60) return resultRtf.format(-diffMinutes, 'minute');
+
+  const diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) return resultRtf.format(-diffHours, 'hour');
+
+  const diffDays = Math.round(diffHours / 24);
+  return resultRtf.format(-diffDays, 'day');
+}
+
+function updateResultTime() {
+  if (!lastResultAt || !resultTimeEl) return;
+  if (!resultEl.classList.contains('visible')) return;
+  resultTimeEl.textContent = formatRelativeResultTime(lastResultAt);
+}
+
+function ensureResultTimer() {
+  if (resultTimer) return;
+  resultTimer = window.setInterval(updateResultTime, 10000);
 }
 
 // Initial state
