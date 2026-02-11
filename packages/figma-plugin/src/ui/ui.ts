@@ -100,12 +100,19 @@ connectBtn.addEventListener('click', () => {
   if (syncClient) {
     syncClient.disconnect();
     syncClient = null;
-    unlockUI();
+    unlockUI(true);
     return;
   }
 
   const raw = tokenInput.value.trim();
   if (!raw) return;
+
+  // Validate: must be hex chars (with optional beam:// prefix)
+  const stripped = raw.replace(/^beam:\/\//i, '');
+  if (!/^[0-9a-f]+$/i.test(stripped)) {
+    showResult('Invalid token format — paste the token from the web app', false);
+    return;
+  }
 
   // Normalise: accept "beam://ABC123", "ABC123", or "beam://abc123"
   const token = raw.startsWith('beam://') ? raw : `beam://${raw.toUpperCase()}`;
@@ -143,11 +150,20 @@ connectBtn.addEventListener('click', () => {
         return;
       }
       console.warn('[token-beam]', error);
+
+      // Show user-friendly messages for known errors
+      if (error === 'Invalid session token') {
+        showResult('Session not found — check the token or start a new session from the web app', false);
+      } else {
+        showResult(error, false);
+      }
+      updateSyncStatus('', 'error');
       unlockUI();
       syncClient = null;
     },
     onDisconnected: () => {
       console.warn('[token-beam] disconnected');
+      updateSyncStatus('Disconnected', 'disconnected');
       unlockUI();
       syncClient = null;
     },
@@ -155,6 +171,7 @@ connectBtn.addEventListener('click', () => {
 
   syncClient.connect().catch((err: unknown) => {
     console.warn('[token-beam] connection failed', err);
+    showResult('Could not connect to sync server', false);
     unlockUI();
     syncClient = null;
   });
@@ -165,12 +182,14 @@ function lockUI() {
   connectBtn.disabled = true;
 }
 
-function unlockUI() {
+function unlockUI(clearResult = false) {
   tokenInput.disabled = false;
-  tokenInput.value = '';
   updateConnectEnabled();
   connectBtn.textContent = 'Connect & Sync';
   pairedOrigin = null;
   syncStatusEl.classList.add('plugin__hidden');
-  resultEl.classList.add('plugin__hidden');
+  if (clearResult) {
+    tokenInput.value = '';
+    resultEl.classList.add('plugin__hidden');
+  }
 }
