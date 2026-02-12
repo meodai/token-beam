@@ -10,6 +10,10 @@
     "packages/lib",
     "packages/figma-plugin",
     "packages/demo",
+    "packages/aseprite-plugin",
+    "packages/sketch-plugin",
+    "packages/krita-plugin",
+    "packages/adobe-xd-plugin",
     "packages/sync-server",
     "packages/marketing",
     "packages/mcp-server"
@@ -27,6 +31,12 @@
     "start:server": "npm run start -w packages/sync-server",
     "install:aseprite": "npm run install:aseprite -w packages/aseprite-plugin",
     "uninstall:aseprite": "npm run uninstall:aseprite -w packages/aseprite-plugin",
+    "install:sketch": "npm run install:sketch -w packages/sketch-plugin",
+    "uninstall:sketch": "npm run uninstall:sketch -w packages/sketch-plugin",
+    "install:krita": "npm run install:krita -w packages/krita-plugin",
+    "uninstall:krita": "npm run uninstall:krita -w packages/krita-plugin",
+    "install:adobe-xd": "npm run install:adobe-xd -w packages/adobe-xd-plugin",
+    "uninstall:adobe-xd": "npm run uninstall:adobe-xd -w packages/adobe-xd-plugin",
     "format": "prettier --write \"packages/*/src/**/*.{ts,css}\" \"*.{json,md}\"",
     "format:check": "prettier --check \"packages/*/src/**/*.{ts,css}\" \"*.{json,md}\""
   },

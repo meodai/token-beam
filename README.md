@@ -301,6 +301,15 @@ npm run dev:figma
 # Install Aseprite extension (macOS)
 npm run install:aseprite
 
+# Install Sketch plugin (macOS)
+npm run install:sketch
+
+# Install Krita plugin
+npm run install:krita
+
+# Install Adobe XD plugin (symlink for development)
+npm run install:adobe-xd
+
 # Run sync server
 npm run start:server
 ```
