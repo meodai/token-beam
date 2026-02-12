@@ -38,6 +38,12 @@ TokenBeamColor.__annotations__ = {
 }
 
 
+def _srgb_to_linear(channel):
+    if channel <= 0.04045:
+        return channel / 12.92
+    return ((channel + 0.055) / 1.055) ** 2.4
+
+
 def _hex_to_rgba(hex_value):
     value = hex_value.strip().lstrip("#")
     if len(value) == 3:
@@ -47,11 +53,16 @@ def _hex_to_rgba(hex_value):
     if len(value) != 8:
         raise ValueError("Invalid hex color")
 
-    red = int(value[0:2], 16) / 255.0
-    green = int(value[2:4], 16) / 255.0
-    blue = int(value[4:6], 16) / 255.0
+    red_srgb = int(value[0:2], 16) / 255.0
+    green_srgb = int(value[2:4], 16) / 255.0
+    blue_srgb = int(value[4:6], 16) / 255.0
     alpha = int(value[6:8], 16) / 255.0
-    return (red, green, blue, alpha)
+    return (
+        _srgb_to_linear(red_srgb),
+        _srgb_to_linear(green_srgb),
+        _srgb_to_linear(blue_srgb),
+        alpha,
+    )
 
 
 def _normalize_token(raw):
@@ -266,11 +277,13 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
         if len(scene.token_beam_colors) == 0:
             box.label(text="No colors synced")
         else:
-            for item in scene.token_beam_colors:
+            for index, item in enumerate(scene.token_beam_colors):
                 row = box.row(align=True)
                 swatch = row.row(align=True)
                 swatch.prop(item, "value", text="")
                 row.label(text=item.token_name)
+                apply_op = row.operator("token_beam.apply_color", text="Apply")
+                apply_op.color_index = index
 
 
 class TOKENBEAM_OT_clear_colors(bpy.types.Operator):
@@ -279,6 +292,50 @@ class TOKENBEAM_OT_clear_colors(bpy.types.Operator):
 
     def execute(self, context):
         context.scene.token_beam_colors.clear()
+        return {"FINISHED"}
+
+
+class TOKENBEAM_OT_apply_color(bpy.types.Operator):
+    bl_idname = "token_beam.apply_color"
+    bl_label = "Apply Color"
+
+    color_index: bpy.props.IntProperty(default=-1)
+
+    def execute(self, context):
+        scene = context.scene
+        if self.color_index < 0 or self.color_index >= len(scene.token_beam_colors):
+            return {"CANCELLED"}
+
+        active_obj = context.active_object
+        if active_obj is None:
+            self.report({"WARNING"}, "No active object")
+            return {"CANCELLED"}
+
+        if active_obj.type != "MESH":
+            self.report({"WARNING"}, "Active object must be a mesh")
+            return {"CANCELLED"}
+
+        color_item = scene.token_beam_colors[self.color_index]
+
+        material = active_obj.active_material
+        if material is None:
+            material = bpy.data.materials.new(name="Token Beam Material")
+            active_obj.active_material = material
+
+        material.use_nodes = True
+        principled = None
+        if material.node_tree:
+            for node in material.node_tree.nodes:
+                if node.type == "BSDF_PRINCIPLED":
+                    principled = node
+                    break
+
+        if principled is None:
+            self.report({"WARNING"}, "No Principled BSDF node found")
+            return {"CANCELLED"}
+
+        principled.inputs["Base Color"].default_value = color_item.value
+        self.report({"INFO"}, f"Applied {color_item.token_name}")
         return {"FINISHED"}
 
 
@@ -325,6 +382,7 @@ classes = (
     TOKENBEAM_OT_connect,
     TOKENBEAM_OT_disconnect,
     TOKENBEAM_OT_clear_colors,
+    TOKENBEAM_OT_apply_color,
     TOKENBEAM_PT_panel,
 )
 
