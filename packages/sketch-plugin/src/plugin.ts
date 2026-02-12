@@ -4,6 +4,39 @@ var UI = sketch.UI;
 
 var browserWindow = null;
 
+function resolveUiHtmlPath(context) {
+  try {
+    if (context && context.plugin && context.plugin.urlForResourceNamed) {
+      var resourceUrl = context.plugin.urlForResourceNamed('ui/index.html');
+      if (resourceUrl && resourceUrl.path) {
+        return String(resourceUrl.path());
+      }
+    }
+  } catch (_err) {}
+
+  try {
+    if (context && context.plugin && context.plugin.url) {
+      var pluginRoot = String(context.plugin.url().path());
+      return pluginRoot + '/Contents/Resources/ui/index.html';
+    }
+  } catch (_err) {}
+
+  try {
+    if (context && context.scriptURL && context.scriptURL.path) {
+      var scriptPath = String(context.scriptURL.path());
+      var sketchDir = scriptPath.replace(/\/[^/]+$/, '');
+      return sketchDir + '/../Resources/ui/index.html';
+    }
+  } catch (_err) {}
+
+  if (context && context.scriptPath) {
+    var sketchDirFromScriptPath = String(context.scriptPath).replace(/\/[^/]+$/, '');
+    return sketchDirFromScriptPath + '/../Resources/ui/index.html';
+  }
+
+  throw new Error('Could not resolve plugin UI resource path');
+}
+
 function openTokenBeam(context) {
   if (browserWindow) {
     browserWindow.show();
@@ -14,7 +47,7 @@ function openTokenBeam(context) {
     identifier: 'com.tokenbeam.sketch.panel',
     width: 400,
     height: 600,
-    show: false,
+    show: true,
     title: '⊷ Token Beam',
     resizable: true,
     alwaysOnTop: true,
@@ -39,13 +72,17 @@ function openTokenBeam(context) {
     browserWindow = null;
   });
 
-  // Get the plugin bundle path using context.plugin
-  var plugin = context.plugin;
-  var pluginFolderPath = plugin.url().path();
-  var htmlPath = pluginFolderPath + '/Contents/Resources/ui/index.html';
-
-  browserWindow.loadURL('file://' + htmlPath);
-  browserWindow.show();
+  try {
+    var htmlPath = resolveUiHtmlPath(context);
+    browserWindow.loadURL('file://' + htmlPath);
+  } catch (err) {
+    UI.message('Token Beam: Failed to open window');
+    console.error('Token Beam: UI load error', err);
+    if (browserWindow) {
+      browserWindow.close();
+      browserWindow = null;
+    }
+  }
 }
 
 function applySyncedColors(collections) {

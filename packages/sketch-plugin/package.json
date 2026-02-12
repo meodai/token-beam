@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "mkdir -p 'Token Beam.sketchplugin/Contents/Sketch' && mkdir -p 'Token Beam.sketchplugin/Contents/Resources/ui' && cp manifest.json 'Token Beam.sketchplugin/Contents/Sketch/' && cp ui/index.html 'Token Beam.sketchplugin/Contents/Resources/ui/' && esbuild src/plugin.ts --bundle --format=cjs --platform=node --target=es2018 --tree-shaking=false --external:sketch --outfile='Token Beam.sketchplugin/Contents/Sketch/plugin.js' && esbuild ui/ui.ts --platform=browser --target=es2018 --tree-shaking=false --outfile='Token Beam.sketchplugin/Contents/Resources/ui/ui.js'",
-    "install:sketch": "npm run build && cp -r 'Token Beam.sketchplugin' ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/",
+    "install:sketch": "npm run build && rm -rf ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/'Token Beam.sketchplugin' && cp -r 'Token Beam.sketchplugin' ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/",
     "uninstall:sketch": "rm -rf ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/'Token Beam.sketchplugin'"
   },
   "dependencies": {

@@ -11,7 +11,9 @@
       "name": "Token Beam",
       "identifier": "token-beam",
       "script": "plugin.js",
-      "handler": "openTokenBeam"
+      "handlers": {
+        "run": "openTokenBeam"
+      }
     }
   ],
   "menu": {
