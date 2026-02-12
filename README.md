@@ -2,17 +2,16 @@
 
 A tool-agnostic design token synchronization system aligned with the **W3C Design Tokens Community Group** specification.
 
-## Specification Compliance
+## Specification Alignment
 
-This project implements the [W3C Design Tokens Format Module 2025.10](https://www.designtokens.org/tr/2025.10/format/) specification (Final Community Group Report, 28 October 2025).
+This project is aligned with the [W3C Design Tokens Format Module 2025.10](https://www.designtokens.org/tr/2025.10/format/) specification (Final Community Group Report, 28 October 2025), while using a normalized internal transport model.
 
 ### Core Features Aligned with Spec
 
 - **Generic Token Types**: Lowercase type names (`color`, `number`, `string`, `boolean`) per spec section 8
-- **$value and $type Properties**: All tokens use `$value` for content and `$type` for type declaration (section 5)
+- **Normalized Internal Shape**: Runtime payloads use `name`, `type`, and `value` fields, mapped from DTCG token concepts for transport and adapter transforms
 - **Color Values**: Stored as spec strings (e.g. `#0066cc`) — each consumer adapter converts to its target format
-- **Dimension Values**: Object format with `value` and `unit` properties (section 8.2)
-- **References/Aliases**: Support for `{token.path}` reference syntax (section 7)
+- **Adapter Ownership**: Tool-specific output details (field naming and value conversion) are handled in consumer adapters
 
 ### Architecture
 
@@ -48,7 +47,7 @@ Each consumer plugin owns its own adapter — a pure transform function that con
 **How it works (Figma example):**
 
 ```typescript
-// 1. Web sends W3C-compliant generic payload via WebSocket
+// 1. Web sends normalized generic payload via WebSocket
 TokenSyncPayload { collections: [...] }
 
 // 2. Figma UI receives generic payload
@@ -307,11 +306,11 @@ npm run start:server
 - **Published**: 28 October 2025
 - **Community Group**: [W3C Design Tokens CG](https://www.w3.org/groups/cg/design-tokens)
 
-### Key Sections Implemented
+### Key Sections Reflected
 
-- Section 5: Design Token (name, $value, $type properties)
-- Section 7: Aliases/References
-- Section 8: Types (color, dimension, number, string, boolean)
+- Section 5: Design Token concepts (name/type/value mapping in runtime payloads)
+- Section 7: Alias/reference concepts (transported as token values; adapter-specific handling)
+- Section 8: Core primitive types currently supported (`color`, `number`, `string`, `boolean`)
 
 ## License
 
