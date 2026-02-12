@@ -126,9 +126,11 @@ function connect(): Promise<string> {
 
     socket.onopen = () => {
       clearTimeout(timeout);
+      // MCP acts as a "web" client (the token source).
+      // Design tools (Figma, Krita, Aseprite) join as targets.
       const pair: SyncMessage = {
         type: 'pair',
-        clientType: 'mcp',
+        clientType: 'web',
         origin: 'Token Beam MCP',
       };
       socket.send(JSON.stringify(pair));
@@ -143,6 +145,7 @@ function connect(): Promise<string> {
             pairedOrigin = msg.origin;
             resolve(sessionToken);
           } else if (msg.clientType) {
+            // A design tool joined the session
             connectedTargets.push(msg.clientType);
           }
         } else if (msg.type === 'error') {

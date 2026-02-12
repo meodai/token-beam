@@ -6,7 +6,8 @@
     "packages/figma-plugin",
     "packages/demo",
     "packages/sync-server",
-    "packages/marketing"
+    "packages/marketing",
+    "packages/mcp-server"
   ],
   "scripts": {
     "build": "npm run build:lib && npm run build:figma && npm run build:server",
