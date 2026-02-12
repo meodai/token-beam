@@ -99,6 +99,67 @@ function applySyncedColors(collections, context) {
   var skippedCount = 0;
   var swatches = document.documentData().sharedSwatches();
 
+  function normalizeHexForSketch(value) {
+    if (!value || typeof value !== 'string') return null;
+    var raw = value.trim().replace('#', '');
+    if (!/^[0-9a-fA-F]{3,8}$/.test(raw)) return null;
+
+    if (raw.length === 3) {
+      return (
+        '#' +
+        raw[0] +
+        raw[0] +
+        raw[1] +
+        raw[1] +
+        raw[2] +
+        raw[2]
+      ).toLowerCase();
+    }
+    if (raw.length === 4) {
+      return (
+        '#' +
+        raw[0] +
+        raw[0] +
+        raw[1] +
+        raw[1] +
+        raw[2] +
+        raw[2] +
+        raw[3] +
+        raw[3]
+      ).toLowerCase();
+    }
+    return ('#' + raw).toLowerCase();
+  }
+
+  function addOrUpdateViaSketchAPI(name, hexValue) {
+    try {
+      if (typeof require === 'undefined') return false;
+      var sketch = require('sketch');
+      if (!sketch || !sketch.getSelectedDocument) return false;
+
+      var doc = sketch.getSelectedDocument();
+      if (!doc || !doc.swatches) return false;
+
+      var existing = null;
+      for (var i = 0; i < doc.swatches.length; i++) {
+        if (doc.swatches[i].name === name) {
+          existing = doc.swatches[i];
+          break;
+        }
+      }
+
+      if (existing) {
+        existing.color = hexValue;
+      } else {
+        doc.swatches.push({ name: name, color: hexValue });
+      }
+
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
   function addColorAsVariable(name, color) {
     if (!swatches || !color) return false;
 
@@ -173,7 +234,16 @@ function applySyncedColors(collections, context) {
           }
 
           var color = MSColor.colorWithRed_green_blue_alpha(r, g, b, 1.0);
-          var addedAsVariable = addColorAsVariable(token.name, color);
+          var normalizedHex = normalizeHexForSketch(token.value);
+
+          var addedAsVariable = false;
+          if (normalizedHex) {
+            addedAsVariable = addOrUpdateViaSketchAPI(token.name, normalizedHex);
+          }
+
+          if (!addedAsVariable) {
+            addedAsVariable = addColorAsVariable(token.name, color);
+          }
 
           if (addedAsVariable) {
             variableCount++;
