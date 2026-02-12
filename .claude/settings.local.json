@@ -15,7 +15,8 @@
       "WebFetch(domain:apidoc.krita.maou-maou.fr)",
       "Bash(/Applications/krita.app/Contents/Frameworks/Python.framework/Versions/3.10/bin/python3.10:*)",
       "WebFetch(domain:deepwiki.com)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:developer.sketch.com)"
     ]
   }
 }

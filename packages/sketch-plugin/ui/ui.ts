@@ -147,13 +147,8 @@ function handleMessage(message: SyncMessage) {
         // Transform payload for Sketch
         const collections = transformPayload(message.payload);
 
-        // Send to Sketch plugin via webkit message handler
-        if ((window as any).webkit && (window as any).webkit.messageHandlers && (window as any).webkit.messageHandlers.sketchBridge) {
-          (window as any).webkit.messageHandlers.sketchBridge.postMessage({
-            type: 'syncColors',
-            data: collections,
-          });
-        }
+        // Send to Sketch plugin via postMessage bridge (sketch-module-web-view)
+        window.postMessage('syncColors', JSON.stringify(collections));
 
         const collectionName = collections[0]?.name || 'Unknown';
         showResult(`Updated collection: ${collectionName}`);

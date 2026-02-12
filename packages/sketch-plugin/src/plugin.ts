@@ -1,111 +1,50 @@
-/* global NSMakeRect, NSURL, NSURLRequest, NSWindowStyleMaskTitled, NSWindowStyleMaskClosable, NSPanel, WKWebView, WKWebViewConfiguration, WKUserContentController, coscript, NSBackingStoreBuffered, NSFloatingWindowLevel */
+var BrowserWindow = require('sketch-module-web-view');
+var sketch = require('sketch');
+var UI = sketch.UI;
 
-var webviewWindow = null;
-var webView = null;
-var currentContext = null;
+var browserWindow = null;
 
-function notify(message) {
-  try {
-    var sketch = require('sketch');
-    var doc = sketch.getSelectedDocument();
-    if (doc) {
-      sketch.UI.message(message);
-      return;
-    }
-  } catch (_e) {}
-  // Fallback to context-based notification
-  if (currentContext && currentContext.document && currentContext.document.showMessage) {
-    currentContext.document.showMessage(message);
-  }
-}
-
-function openTokenBeam(context) {
-  currentContext = context;
-  try {
-    if (webviewWindow && webView) {
-      webviewWindow.makeKeyAndOrderFront(null);
-      return;
-    }
-
-    // Create window
-    var frame = NSMakeRect(0, 0, 400, 300);
-    var styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable;
-
-    webviewWindow = NSPanel.alloc().initWithContentRect_styleMask_backing_defer(
-      frame,
-      styleMask,
-      NSBackingStoreBuffered,
-      false,
-    );
-
-    webviewWindow.setTitle('⊷ Token Beam');
-    webviewWindow.center();
-    webviewWindow.setLevel(NSFloatingWindowLevel);
-
-    // Create WebView with message bridge
-    var config = WKWebViewConfiguration.alloc().init();
-    var userController = WKUserContentController.alloc().init();
-
-    if (typeof coscript !== 'undefined' && coscript && coscript.createClass) {
-      // Keep the coscript fiber alive so WebSocket stays connected
-      coscript.setShouldKeepAround(true);
-
-      var handlerDef = {
-        'userContentController:didReceiveScriptMessage:': function (_controller, message) {
-          try {
-            var body = message.body();
-            if (body && body.type === 'syncColors') {
-              applySyncedColors(body.data);
-            }
-          } catch (err) {
-            notify('Token Beam: bridge error — ' + String(err));
-          }
-        },
-      };
-
-      var HandlerClass = coscript.createClass(
-        'TokenBeamBridgeHandler_' + Date.now(),
-        handlerDef,
-      );
-      var handler = HandlerClass.alloc().init();
-      userController.addScriptMessageHandler_name(handler, 'sketchBridge');
-    } else {
-      notify('Token Beam: coscript bridge unavailable');
-    }
-
-    config.setUserContentController(userController);
-    webView = WKWebView.alloc().initWithFrame_configuration(frame, config);
-
-    // Load HTML
-    var pluginFolder = currentContext.scriptPath.stringByDeletingLastPathComponent();
-    var uiPath = pluginFolder.stringByAppendingPathComponent('../Resources/ui/index.html');
-    var url = NSURL.fileURLWithPath(uiPath);
-    var request = NSURLRequest.requestWithURL(url);
-    webView.loadRequest(request);
-
-    webviewWindow.setContentView(webView);
-    webviewWindow.makeKeyAndOrderFront(null);
-  } catch (error) {
-    notify('Token Beam error: ' + (error && error.message ? error.message : String(error)));
-  }
-}
-
-/**
- * Apply synced color tokens as Sketch swatches using the JS API.
- * This is the simple, reliable path — no MSColor/MSSwatch native objects needed.
- */
-function applySyncedColors(collections) {
-  var sketch;
-  try {
-    sketch = require('sketch');
-  } catch (_e) {
-    notify('Token Beam: Sketch JS API not available');
+function openTokenBeam() {
+  if (browserWindow) {
+    browserWindow.show();
     return;
   }
 
+  browserWindow = new BrowserWindow({
+    identifier: 'com.tokenbeam.sketch.panel',
+    width: 400,
+    height: 300,
+    show: false,
+    title: '⊷ Token Beam',
+    resizable: false,
+    alwaysOnTop: true,
+  });
+
+  // Listen for color sync messages from the WebView
+  browserWindow.webContents.on('syncColors', function (rawData) {
+    try {
+      var collections = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+      applySyncedColors(collections);
+    } catch (err) {
+      UI.message('Token Beam: Failed to parse colors — ' + String(err));
+    }
+  });
+
+  browserWindow.on('closed', function () {
+    browserWindow = null;
+  });
+
+  // Load the UI — resolve relative to this script's location inside the .sketchplugin bundle
+  var path = require('path');
+  var htmlPath = path.resolve(__dirname, '../Resources/ui/index.html');
+  browserWindow.loadURL('file://' + htmlPath);
+  browserWindow.show();
+}
+
+function applySyncedColors(collections) {
   var doc = sketch.getSelectedDocument();
   if (!doc) {
-    notify('Token Beam: No document open');
+    UI.message('Token Beam: No document open');
     return;
   }
 
@@ -123,13 +62,16 @@ function applySyncedColors(collections) {
         // Ensure # prefix
         if (hex.charAt(0) !== '#') hex = '#' + hex;
 
-        // Build swatch name: "collection / token" or just "token" if one collection
+        // Sketch expects #rrggbbaa — append ff alpha if needed
+        if (hex.length === 7) hex = hex + 'ff';
+
+        // Build swatch name
         var name = collection.name ? collection.name + ' / ' + token.name : token.name;
         if (mode.name && mode.name !== 'Value') {
           name = name + ' (' + mode.name + ')';
         }
 
-        // Check if swatch already exists
+        // Check for existing swatch
         var existing = null;
         for (var i = 0; i < doc.swatches.length; i++) {
           if (doc.swatches[i].name === name) {
@@ -142,7 +84,7 @@ function applySyncedColors(collections) {
           existing.color = hex;
           updatedCount++;
         } else {
-          doc.swatches.push({ name: name, color: hex });
+          doc.swatches.append({ name: name, color: hex });
         }
 
         colorCount++;
@@ -151,7 +93,7 @@ function applySyncedColors(collections) {
   });
 
   if (colorCount === 0) {
-    notify('Token Beam: No color tokens received');
+    UI.message('Token Beam: No color tokens received');
     return;
   }
 
@@ -159,14 +101,12 @@ function applySyncedColors(collections) {
   if (updatedCount > 0) {
     msg += ' (' + updatedCount + ' updated)';
   }
-  notify(msg);
+  UI.message(msg);
 }
 
 function onShutdown() {
-  currentContext = null;
-  if (webviewWindow) {
-    webviewWindow.close();
-    webviewWindow = null;
-    webView = null;
+  if (browserWindow) {
+    browserWindow.close();
+    browserWindow = null;
   }
 }
