@@ -74,17 +74,27 @@ export class TokenSyncServer {
             {
               id: 'figma',
               name: 'Figma',
-              url: 'https://example.com/figma-plugin',
+              url: 'https://github.com/meodai/token-sync/tree/main/packages/figma-plugin',
             },
             {
               id: 'sketch',
               name: 'Sketch',
-              url: 'https://www.sketch.com/extensions/',
+              url: 'https://github.com/meodai/token-sync/tree/main/packages/sketch-plugin',
             },
             {
               id: 'aseprite',
               name: 'Aseprite',
-              url: 'https://www.aseprite.org/',
+              url: 'https://github.com/meodai/token-sync/tree/main/packages/aseprite-plugin',
+            },
+            {
+              id: 'krita',
+              name: 'Krita',
+              url: 'https://github.com/meodai/token-sync/tree/main/packages/krita-plugin',
+            },
+            {
+              id: 'adobe-xd',
+              name: 'Adobe XD',
+              url: 'https://github.com/meodai/token-sync/tree/main/packages/adobe-xd-plugin',
             },
           ]),
         );
