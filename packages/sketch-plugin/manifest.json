@@ -1,6 +1,6 @@
 {
   "name": "Token Beam",
-  "description": "Sync design tokens to Sketch color swatches",
+  "description": "Sync design tokens to Sketch color variables",
   "author": "Token Beam",
   "version": "0.1.0",
   "identifier": "com.tokenbeam.sketch",

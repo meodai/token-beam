@@ -94,7 +94,65 @@ function applySyncedColors(collections, context) {
   }
 
   var colorCount = 0;
+  var variableCount = 0;
+  var fallbackCount = 0;
+  var skippedCount = 0;
   var swatches = document.documentData().sharedSwatches();
+
+  function addColorAsVariable(name, color) {
+    if (!swatches || !color) return false;
+
+    var swatch = null;
+
+    if (typeof MSSwatch !== 'undefined' && MSSwatch) {
+      if (MSSwatch.swatchWithName_color) {
+        swatch = MSSwatch.swatchWithName_color(name, color);
+      } else if (MSSwatch.alloc && MSSwatch.alloc().initWithName_color) {
+        swatch = MSSwatch.alloc().initWithName_color(name, color);
+      } else if (MSSwatch.alloc && MSSwatch.alloc().init) {
+        swatch = MSSwatch.alloc().init();
+        if (swatch.setName) swatch.setName(name);
+        if (swatch.setColor) swatch.setColor(color);
+      }
+    }
+
+    if (swatch) {
+      if (swatches.addSharedObject) {
+        swatches.addSharedObject(swatch);
+        return true;
+      }
+      if (swatches.addSwatch) {
+        swatches.addSwatch(swatch);
+        return true;
+      }
+      if (swatches.addObject) {
+        swatches.addObject(swatch);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function addColorAsLegacyStyle(name, color) {
+    if (!swatches || !color) return false;
+    if (typeof MSSharedStyle === 'undefined' || !MSSharedStyle) return false;
+
+    var shared = MSSharedStyle.alloc().init();
+    if (shared.setName) shared.setName(name);
+    if (shared.setValue) shared.setValue(color);
+
+    if (swatches.addSharedObject) {
+      swatches.addSharedObject(shared);
+      return true;
+    }
+    if (swatches.addObject) {
+      swatches.addObject(shared);
+      return true;
+    }
+
+    return false;
+  }
 
   collections.forEach(function (collection) {
     collection.modes.forEach(function (mode) {
@@ -115,18 +173,57 @@ function applySyncedColors(collections, context) {
           }
 
           var color = MSColor.colorWithRed_green_blue_alpha(r, g, b, 1.0);
-          var swatch = MSSharedStyle.alloc().init();
-          swatch.setName(token.name);
-          swatch.setValue(color);
+          var addedAsVariable = addColorAsVariable(token.name, color);
 
-          swatches.addSharedObject(swatch);
+          if (addedAsVariable) {
+            variableCount++;
+          } else {
+            var addedFallback = addColorAsLegacyStyle(token.name, color);
+            if (addedFallback) {
+              fallbackCount++;
+            } else {
+              skippedCount++;
+            }
+
+            if (!addedAsVariable && !addedFallback) {
+              return;
+            }
+          }
+
           colorCount++;
         }
       });
     });
   });
 
-  document.showMessage('✅ Synced ' + colorCount + ' color' + (colorCount !== 1 ? 's' : ''));
+  if (skippedCount > 0) {
+    document.showMessage(
+      '⚠️ Synced ' +
+        colorCount +
+        ' color' +
+        (colorCount !== 1 ? 's' : '') +
+        ' (' +
+        variableCount +
+        ' variables, ' +
+        fallbackCount +
+        ' fallback, ' +
+        skippedCount +
+        ' skipped)',
+    );
+    return;
+  }
+
+  document.showMessage(
+    '✅ Synced ' +
+      colorCount +
+      ' color' +
+      (colorCount !== 1 ? 's' : '') +
+      ' (' +
+      variableCount +
+      ' variables' +
+      (fallbackCount > 0 ? ', ' + fallbackCount + ' fallback' : '') +
+      ')',
+  );
 }
 
 function onShutdown() {
