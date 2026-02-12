@@ -88,21 +88,9 @@ class SimpleWebSocket(QObject):
             self._socket.connectToHostEncrypted(self._host, self._port)
         else:
             self._socket.connectToHost(self._host, self._port)
-# Avoid double-handshake if we get both connected and encrypted signals
-        if self._handshake_done: 
-             return
-             
-        # For SSL, we wait for encryption. For plain TCP, connected is enough.
-        # However, QSslSocket emits connected() then encrypted().
-        # We can just proceed on connected() for plain, but for SSL we must wait.
-        if self._using_ssl and not self._socket.isEncrypted():
-            return
 
-        import base64
-        key_bytes = os.urandom(16)
-        self._ws_key = base64.b64encode(key_bytes).decode("ascii")
-        
-        # Note: headers in handshake must end with \r\n
+    def sendTextMessage(self, text):
+        if not self._handshake_done:
             return
         payload = text.encode("utf-8")
         frame = self._build_frame(0x1, payload)
@@ -118,6 +106,13 @@ class SimpleWebSocket(QObject):
         self._socket.disconnectFromHost()
 
     def _on_tcp_connected(self):
+        # Avoid double-handshake: QSslSocket emits connected() then encrypted().
+        # For SSL we must wait for encrypted(); for plain TCP, connected() is enough.
+        if self._handshake_done:
+            return
+        if self._using_ssl and not self._socket.isEncrypted():
+            return
+
         import base64
         key_bytes = os.urandom(16)
         self._ws_key = base64.b64encode(key_bytes).decode("ascii")
