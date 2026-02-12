@@ -10,43 +10,14 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import {
+  createCollection,
+  createMultiModeCollection,
+  TokenTypeSchema,
+} from 'token-beam';
+import type { SyncMessage, TokenSyncPayload } from 'token-beam';
 import { z } from 'zod';
 import WebSocket from 'ws';
-
-// ---------------------------------------------------------------------------
-// Types (mirrored from token-beam lib)
-// ---------------------------------------------------------------------------
-
-type TokenType = 'color' | 'number' | 'string' | 'boolean';
-
-interface DesignToken {
-  name: string;
-  type: TokenType;
-  value: string | number | boolean;
-}
-
-interface TokenMode {
-  name: string;
-  tokens: DesignToken[];
-}
-
-interface TokenCollection {
-  name: string;
-  modes: TokenMode[];
-}
-
-interface TokenSyncPayload {
-  collections: TokenCollection[];
-}
-
-interface SyncMessage {
-  type: 'pair' | 'sync' | 'ping' | 'error';
-  sessionToken?: string;
-  clientType?: string;
-  origin?: string;
-  payload?: TokenSyncPayload;
-  error?: string;
-}
 
 // ---------------------------------------------------------------------------
 // Session state
@@ -62,48 +33,9 @@ const serverUrl = process.env.TOKEN_BEAM_SERVER ?? 'ws://localhost:8080';
 // Helpers
 // ---------------------------------------------------------------------------
 
-function isHexColor(v: string): boolean {
-  return /^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(v);
-}
-
-function resolveToken(
-  name: string,
-  value: string | number | boolean,
-  explicitType?: TokenType,
-): DesignToken {
-  if (explicitType) return { name, type: explicitType, value };
-  if (typeof value === 'boolean') return { name, type: 'boolean', value };
-  if (typeof value === 'number') return { name, type: 'number', value };
-  if (typeof value === 'string' && isHexColor(value))
-    return { name, type: 'color', value };
-  return { name, type: 'string', value: String(value) };
-}
-
-function buildPayload(
-  collectionName: string,
-  tokens: Record<string, string | number | boolean>,
-  modeName = 'Value',
-): TokenSyncPayload {
-  const resolved = Object.entries(tokens).map(([k, v]) => resolveToken(k, v));
-  return {
-    collections: [{ name: collectionName, modes: [{ name: modeName, tokens: resolved }] }],
-  };
-}
-
-function buildMultiModePayload(
-  collectionName: string,
-  modes: Record<string, Record<string, string | number | boolean>>,
-): TokenSyncPayload {
-  const modeList: TokenMode[] = Object.entries(modes).map(([modeName, tokens]) => ({
-    name: modeName,
-    tokens: Object.entries(tokens).map(([k, v]) => resolveToken(k, v)),
-  }));
-  return { collections: [{ name: collectionName, modes: modeList }] };
-}
-
 function sendSync(payload: TokenSyncPayload): boolean {
   if (!ws || ws.readyState !== WebSocket.OPEN) return false;
-  const msg: SyncMessage = { type: 'sync', payload };
+  const msg: SyncMessage<TokenSyncPayload> = { type: 'sync', payload };
   ws.send(JSON.stringify(msg));
   return true;
 }
@@ -229,8 +161,7 @@ const tokenEntrySchema = z.object({
     'Token value. Hex colors like "#ff3366" are auto-detected. ' +
     'Numbers, booleans, and other strings are also supported.',
   ),
-  type: z
-    .enum(['color', 'number', 'string', 'boolean'])
+  type: TokenTypeSchema
     .optional()
     .describe('Explicit token type. If omitted, type is inferred from the value.'),
 });
@@ -269,12 +200,13 @@ server.registerTool(
       };
     }
 
-    const tokenMap: Record<string, string | number | boolean> = {};
-    for (const t of tokens) {
-      tokenMap[t.name] = t.value;
-    }
+    const entries = tokens.map((t) => ({
+      name: t.name,
+      value: t.value,
+      type: t.type,
+    }));
 
-    const payload = buildPayload(collection, tokenMap, mode);
+    const payload = createCollection(collection, entries, mode);
     const ok = sendSync(payload);
 
     if (ok) {
@@ -333,16 +265,16 @@ server.registerTool(
       };
     }
 
-    const modeMap: Record<string, Record<string, string | number | boolean>> = {};
+    const modeEntries: Record<string, { name: string; value: string | number | boolean; type?: 'color' | 'number' | 'string' | 'boolean' }[]> = {};
     for (const [modeName, tokenArr] of Object.entries(modes)) {
-      const map: Record<string, string | number | boolean> = {};
-      for (const t of tokenArr) {
-        map[t.name] = t.value;
-      }
-      modeMap[modeName] = map;
+      modeEntries[modeName] = tokenArr.map((t) => ({
+        name: t.name,
+        value: t.value,
+        type: t.type,
+      }));
     }
 
-    const payload = buildMultiModePayload(collection, modeMap);
+    const payload = createMultiModeCollection(collection, modeEntries);
     const ok = sendSync(payload);
 
     if (ok) {

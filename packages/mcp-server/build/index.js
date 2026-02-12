@@ -8,6 +8,7 @@
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { createCollection, createMultiModeCollection, TokenTypeSchema, } from 'token-beam';
 import { z } from 'zod';
 import WebSocket from 'ws';
 // ---------------------------------------------------------------------------
@@ -21,33 +22,6 @@ const serverUrl = process.env.TOKEN_BEAM_SERVER ?? 'ws://localhost:8080';
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-function isHexColor(v) {
-    return /^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(v);
-}
-function resolveToken(name, value, explicitType) {
-    if (explicitType)
-        return { name, type: explicitType, value };
-    if (typeof value === 'boolean')
-        return { name, type: 'boolean', value };
-    if (typeof value === 'number')
-        return { name, type: 'number', value };
-    if (typeof value === 'string' && isHexColor(value))
-        return { name, type: 'color', value };
-    return { name, type: 'string', value: String(value) };
-}
-function buildPayload(collectionName, tokens, modeName = 'Value') {
-    const resolved = Object.entries(tokens).map(([k, v]) => resolveToken(k, v));
-    return {
-        collections: [{ name: collectionName, modes: [{ name: modeName, tokens: resolved }] }],
-    };
-}
-function buildMultiModePayload(collectionName, modes) {
-    const modeList = Object.entries(modes).map(([modeName, tokens]) => ({
-        name: modeName,
-        tokens: Object.entries(tokens).map(([k, v]) => resolveToken(k, v)),
-    }));
-    return { collections: [{ name: collectionName, modes: modeList }] };
-}
 function sendSync(payload) {
     if (!ws || ws.readyState !== WebSocket.OPEN)
         return false;
@@ -159,8 +133,7 @@ const tokenEntrySchema = z.object({
     name: z.string().describe('Token name (e.g. "primary", "spacing/sm", "brand/red")'),
     value: z.union([z.string(), z.number(), z.boolean()]).describe('Token value. Hex colors like "#ff3366" are auto-detected. ' +
         'Numbers, booleans, and other strings are also supported.'),
-    type: z
-        .enum(['color', 'number', 'string', 'boolean'])
+    type: TokenTypeSchema
         .optional()
         .describe('Explicit token type. If omitted, type is inferred from the value.'),
 });
@@ -193,11 +166,12 @@ server.registerTool('sync_tokens', {
             ],
         };
     }
-    const tokenMap = {};
-    for (const t of tokens) {
-        tokenMap[t.name] = t.value;
-    }
-    const payload = buildPayload(collection, tokenMap, mode);
+    const entries = tokens.map((t) => ({
+        name: t.name,
+        value: t.value,
+        type: t.type,
+    }));
+    const payload = createCollection(collection, entries, mode);
     const ok = sendSync(payload);
     if (ok) {
         const summary = tokens
@@ -241,15 +215,15 @@ server.registerTool('sync_multi_mode', {
             ],
         };
     }
-    const modeMap = {};
+    const modeEntries = {};
     for (const [modeName, tokenArr] of Object.entries(modes)) {
-        const map = {};
-        for (const t of tokenArr) {
-            map[t.name] = t.value;
-        }
-        modeMap[modeName] = map;
+        modeEntries[modeName] = tokenArr.map((t) => ({
+            name: t.name,
+            value: t.value,
+            type: t.type,
+        }));
     }
-    const payload = buildMultiModePayload(collection, modeMap);
+    const payload = createMultiModeCollection(collection, modeEntries);
     const ok = sendSync(payload);
     if (ok) {
         const modeNames = Object.keys(modes).join(', ');
