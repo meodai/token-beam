@@ -270,6 +270,12 @@ console.log(`Serving at ${url}`); // http://localhost:3333
 
 ## Development
 
+Tooling baseline:
+
+- Node.js 20+
+- npm 9+ (repo is pinned via `packageManager` in the root `package.json`)
+- Internal package deps intentionally use `"token-beam": "*"` (not `workspace:*`) for compatibility across npm environments used by contributors and CI.
+
 ```bash
 # Install dependencies
 npm install

@@ -1,6 +1,11 @@
 {
   "name": "token-beam-monorepo",
   "private": true,
+  "packageManager": "npm@11.6.0",
+  "engines": {
+    "node": ">=20",
+    "npm": ">=9"
+  },
   "workspaces": [
     "packages/lib",
     "packages/figma-plugin",
