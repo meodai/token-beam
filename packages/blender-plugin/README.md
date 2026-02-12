@@ -36,6 +36,18 @@ npm run uninstall:blender
 3. Search for **Token Beam**
 4. Enable **Token Beam: Sync design token colors via WebSocket**
 
+## Python Dependency
+
+This add-on uses `websocket-client` inside Blender's Python environment.
+
+Install once from Blender's Python console or terminal:
+
+```python
+import ensurepip, subprocess, sys
+ensurepip.bootstrap()
+subprocess.check_call([sys.executable, "-m", "pip", "install", "websocket-client"])
+```
+
 ## Usage
 
 1. Start the sync server:

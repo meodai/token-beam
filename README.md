@@ -185,7 +185,7 @@ See [packages/aseprite-plugin/README.md](packages/aseprite-plugin/README.md) for
 
 The **`packages/blender-plugin`** package syncs color tokens into Blender scene properties using a Python add-on.
 
-### Quick Start
+### Blender Quick Start
 
 1. **Install the Blender add-on (macOS):**
 
@@ -193,15 +193,17 @@ The **`packages/blender-plugin`** package syncs color tokens into Blender scene 
   npm run install:blender
   ```
 
-2. **Start the sync server:**
+1. **Start the sync server:**
+
   ```bash
   npm run start:server
   ```
 
-3. **Use in Blender:**
-  - Enable the add-on in **Edit → Preferences → Add-ons**
-  - Open **3D Viewport → Sidebar (N) → Token Beam**
-  - Enter your session token and click **Connect**
+1. **Use in Blender:**
+
+- Enable the add-on in **Edit → Preferences → Add-ons**
+- Open **3D Viewport → Sidebar (N) → Token Beam**
+- Enter your session token and click **Connect**
 
 See [packages/blender-plugin/README.md](packages/blender-plugin/README.md) for detailed setup and dependency notes.
 
