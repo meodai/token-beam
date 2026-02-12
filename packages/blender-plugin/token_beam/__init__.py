@@ -35,6 +35,7 @@ TokenBeamColor.__annotations__ = {
     ),
     "collection": bpy.props.StringProperty(name="Collection"),
     "mode": bpy.props.StringProperty(name="Mode"),
+    "material_name": bpy.props.StringProperty(name="Material", default=""),
 }
 
 
@@ -94,6 +95,35 @@ def _extract_colors(payload):
                     }
                 )
     return colors
+
+
+def _token_material_name(token_name):
+    safe_name = re.sub(r"[^a-zA-Z0-9_]+", "_", token_name).strip("_")
+    if not safe_name:
+        safe_name = "unnamed"
+    return f"TB_{safe_name}"
+
+
+def _ensure_token_material(token_name, rgba):
+    material_name = _token_material_name(token_name)
+    material = bpy.data.materials.get(material_name)
+    if material is None:
+        material = bpy.data.materials.new(name=material_name)
+
+    material.use_nodes = True
+
+    principled = None
+    if material.node_tree:
+        for node in material.node_tree.nodes:
+            if node.type == "BSDF_PRINCIPLED":
+                principled = node
+                break
+
+    if principled is not None:
+        principled.inputs["Base Color"].default_value = rgba
+
+    material.diffuse_color = rgba
+    return material_name
 
 
 class TokenBeamState(bpy.types.PropertyGroup):
@@ -317,25 +347,16 @@ class TOKENBEAM_OT_apply_color(bpy.types.Operator):
 
         color_item = scene.token_beam_colors[self.color_index]
 
-        material = active_obj.active_material
+        material_name = color_item.material_name or _ensure_token_material(
+            color_item.token_name, color_item.value
+        )
+        material = bpy.data.materials.get(material_name)
         if material is None:
-            material = bpy.data.materials.new(name="Token Beam Material")
-            active_obj.active_material = material
-
-        material.use_nodes = True
-        principled = None
-        if material.node_tree:
-            for node in material.node_tree.nodes:
-                if node.type == "BSDF_PRINCIPLED":
-                    principled = node
-                    break
-
-        if principled is None:
-            self.report({"WARNING"}, "No Principled BSDF node found")
+            self.report({"WARNING"}, "Token material not found")
             return {"CANCELLED"}
 
-        principled.inputs["Base Color"].default_value = color_item.value
-        self.report({"INFO"}, f"Applied {color_item.token_name}")
+        active_obj.active_material = material
+        self.report({"INFO"}, f"Applied {color_item.token_name} ({material_name})")
         return {"FINISHED"}
 
 
@@ -360,11 +381,13 @@ def _drain_events():
         elif kind == "colors":
             scene.token_beam_colors.clear()
             for color in value:
+                material_name = _ensure_token_material(color["name"], color["value"])
                 item = scene.token_beam_colors.add()
                 item.token_name = color["name"]
                 item.value = color["value"]
                 item.collection = color["collection"]
                 item.mode = color["mode"]
+                item.material_name = material_name
 
     return 0.5
 
