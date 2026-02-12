@@ -4,6 +4,14 @@ var UI = sketch.UI;
 
 var browserWindow = null;
 
+function setPluginAlive(isAlive) {
+  try {
+    if (COScript && COScript.currentCOScript) {
+      COScript.currentCOScript().setShouldKeepAround(isAlive);
+    }
+  } catch (_err) {}
+}
+
 function resolveUiHtmlPath(context) {
   try {
     if (context && context.plugin && context.plugin.urlForResourceNamed) {
@@ -38,20 +46,30 @@ function resolveUiHtmlPath(context) {
 }
 
 function openTokenBeam(context) {
+  UI.message('Token Beam: opening…');
+  setPluginAlive(true);
+
   if (browserWindow) {
     browserWindow.show();
     return;
   }
 
-  browserWindow = new BrowserWindow({
-    identifier: 'com.tokenbeam.sketch.panel',
-    width: 400,
-    height: 600,
-    show: true,
-    title: '⊷ Token Beam',
-    resizable: true,
-    alwaysOnTop: true,
-  });
+  try {
+    browserWindow = new BrowserWindow({
+      identifier: 'com.tokenbeam.sketch.panel',
+      width: 400,
+      height: 600,
+      show: true,
+      title: '⊷ Token Beam',
+      resizable: true,
+      alwaysOnTop: true,
+    });
+  } catch (err) {
+    UI.message('Token Beam: failed to create window');
+    setPluginAlive(false);
+    console.error('Token Beam: BrowserWindow init error', err);
+    return;
+  }
 
   // Listen for color sync messages from the WebView
   browserWindow.webContents.on('syncColors', function (rawData) {
@@ -70,6 +88,7 @@ function openTokenBeam(context) {
 
   browserWindow.on('closed', function () {
     browserWindow = null;
+    setPluginAlive(false);
   });
 
   try {
@@ -77,6 +96,7 @@ function openTokenBeam(context) {
     browserWindow.loadURL('file://' + htmlPath);
   } catch (err) {
     UI.message('Token Beam: Failed to open window');
+    setPluginAlive(false);
     console.error('Token Beam: UI load error', err);
     if (browserWindow) {
       browserWindow.close();
@@ -154,6 +174,7 @@ function onShutdown() {
     browserWindow.close();
     browserWindow = null;
   }
+  setPluginAlive(false);
 }
 
 module.exports = {
