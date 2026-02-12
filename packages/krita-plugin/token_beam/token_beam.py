@@ -10,7 +10,7 @@ import math
 
 from PyQt5.QtCore import QUrl, Qt, QTimer, QByteArray, QObject, pyqtSignal, QSize
 from PyQt5.QtGui import QFont, QIcon, QColor, QPainter, QCursor
-from PyQt5.QtNetwork import QTcpSocket, QAbstractSocket
+from PyQt5.QtNetwork import QTcpSocket, QAbstractSocket, QSslSocket
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QScrollArea,
     QLineEdit, QPushButton, QLabel, QToolTip, QSizePolicy
@@ -38,26 +38,41 @@ class SimpleWebSocket(QObject):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._socket = QTcpSocket(self)
+        self._socket = QSslSocket(self)
         self._host = ""
         self._port = 80
         self._path = "/"
         self._handshake_done = False
         self._buffer = QByteArray()
         self._closing = False
+        self._using_ssl = False
 
         self._socket.connected.connect(self._on_tcp_connected)
+        self._socket.encrypted.connect(self._on_tcp_connected)
         self._socket.readyRead.connect(self._on_data)
         self._socket.disconnected.connect(self._on_tcp_disconnected)
         self._socket.errorOccurred.connect(self._on_tcp_error)
+        
+        # Ignore self-signed certs for local/dev use if needed (optional)
+        # self._socket.setPeerVerifyMode(QSslSocket.VerifyNone)
 
     def open(self, url_str):
         self._handshake_done = False
         self._buffer = QByteArray()
         self._closing = False
+        self._using_ssl = False
 
-        if url_str.startswith("ws://"):
+        if url_str.startswith("wss://"):
+            self._using_ssl = True
+            url_str = url_str[6:]
+            default_port = 443
+        elif url_str.startswith("ws://"):
             url_str = url_str[5:]
+            default_port = 80
+        else:
+            # Default to ws if no scheme
+            default_port = 80
+
         parts = url_str.split("/", 1)
         host_port = parts[0]
         self._path = "/" + (parts[1] if len(parts) > 1 else "")
@@ -67,12 +82,27 @@ class SimpleWebSocket(QObject):
             self._port = int(port_str)
         else:
             self._host = host_port
-            self._port = 80
+            self._port = default_port
 
-        self._socket.connectToHost(self._host, self._port)
+        if self._using_ssl:
+            self._socket.connectToHostEncrypted(self._host, self._port)
+        else:
+            self._socket.connectToHost(self._host, self._port)
+# Avoid double-handshake if we get both connected and encrypted signals
+        if self._handshake_done: 
+             return
+             
+        # For SSL, we wait for encryption. For plain TCP, connected is enough.
+        # However, QSslSocket emits connected() then encrypted().
+        # We can just proceed on connected() for plain, but for SSL we must wait.
+        if self._using_ssl and not self._socket.isEncrypted():
+            return
 
-    def sendTextMessage(self, text):
-        if not self._handshake_done:
+        import base64
+        key_bytes = os.urandom(16)
+        self._ws_key = base64.b64encode(key_bytes).decode("ascii")
+        
+        # Note: headers in handshake must end with \r\n
             return
         payload = text.encode("utf-8")
         frame = self._build_frame(0x1, payload)

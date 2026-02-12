@@ -2,6 +2,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import type { IncomingMessage } from 'http';
 import { createServer, type Server as HTTPServer } from 'http';
 import { randomBytes } from 'crypto';
+import { validateTokenPayload } from 'token-beam';
 
 /** Icon provided by the source app — either a single unicode character or an SVG string. */
 export type SyncIcon = { type: 'unicode'; value: string } | { type: 'svg'; value: string };
@@ -282,6 +283,14 @@ export class TokenSyncServer {
     const isFromWeb = ws === session.webClient;
 
     if (isFromWeb) {
+      // Validate payload before broadcasting
+      const validation = validateTokenPayload(message.payload);
+      if (!validation.success) {
+        console.error('Invalid payload received:', validation.error);
+        this.sendError(ws, 'Invalid payload structure');
+        return;
+      }
+
       // Broadcast to all target clients
       let sentCount = 0;
       for (const target of session.targetClients) {

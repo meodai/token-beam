@@ -1,5 +1,5 @@
 {
-  "name": "token-beam",
+  "name": "token-beam-aseprite-plugin",
   "displayName": "⊷ Token Beam",
   "description": "Sync design tokens (colors) to Aseprite palette",
   "version": "0.1.0",

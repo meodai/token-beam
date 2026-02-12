@@ -12,3 +12,11 @@ export type {
   ExplicitTokenEntry,
   TargetAdapter,
 } from './types';
+export {
+  TokenTypeSchema,
+  DesignTokenSchema,
+  TokenModeSchema,
+  TokenCollectionSchema,
+  TokenSyncPayloadSchema,
+  validateTokenPayload,
+} from './schema';
