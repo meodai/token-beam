@@ -127,9 +127,9 @@ server.registerTool(
   'create_session',
   {
     description:
-      'Start a new Token Beam sync session. Returns a session token ' +
-      'that can be pasted into Figma, Krita, Aseprite, or any Token Beam client ' +
-      'to establish a live connection. The token looks like beam://ABC123...',
+      'Start a new Token Beam sync session. Returns a beam:// token ' +
+      'that the user pastes into Figma, Krita, Aseprite, or any Token Beam client. ' +
+      'You usually don\'t need to call this directly — sync_tokens auto-creates a session.',
     inputSchema: {},
   },
   async () => {
@@ -139,7 +139,7 @@ server.registerTool(
         content: [
           {
             type: 'text' as const,
-            text: `Session created. Token: ${token}\n\nPaste this token into any Token Beam-enabled design tool to pair.`,
+            text: `Session created!\n\nPaste this token in your design tool: **${token}**`,
           },
         ],
       };
@@ -172,8 +172,8 @@ server.registerTool(
     description:
       'Push design tokens to all paired design tools. ' +
       'Supports any W3C DTCG token type: colors (#hex), numbers, strings, booleans. ' +
-      'A session must be active (use create_session first). ' +
-      'Tokens are sent as a named collection.',
+      'Auto-creates a session if none exists. ' +
+      'Always tell the user the beam:// token so they can paste it in their design tool.',
     inputSchema: {
       collection: z
         .string()
@@ -189,15 +189,20 @@ server.registerTool(
     },
   },
   async ({ collection, tokens, mode }) => {
+    // Auto-connect if no session
     if (!ws || ws.readyState !== WebSocket.OPEN) {
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: 'No active session. Use create_session first.',
-          },
-        ],
-      };
+      try {
+        await connect();
+      } catch (e) {
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: `Failed to connect to Token Beam server: ${e}`,
+            },
+          ],
+        };
+      }
     }
 
     const entries = tokens.map((t) => ({
@@ -213,11 +218,14 @@ server.registerTool(
       const summary = tokens
         .map((t) => `  ${t.name}: ${t.value}`)
         .join('\n');
+      const targetInfo = connectedTargets.length > 0
+        ? `\nConnected targets: ${connectedTargets.join(', ')}`
+        : '\nNo design tools connected yet.';
       return {
         content: [
           {
             type: 'text' as const,
-            text: `Synced ${tokens.length} tokens in "${collection}":\n${summary}`,
+            text: `Session: ${sessionToken}\n\nSynced ${tokens.length} tokens in "${collection}":\n${summary}${targetInfo}`,
           },
         ],
       };
@@ -239,7 +247,8 @@ server.registerTool(
     description:
       'Push a multi-mode token collection (e.g. Light/Dark themes). ' +
       'Each mode contains its own set of tokens. ' +
-      'A session must be active (use create_session first).',
+      'Auto-creates a session if none exists. ' +
+      'Always tell the user the beam:// token so they can paste it in their design tool.',
     inputSchema: {
       collection: z.string().describe('Collection name'),
       modes: z
@@ -254,15 +263,20 @@ server.registerTool(
     },
   },
   async ({ collection, modes }) => {
+    // Auto-connect if no session
     if (!ws || ws.readyState !== WebSocket.OPEN) {
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: 'No active session. Use create_session first.',
-          },
-        ],
-      };
+      try {
+        await connect();
+      } catch (e) {
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: `Failed to connect to Token Beam server: ${e}`,
+            },
+          ],
+        };
+      }
     }
 
     const modeEntries: Record<string, { name: string; value: string | number | boolean; type?: 'color' | 'number' | 'string' | 'boolean' }[]> = {};
@@ -280,11 +294,14 @@ server.registerTool(
     if (ok) {
       const modeNames = Object.keys(modes).join(', ');
       const totalTokens = Object.values(modes).reduce((sum, arr) => sum + arr.length, 0);
+      const targetInfo = connectedTargets.length > 0
+        ? `\nConnected targets: ${connectedTargets.join(', ')}`
+        : '\nNo design tools connected yet.';
       return {
         content: [
           {
             type: 'text' as const,
-            text: `Synced ${totalTokens} tokens across modes [${modeNames}] in "${collection}".`,
+            text: `Session: ${sessionToken}\n\nSynced ${totalTokens} tokens across modes [${modeNames}] in "${collection}".${targetInfo}`,
           },
         ],
       };
