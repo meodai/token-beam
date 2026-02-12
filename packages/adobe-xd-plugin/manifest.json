@@ -1,0 +1,17 @@
+{
+  "id": "com.tokenbeam.adobexd",
+  "name": "Token Beam",
+  "version": "0.1.0",
+  "main": "main.js",
+  "host": {
+    "app": "XD",
+    "minVersion": "45.0"
+  },
+  "uiEntryPoints": [
+    {
+      "type": "panel",
+      "label": "Token Beam",
+      "panelId": "tokenBeamPanel"
+    }
+  ]
+}
