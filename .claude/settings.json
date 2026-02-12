@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "token-beam": {
+      "command": "node",
+      "args": ["/Users/meodai/Sites/figma-sync/packages/mcp-server/build/index.js"],
+      "env": {
+        "TOKEN_BEAM_SERVER": "ws://localhost:8080"
+      }
+    }
+  }
+}
