@@ -26,12 +26,17 @@ except Exception:
 
 
 class TokenBeamColor(bpy.types.PropertyGroup):
-    token_name = bpy.props.StringProperty(name="Name")
-    value = bpy.props.FloatVectorProperty(
+    pass
+
+
+TokenBeamColor.__annotations__ = {
+    "token_name": bpy.props.StringProperty(name="Name"),
+    "value": bpy.props.FloatVectorProperty(
         name="Color", size=4, min=0.0, max=1.0, subtype="COLOR"
-    )
-    collection = bpy.props.StringProperty(name="Collection")
-    mode = bpy.props.StringProperty(name="Mode")
+    ),
+    "collection": bpy.props.StringProperty(name="Collection"),
+    "mode": bpy.props.StringProperty(name="Mode"),
+}
 
 
 def _hex_to_rgba(hex_value):
@@ -82,10 +87,15 @@ def _extract_colors(payload):
 
 
 class TokenBeamState(bpy.types.PropertyGroup):
-    session_token = bpy.props.StringProperty(name="Token", default="")
-    status = bpy.props.StringProperty(name="Status", default="Disconnected")
-    is_connected = bpy.props.BoolProperty(name="Connected", default=False)
-    client_id = bpy.props.StringProperty(name="Client ID", default="")
+    pass
+
+
+TokenBeamState.__annotations__ = {
+    "session_token": bpy.props.StringProperty(name="Token", default=""),
+    "status": bpy.props.StringProperty(name="Status", default="Disconnected"),
+    "is_connected": bpy.props.BoolProperty(name="Connected", default=False),
+    "client_id": bpy.props.StringProperty(name="Client ID", default=""),
+}
 
 
 class TokenBeamRuntime:
