@@ -4,10 +4,7 @@ var UI = sketch.UI;
 
 var browserWindow = null;
 
-// Sketch looks up command handlers as global functions.
-// We must attach them to globalThis so esbuild doesn't tree-shake them.
-
-globalThis.openTokenBeam = function (context) {
+function openTokenBeam(context) {
   if (browserWindow) {
     browserWindow.show();
     return;
@@ -42,37 +39,14 @@ globalThis.openTokenBeam = function (context) {
     browserWindow = null;
   });
 
-  // Resolve the HTML file path from the plugin bundle.
-  // Try context.scriptURL first (newer Sketch), fallback to context.scriptPath
-  var scriptPath;
-  
-  try {
-    if (context.scriptURL && context.scriptURL.path) {
-      scriptPath = String(context.scriptURL.path());
-    } else if (context.scriptPath) {
-      scriptPath = String(context.scriptPath);
-    } else {
-      // Fallback: use plugin identifier to construct path
-      var pluginPath = NSString.stringWithString('~/Library/Application Support/com.bohemiancoding.sketch3/Plugins/Token Beam.sketchplugin').stringByExpandingTildeInPath();
-      scriptPath = String(pluginPath) + '/Contents/Sketch/plugin.js';
-    }
-    
-    var sketchDir = String(
-      NSString.alloc().initWithString(scriptPath).stringByDeletingLastPathComponent()
-    );
-    var htmlPath = sketchDir + '/../Resources/ui/index.html';
-    
-    browserWindow.loadURL('file://' + htmlPath);
-    browserWindow.show();
-  } catch (err) {
-    UI.message('Token Beam: Failed to load UI — ' + String(err));
-    console.error('Token Beam path resolution error:', err);
-    if (browserWindow) {
-      browserWindow.close();
-      browserWindow = null;
-    }
-  }
-};
+  // Get the plugin bundle path using context.plugin
+  var plugin = context.plugin;
+  var pluginFolderPath = plugin.url().path();
+  var htmlPath = pluginFolderPath + '/Contents/Resources/ui/index.html';
+
+  browserWindow.loadURL('file://' + htmlPath);
+  browserWindow.show();
+}
 
 function applySyncedColors(collections) {
   var doc = sketch.getSelectedDocument();
@@ -138,9 +112,14 @@ function applySyncedColors(collections) {
   UI.message(msg);
 }
 
-globalThis.onShutdown = function () {
+function onShutdown() {
   if (browserWindow) {
     browserWindow.close();
     browserWindow = null;
   }
+}
+
+module.exports = {
+  openTokenBeam: openTokenBeam,
+  onShutdown: onShutdown,
 };
