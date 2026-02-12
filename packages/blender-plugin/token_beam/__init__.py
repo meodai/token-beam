@@ -12,7 +12,6 @@ import json
 import re
 import threading
 import queue
-from urllib.parse import urlparse
 
 import bpy
 
@@ -125,11 +124,22 @@ class TOKENBEAM_OT_connect(bpy.types.Operator):
             state.status = "Already connected"
             return {"FINISHED"}
 
-        endpoint = _build_endpoint(SYNC_SERVER_URL, normalized)
+        endpoint = SYNC_SERVER_URL
 
         def on_open(ws):
-            TokenBeamRuntime.event_queue.put(("status", "Connected"))
-            TokenBeamRuntime.event_queue.put(("connected", True))
+            TokenBeamRuntime.event_queue.put(("status", "Connected - pairing..."))
+            try:
+                ws.send(
+                    json.dumps(
+                        {
+                            "type": "pair",
+                            "clientType": "blender",
+                            "sessionToken": normalized,
+                        }
+                    )
+                )
+            except Exception as error:
+                TokenBeamRuntime.event_queue.put(("status", f"Error: {error}"))
 
         def on_message(ws, message):
             try:
@@ -137,13 +147,46 @@ class TOKENBEAM_OT_connect(bpy.types.Operator):
             except Exception:
                 return
 
-            if data.get("type") == "registered":
-                TokenBeamRuntime.event_queue.put(("client_id", data.get("clientId", "")))
+            msg_type = data.get("type")
+
+            if msg_type == "pair":
+                TokenBeamRuntime.event_queue.put(("connected", True))
+                origin = data.get("origin", "unknown")
+                TokenBeamRuntime.event_queue.put(
+                    ("status", f"Paired with {origin} - waiting for data...")
+                )
                 return
 
-            payload = data.get("payload")
-            if isinstance(payload, dict):
-                TokenBeamRuntime.event_queue.put(("colors", _extract_colors(payload)))
+            if msg_type == "sync":
+                payload = data.get("payload")
+                if not isinstance(payload, dict):
+                    TokenBeamRuntime.event_queue.put(("status", "No payload in sync message"))
+                    return
+                colors = _extract_colors(payload)
+                TokenBeamRuntime.event_queue.put(("colors", colors))
+                if colors:
+                    TokenBeamRuntime.event_queue.put(
+                        ("status", f"{len(colors)} colors synced")
+                    )
+                else:
+                    TokenBeamRuntime.event_queue.put(("status", "No colors found in payload"))
+                return
+
+            if msg_type == "error":
+                error_text = data.get("error", "Unknown error")
+                if isinstance(error_text, str) and error_text.startswith("[warn]"):
+                    TokenBeamRuntime.event_queue.put(("status", error_text[7:].strip()))
+                elif error_text == "Invalid session token":
+                    TokenBeamRuntime.event_queue.put(("status", "Session not found"))
+                else:
+                    TokenBeamRuntime.event_queue.put(("status", f"Error: {error_text}"))
+                return
+
+            if msg_type == "ping":
+                try:
+                    ws.send(json.dumps({"type": "pong"}))
+                except Exception:
+                    pass
 
         def on_error(ws, error):
             TokenBeamRuntime.event_queue.put(("status", f"Error: {error}"))
@@ -237,13 +280,6 @@ class TOKENBEAM_OT_clear_colors(bpy.types.Operator):
     def execute(self, context):
         context.scene.token_beam_colors.clear()
         return {"FINISHED"}
-
-
-def _build_endpoint(base_url, token):
-    parsed = urlparse(base_url)
-    scheme = parsed.scheme if parsed.scheme in ("ws", "wss") else "ws"
-    netloc = parsed.netloc or parsed.path
-    return f"{scheme}://{netloc}/?token={token}"
 
 
 def _drain_events():
