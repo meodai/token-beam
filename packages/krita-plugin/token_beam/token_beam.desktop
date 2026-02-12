@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Krita/PythonPlugin
+X-KDE-Library=token_beam
+X-Python-2-Compatible=false
+Name=Token Beam
+Comment=Sync design tokens (colors) from any web app to Krita palettes in real-time

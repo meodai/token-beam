@@ -1,0 +1,27 @@
+<html>
+<head><title>Token Beam</title></head>
+<body>
+<h1>Token Beam</h1>
+<p>Sync design tokens (colors) from any web app to Krita in real-time.</p>
+
+<h2>How to open</h2>
+<p><b>Settings &rarr; Dockers &rarr; Token Beam</b></p>
+<p>This opens a small panel you can dock anywhere in Krita's interface.</p>
+
+<h2>How to use</h2>
+<ol>
+  <li>In your web app (e.g. Polaris, OKPalette, or the Token Beam demo), start a sync session. You'll get a session token like <code>beam://A1B2C3...</code></li>
+  <li>Paste the token into the Token Beam panel in Krita.</li>
+  <li>Click <b>Connect</b>.</li>
+  <li>Once paired, colors appear as a grid of swatches in the panel. They update in real-time whenever the web app changes.</li>
+  <li>Click any swatch to set it as your foreground color.</li>
+  <li>Click <b>Save as Krita Palette</b> to persist the colors as a .gpl palette file (visible in the Palette docker after restarting Krita).</li>
+</ol>
+
+<h2>Requirements</h2>
+<ul>
+  <li>The Token Beam sync server must be running (default: <code>ws://localhost:8080</code>).</li>
+  <li>A web app with Token Beam integration to pair with.</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "token-beam-krita-plugin",
+  "displayName": "Token Beam",
+  "description": "Sync design tokens (colors) from any web app to Krita palettes in real-time",
+  "version": "0.1.0",
+  "author": { "name": "Token Beam" },
+  "license": "MIT",
+  "scripts": {
+    "install:krita": "mkdir -p \"$HOME/Library/Application Support/Krita/pykrita\" && SYNC_URL=\"${SYNC_SERVER_URL:-ws://localhost:8080}\" && sed \"s|^SYNC_SERVER_URL = \\\".*\\\"|SYNC_SERVER_URL = \\\"$SYNC_URL\\\"|\" token_beam/token_beam.py > /tmp/_tb_krita.py && mkdir -p \"$HOME/Library/Application Support/Krita/pykrita/token_beam\" && mv /tmp/_tb_krita.py \"$HOME/Library/Application Support/Krita/pykrita/token_beam/token_beam.py\" && cp token_beam/__init__.py \"$HOME/Library/Application Support/Krita/pykrita/token_beam/\" && cp token_beam/token_beam.desktop \"$HOME/Library/Application Support/Krita/pykrita/\"",
+    "uninstall:krita": "rm -rf \"$HOME/Library/Application Support/Krita/pykrita/token_beam\" && rm -f \"$HOME/Library/Application Support/Krita/pykrita/token_beam.desktop\""
+  }
+}
