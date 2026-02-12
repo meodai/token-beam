@@ -37,6 +37,7 @@ The plugin creates a WebView window that connects to the sync server via WebSock
 ## Development
 
 The plugin is built using:
+- TypeScript source files transpiled to Sketch-compatible JavaScript
 - Native Sketch JavaScript API (CocoaScript)
 - WKWebView for the UI
 - WebSocket for real-time communication

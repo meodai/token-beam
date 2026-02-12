@@ -1,17 +1,37 @@
 const SYNC_SERVER_URL = 'ws://localhost:8080';
 
-const tokenInput = document.getElementById('token-input');
-const connectBtn = document.getElementById('connect-btn');
-const statusEl = document.getElementById('status');
-const resultEl = document.getElementById('result');
-const resultTextEl = document.getElementById('result-text');
-const resultTimeEl = document.getElementById('result-time');
+const tokenInput = document.getElementById('token-input') as HTMLInputElement;
+const connectBtn = document.getElementById('connect-btn') as HTMLButtonElement;
+const statusEl = document.getElementById('status') as HTMLDivElement;
+const resultEl = document.getElementById('result') as HTMLDivElement;
+const resultTextEl = document.getElementById('result-text') as HTMLSpanElement;
+const resultTimeEl = document.getElementById('result-time') as HTMLSpanElement;
 
-let ws = null;
+type SyncMessage = {
+  type: 'pair' | 'sync' | 'ping' | 'error';
+  sessionToken?: string;
+  origin?: string;
+  error?: string;
+  payload?: {
+    collections?: Array<{
+      name: string;
+      modes: Array<{
+        name: string;
+        tokens: Array<{
+          type: string;
+          name: string;
+          value: string;
+        }>;
+      }>;
+    }>;
+  };
+};
+
+let ws: WebSocket | null = null;
 let isConnected = false;
-let sessionToken = null;
-let lastResultAt = null;
-let resultTimer = null;
+let sessionToken: string | null = null;
+let lastResultAt: number | null = null;
+let resultTimer: number | null = null;
 const resultRtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
 
 // Enable/disable connect button based on token input
@@ -49,17 +69,19 @@ function connect() {
 
     ws.onopen = () => {
       // Send pair message
-      ws.send(JSON.stringify({
-        type: 'pair',
-        clientType: 'sketch',
-        sessionToken: sessionToken,
-        origin: 'Sketch'
-      }));
+      ws?.send(
+        JSON.stringify({
+          type: 'pair',
+          clientType: 'sketch',
+          sessionToken: sessionToken,
+          origin: 'Sketch',
+        }),
+      );
     };
 
     ws.onmessage = (event) => {
       try {
-        const message = JSON.parse(event.data);
+        const message = JSON.parse(event.data) as SyncMessage;
         handleMessage(message);
       } catch (err) {
         console.error('Failed to parse message:', err);
@@ -78,13 +100,13 @@ function connect() {
       }
       disconnect();
     };
-  } catch (err) {
+  } catch (_err) {
     showStatus('Failed to connect', 'error');
     disconnect();
   }
 }
 
-function disconnect(clearStatus) {
+function disconnect(clearStatus = false) {
   if (ws) {
     ws.close();
     ws = null;
@@ -103,7 +125,7 @@ function disconnect(clearStatus) {
   }
 }
 
-function handleMessage(message) {
+function handleMessage(message: SyncMessage) {
   switch (message.type) {
     case 'pair':
       if (message.sessionToken) {
@@ -112,7 +134,7 @@ function handleMessage(message) {
         tokenInput.disabled = true;
         connectBtn.disabled = false;
         connectBtn.textContent = 'Disconnect';
-        
+
         const origin = message.origin || 'unknown source';
         showStatus(`Paired with ${origin}`, 'connected');
       }
@@ -121,21 +143,21 @@ function handleMessage(message) {
     case 'sync':
       if (message.payload && message.payload.collections) {
         showStatus('Syncing colors...', 'connected');
-        
+
         // Transform payload for Sketch
         const collections = transformPayload(message.payload);
-        
+
         // Send to Sketch plugin via webkit message handler
-        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.sketchBridge) {
-          window.webkit.messageHandlers.sketchBridge.postMessage({
+        if ((window as any).webkit && (window as any).webkit.messageHandlers && (window as any).webkit.messageHandlers.sketchBridge) {
+          (window as any).webkit.messageHandlers.sketchBridge.postMessage({
             type: 'syncColors',
-            data: collections
+            data: collections,
           });
         }
 
         const collectionName = collections[0]?.name || 'Unknown';
         showResult(`Updated collection: ${collectionName}`);
-        
+
         setTimeout(() => {
           showStatus('Paired with ' + (message.origin || 'web'), 'connected');
         }, 1000);
@@ -165,23 +187,23 @@ function handleMessage(message) {
   }
 }
 
-function transformPayload(payload) {
+function transformPayload(payload: NonNullable<SyncMessage['payload']>) {
   // Transform the token payload to match Sketch's expected format
-  return payload.collections.map(collection => ({
+  return payload.collections?.map((collection) => ({
     name: collection.name,
-    modes: collection.modes.map(mode => ({
+    modes: collection.modes.map((mode) => ({
       name: mode.name,
-      tokens: mode.tokens.filter(token => token.type === 'color')
-    }))
-  }));
+      tokens: mode.tokens.filter((token) => token.type === 'color'),
+    })),
+  })) ?? [];
 }
 
-function showStatus(text, state) {
+function showStatus(text: string, state: 'connecting' | 'connected' | 'error') {
   statusEl.className = `status visible ${state}`;
   statusEl.textContent = text;
 }
 
-function showResult(text) {
+function showResult(text: string) {
   if (!resultEl || !resultTextEl || !resultTimeEl) return;
   resultTextEl.textContent = text;
   resultEl.className = 'result visible';
@@ -190,7 +212,7 @@ function showResult(text) {
   ensureResultTimer();
 }
 
-function formatRelativeResultTime(timestamp) {
+function formatRelativeResultTime(timestamp: number) {
   const diffSeconds = Math.max(0, Math.round((Date.now() - timestamp) / 1000));
   if (diffSeconds < 5) return 'just now';
   if (diffSeconds < 60) return resultRtf.format(-diffSeconds, 'second');
