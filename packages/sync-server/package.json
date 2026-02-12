@@ -18,7 +18,7 @@
     "start": "node dist/cli.js"
   },
   "dependencies": {
-    "token-beam": "^0.1.0",
+    "token-beam": "*",
     "ws": "^8.18.0"
   },
   "devDependencies": {
