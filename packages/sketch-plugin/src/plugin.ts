@@ -4,7 +4,10 @@ var UI = sketch.UI;
 
 var browserWindow = null;
 
-function openTokenBeam() {
+// Sketch looks up command handlers as global functions.
+// We must attach them to globalThis so esbuild doesn't tree-shake them.
+
+globalThis.openTokenBeam = function (context) {
   if (browserWindow) {
     browserWindow.show();
     return;
@@ -13,10 +16,10 @@ function openTokenBeam() {
   browserWindow = new BrowserWindow({
     identifier: 'com.tokenbeam.sketch.panel',
     width: 400,
-    height: 300,
+    height: 600,
     show: false,
     title: '⊷ Token Beam',
-    resizable: false,
+    resizable: true,
     alwaysOnTop: true,
   });
 
@@ -26,20 +29,31 @@ function openTokenBeam() {
       var collections = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
       applySyncedColors(collections);
     } catch (err) {
-      UI.message('Token Beam: Failed to parse colors — ' + String(err));
+      UI.message('Token Beam: bridge error — ' + String(err));
     }
+  });
+
+  // Debug: log any console messages from the webview
+  browserWindow.webContents.on('console-message', function (_level, msg) {
+    console.log('[webview]', msg);
   });
 
   browserWindow.on('closed', function () {
     browserWindow = null;
   });
 
-  // Load the UI — resolve relative to this script's location inside the .sketchplugin bundle
-  var path = require('path');
-  var htmlPath = path.resolve(__dirname, '../Resources/ui/index.html');
+  // Resolve the HTML file path from the plugin bundle.
+  // context.scriptPath points to …/Contents/Sketch/plugin.js
+  // We need …/Contents/Resources/ui/index.html
+  var scriptPath = String(context.scriptPath);
+  var sketchDir = String(
+    NSString.alloc().initWithString(scriptPath).stringByDeletingLastPathComponent()
+  );
+  var htmlPath = sketchDir + '/../Resources/ui/index.html';
+
   browserWindow.loadURL('file://' + htmlPath);
   browserWindow.show();
-}
+};
 
 function applySyncedColors(collections) {
   var doc = sketch.getSelectedDocument();
@@ -65,17 +79,18 @@ function applySyncedColors(collections) {
         // Sketch expects #rrggbbaa — append ff alpha if needed
         if (hex.length === 7) hex = hex + 'ff';
 
-        // Build swatch name
+        // Build swatch name: "Collection / Token (Mode)"
         var name = collection.name ? collection.name + ' / ' + token.name : token.name;
         if (mode.name && mode.name !== 'Value') {
           name = name + ' (' + mode.name + ')';
         }
 
-        // Check for existing swatch
+        // Check for existing swatch with same name
         var existing = null;
-        for (var i = 0; i < doc.swatches.length; i++) {
-          if (doc.swatches[i].name === name) {
-            existing = doc.swatches[i];
+        var swatchList = doc.swatches;
+        for (var i = 0; i < swatchList.length; i++) {
+          if (swatchList[i].name === name) {
+            existing = swatchList[i];
             break;
           }
         }
@@ -84,7 +99,8 @@ function applySyncedColors(collections) {
           existing.color = hex;
           updatedCount++;
         } else {
-          doc.swatches.append({ name: name, color: hex });
+          var swatch = sketch.Swatch.from({ name: name, color: hex });
+          doc.swatches.push(swatch);
         }
 
         colorCount++;
@@ -104,9 +120,9 @@ function applySyncedColors(collections) {
   UI.message(msg);
 }
 
-function onShutdown() {
+globalThis.onShutdown = function () {
   if (browserWindow) {
     browserWindow.close();
     browserWindow = null;
   }
-}
+};
