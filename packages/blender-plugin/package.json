@@ -1,0 +1,12 @@
+{
+  "name": "token-beam-blender-plugin",
+  "displayName": "Token Beam Blender Add-on",
+  "description": "Sync design tokens (colors) from any web app to Blender in real-time",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "install:blender": "mkdir -p \"$HOME/Library/Application Support/Blender\" && BLENDER_SCRIPTS=\"$(find \"$HOME/Library/Application Support/Blender\" -type d -name scripts | sort | tail -n 1)\" && if [ -z \"$BLENDER_SCRIPTS\" ]; then echo 'No Blender scripts directory found. Launch Blender once first.'; exit 1; fi && mkdir -p \"$BLENDER_SCRIPTS/addons/token_beam\" && SYNC_URL=\"${SYNC_SERVER_URL:-ws://localhost:8080}\" && awk -v sync=\"$SYNC_URL\" '/^SYNC_SERVER_URL = \"/ { print \"SYNC_SERVER_URL = \\\"\" sync \"\\\"\"; next } { print }' token_beam/__init__.py > \"$BLENDER_SCRIPTS/addons/token_beam/__init__.py\" && echo \"Installed to $BLENDER_SCRIPTS/addons/token_beam\"",
+    "uninstall:blender": "for ADDON_DIR in \"$HOME/Library/Application Support/Blender\"/*/scripts/addons/token_beam; do if [ -d \"$ADDON_DIR\" ]; then rm -rf \"$ADDON_DIR\" && echo \"Removed $ADDON_DIR\"; fi; done"
+  }
+}

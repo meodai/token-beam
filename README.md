@@ -42,7 +42,8 @@ Each consumer plugin owns its own adapter — a pure transform function that con
 
 - **Figma plugin** (`packages/figma-plugin/src/adapter.ts`): Maps `'color'` → `'COLOR'`, `'number'` → `'FLOAT'`, converts hex strings → 0–1 RGBA, transforms `tokens` → `variables`
 - **Aseprite plugin** (`packages/aseprite-plugin`): Filters color tokens only, applies to sprite palette via Lua API
-- Future plugins (Adobe XD, Sketch, Penpot, etc.) each implement their own adapter
+- **Blender add-on** (`packages/blender-plugin`): Receives color tokens and stores them as scene color properties via Python add-on panel
+- Future plugins (Penpot, etc.) each implement their own adapter
 
 **How it works (Figma example):**
 
@@ -180,6 +181,30 @@ Simple and direct! No bridge server needed thanks to Aseprite's native WebSocket
 
 See [packages/aseprite-plugin/README.md](packages/aseprite-plugin/README.md) for detailed documentation.
 
+## Blender Add-on
+
+The **`packages/blender-plugin`** package syncs color tokens into Blender scene properties using a Python add-on.
+
+### Quick Start
+
+1. **Install the Blender add-on (macOS):**
+
+  ```bash
+  npm run install:blender
+  ```
+
+2. **Start the sync server:**
+  ```bash
+  npm run start:server
+  ```
+
+3. **Use in Blender:**
+  - Enable the add-on in **Edit → Preferences → Add-ons**
+  - Open **3D Viewport → Sidebar (N) → Token Beam**
+  - Enter your session token and click **Connect**
+
+See [packages/blender-plugin/README.md](packages/blender-plugin/README.md) for detailed setup and dependency notes.
+
 ## Project Structure
 
 ```
@@ -202,9 +227,12 @@ token-beam/
 │   ├── figma-plugin/     # Figma plugin (owns its own adapter transform)
 │   │   └── src/adapter.ts  # Figma-specific adapter
 │   │
-│   └── aseprite-plugin/  # Aseprite extension
-       ├── token-beam.lua      # Lua script with WebSocket support
-       └── package.json        # Extension manifest
+│   ├── aseprite-plugin/  # Aseprite extension
+│   │   ├── token-beam.lua      # Lua script with WebSocket support
+│   │   └── package.json        # Extension manifest
+│   │
+│   └── blender-plugin/   # Blender add-on
+│       └── token_beam/__init__.py
 │
 ├── package.json
 └── README.md
@@ -301,6 +329,9 @@ npm run dev:figma
 # Install Aseprite extension (macOS)
 npm run install:aseprite
 
+# Install Blender add-on (macOS)
+npm run install:blender
+
 # Install Sketch plugin (macOS)
 npm run install:sketch
 
@@ -334,7 +365,7 @@ npm run start:server
 - Documentation and examples
 
 **Proprietary License** for:
-- Figma, Sketch, and Aseprite plugins (free to use as-is, modification requires Enterprise)
+- Figma, Sketch, Aseprite, and Blender plugins (free to use as-is, modification requires Enterprise)
 
 **AGPL-3.0 / Commercial License** for:
 - Sync server (`packages/sync-server`)
