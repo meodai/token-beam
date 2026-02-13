@@ -28,6 +28,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Use npm 11
+        run: |
+          npm i -g npm@11
+          npm --version
+          node --version
+
       - name: Build lib
         run: npm run build:lib
 
