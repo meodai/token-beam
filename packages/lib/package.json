@@ -7,12 +7,12 @@
   "author": "David Aerne (meodai)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/meodai/token-beam.git",
+    "url": "https://github.com/meodai/token-sync.git",
     "directory": "packages/lib"
   },
-  "homepage": "https://github.com/meodai/token-beam#readme",
+  "homepage": "https://github.com/meodai/token-sync#readme",
   "bugs": {
-    "url": "https://github.com/meodai/token-beam/issues"
+    "url": "https://github.com/meodai/token-sync/issues"
   },
   "keywords": [
     "design-tokens",

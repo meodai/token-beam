@@ -364,6 +364,6 @@ npm run start:server
 
 AGPL-3.0 OR Commercial. Free for personal and open-source use. Commercial use requires a paid license.
 
-See [LICENSE](LICENSE) for details. Contact: sales@token-beam.dev
+See [LICENSE](LICENSE) for details. Contact: token-beam@elastiq.ch
 
 Copyright (c) 2026 David Aerne (meodai)

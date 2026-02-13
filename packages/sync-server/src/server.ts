@@ -189,7 +189,7 @@ export class TokenSyncServer {
     // Also check user-provided origin (can be spoofed but good for logging)
     if (message.origin && this.isOriginBlocked(message.origin)) {
       console.log(`Blocked pairing from reported origin: ${message.origin}`);
-      this.sendError(ws, 'Commercial use detected. Contact sales@token-beam.dev for licensing.');
+      this.sendError(ws, 'Commercial use detected. Contact token-beam@elastiq.ch for licensing.');
       ws.close();
       return;
     }

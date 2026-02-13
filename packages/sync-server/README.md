@@ -148,7 +148,7 @@ Session paired with origin: Startup Design System
 
 When you identify commercial use:
 1. Add domain to blocklist
-2. Contact them: sales@token-beam.dev
+2. Contact them: token-beam@elastiq.ch
 3. Server will reject future connections with upgrade message
 
 ## API
