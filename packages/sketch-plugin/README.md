@@ -50,3 +50,7 @@ npm run install:sketch
 ```
 
 Then restart Sketch or use **Plugins → Custom Plugin → Reload Plugins**.
+
+## License
+
+AGPL-3.0 OR Commercial. See [LICENSE](../../LICENSE) for details.

@@ -42,3 +42,7 @@ npm run uninstall:adobe-xd
 - Current scope is color tokens only (`type: "color"`)
 - Server URL defaults to `ws://localhost:8080`
 - This is a minimal UXP panel implementation designed for quick shipping
+
+## License
+
+AGPL-3.0 OR Commercial. See [LICENSE](../../LICENSE) for details.

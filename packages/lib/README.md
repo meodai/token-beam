@@ -102,3 +102,7 @@ open node_modules/token-beam/example-widget.html
 cp node_modules/token-beam/example-widget.html ./my-widget.html
 ```
 
+## License
+
+AGPL-3.0 OR Commercial. See [LICENSE](../../LICENSE) for details.
+
