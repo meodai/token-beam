@@ -1,6 +1,5 @@
 {
   "name": "token-beam",
-  "description": "Sync design tokens from Token Beam sessions into Figma variables in real time.",
   "id": "figma-sync-dev",
   "api": "1.0.0",
   "main": "dist/code.js",
