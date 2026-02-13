@@ -1,9 +1,8 @@
 # [1.1.0](https://github.com/meodai/token-beam/compare/v1.0.3...v1.1.0) (2026-02-13)
 
-
 ### Features
 
-* **pages:** add GitHub Actions workflow for deploying demo to GitHub Pages ([55ed612](https://github.com/meodai/token-beam/commit/55ed6122a94508c684b62818aeff8f1c3d866759))
+- **pages:** add GitHub Actions workflow for deploying demo to GitHub Pages ([55ed612](https://github.com/meodai/token-beam/commit/55ed6122a94508c684b62818aeff8f1c3d866759))
 
 ## [1.0.3](https://github.com/meodai/token-beam/compare/v1.0.2...v1.0.3) (2026-02-13)
 
