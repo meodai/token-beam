@@ -45,6 +45,12 @@ def _srgb_to_linear(channel):
     return ((channel + 0.055) / 1.055) ** 2.4
 
 
+def _linear_to_srgb(channel):
+    if channel <= 0.0031308:
+        return channel * 12.92
+    return 1.055 * (channel ** (1.0 / 2.4)) - 0.055
+
+
 def _hex_to_rgba(hex_value):
     value = hex_value.strip().lstrip("#")
     if len(value) == 3:
@@ -132,6 +138,30 @@ def _ensure_token_material(token_name, rgba, collection="", mode=""):
 
     material.diffuse_color = rgba
     return material_name
+
+
+PALETTE_NAME = "Token Beam"
+
+
+def _sync_palette(colors):
+    """Sync colors to a native Blender palette (sRGB gamma space, RGB only)."""
+    palette = bpy.data.palettes.get(PALETTE_NAME)
+    if palette is None:
+        palette = bpy.data.palettes.new(PALETTE_NAME)
+
+    # Clear existing palette colors
+    while len(palette.colors) > 0:
+        palette.colors.remove(palette.colors[0])
+
+    for color in colors:
+        entry = palette.colors.new()
+        rgba = color["value"]
+        # Convert linear → sRGB gamma for the palette (Blender palettes are in gamma space)
+        entry.color = (
+            _linear_to_srgb(rgba[0]),
+            _linear_to_srgb(rgba[1]),
+            _linear_to_srgb(rgba[2]),
+        )
 
 
 class TokenBeamState(bpy.types.PropertyGroup):
@@ -399,6 +429,7 @@ def _drain_events():
                 item.collection = color["collection"]
                 item.mode = color["mode"]
                 item.material_name = material_name
+            _sync_palette(value)
 
     return 0.5
 
