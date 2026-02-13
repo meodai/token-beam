@@ -19,7 +19,7 @@ function getSyncServerUrl(): string {
   
   // Figma plugins don't have window.location, so default to production URL
   // Users can override via VITE_SYNC_SERVER_URL at build time
-  return 'wss://token-sync.fly.dev';
+  return 'wss://token-beam.fly.dev';
 }
 
 const SYNC_SERVER_URL = getSyncServerUrl();

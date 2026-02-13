@@ -31,7 +31,7 @@ const assets = require('assets') as {
 
 const { Color } = require('scenegraph') as { Color: new (hex: string) => unknown };
 
-const SYNC_SERVER_URL = 'ws://localhost:8080';
+const SYNC_SERVER_URL = (globalThis as Record<string, unknown>).__SYNC_SERVER_URL__ as string || 'wss://token-beam.fly.dev';
 
 let panel: HTMLDivElement | undefined;
 let ws: WebSocket | null = null;

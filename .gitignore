@@ -3,3 +3,5 @@ dist/
 *.js.map
 .DS_Store
 lib-dist/
+*.zip
+bundle/

@@ -16,7 +16,7 @@ local dlg = Dialog("Token Beam")
 local tokenValue = ""
 local ws = nil
 local statusText = "Disconnected"
-local syncServerUrl = "ws://localhost:8080"
+local syncServerUrl = "wss://token-beam.fly.dev"
 local generation = 0
 
 -- Convert hex color to Aseprite Color
