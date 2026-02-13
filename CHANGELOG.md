@@ -1,3 +1,9 @@
+## [1.2.3](https://github.com/meodai/token-beam/compare/v1.2.2...v1.2.3) (2026-02-13)
+
+### Bug Fixes
+
+- update WebSocket URL configuration in .env.example ([28cc90a](https://github.com/meodai/token-beam/commit/28cc90a76db375e56e073a14c76666174d9040b9))
+
 ## [1.2.2](https://github.com/meodai/token-beam/compare/v1.2.1...v1.2.2) (2026-02-13)
 
 ### Bug Fixes
