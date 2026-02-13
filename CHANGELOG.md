@@ -1,3 +1,9 @@
+# [1.3.0](https://github.com/meodai/token-beam/compare/v1.2.4...v1.3.0) (2026-02-13)
+
+### Features
+
+- add initial manifest.json for token-beam configuration ([c02e714](https://github.com/meodai/token-beam/commit/c02e71434caafa8d79db79ab565dbaa1e69cf2e6))
+
 ## [1.2.4](https://github.com/meodai/token-beam/compare/v1.2.3...v1.2.4) (2026-02-13)
 
 ### Bug Fixes
