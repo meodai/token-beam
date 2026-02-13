@@ -1,3 +1,9 @@
+## [1.2.4](https://github.com/meodai/token-beam/compare/v1.2.3...v1.2.4) (2026-02-13)
+
+### Bug Fixes
+
+- update development script to include SYNC_SERVER_URL for local environment ([bbed858](https://github.com/meodai/token-beam/commit/bbed858f5c8ffc2b789f8c6d887c59db4752a70c))
+
 ## [1.2.3](https://github.com/meodai/token-beam/compare/v1.2.2...v1.2.3) (2026-02-13)
 
 ### Bug Fixes
