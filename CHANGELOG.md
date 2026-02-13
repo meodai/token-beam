@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/meodai/token-beam/compare/v1.2.0...v1.2.1) (2026-02-13)
+
+### Bug Fixes
+
+- update WebSocket URL for production sync server ([ad72523](https://github.com/meodai/token-beam/commit/ad725237d786eae454ab1b6dabdb92d4a6aa8e1c))
+
 # [1.2.0](https://github.com/meodai/token-beam/compare/v1.1.1...v1.2.0) (2026-02-13)
 
 ### Features
