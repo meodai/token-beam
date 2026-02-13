@@ -1,3 +1,9 @@
+# [1.2.0](https://github.com/meodai/token-beam/compare/v1.1.1...v1.2.0) (2026-02-13)
+
+### Features
+
+- enhance fetchAndRender to support static builds and local development ([e103ded](https://github.com/meodai/token-beam/commit/e103dedf971d9b74f215ed246822b6f6d56088e3))
+
 ## [1.1.1](https://github.com/meodai/token-beam/compare/v1.1.0...v1.1.1) (2026-02-13)
 
 ### Bug Fixes
