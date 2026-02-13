@@ -2,6 +2,7 @@
   "name": "token-beam-sketch-plugin",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "build": "mkdir -p 'Token Beam.sketchplugin/Contents/Sketch' && mkdir -p 'Token Beam.sketchplugin/Contents/Resources/ui' && cp manifest.json 'Token Beam.sketchplugin/Contents/Sketch/' && cp ui/index.html 'Token Beam.sketchplugin/Contents/Resources/ui/' && esbuild src/plugin.ts --bundle --format=cjs --platform=node --target=es2015 --supported:arrow=false --tree-shaking=false --external:sketch --outfile='Token Beam.sketchplugin/Contents/Sketch/plugin.js' && esbuild ui/ui.ts --platform=browser --target=es2015 --tree-shaking=false --outfile='Token Beam.sketchplugin/Contents/Resources/ui/ui.js'",
     "install:sketch": "npm run build && rm -rf ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/'Token Beam.sketchplugin' && cp -r 'Token Beam.sketchplugin' ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/",

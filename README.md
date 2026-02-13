@@ -362,26 +362,8 @@ npm run start:server
 
 ## License
 
-**MIT License** for:
-- Core library (`token-beam` npm package)
-- Documentation and examples
+AGPL-3.0 OR Commercial. Free for personal and open-source use. Commercial use requires a paid license.
 
-**Proprietary License** for:
-- Figma, Sketch, Aseprite, and Blender plugins (free to use as-is, modification requires Enterprise)
+See [LICENSE](LICENSE) for details. Contact: sales@token-beam.dev
 
-**AGPL-3.0 / Commercial License** for:
-- Sync server (`packages/sync-server`)
-
-The sync server is free for personal/open source projects. Commercial use requires a paid plan.
-
-**Pricing:**
-- Free: Personal projects, self-hosted (AGPL-3.0)
-- Pro: $29/month - Hosted service, unlimited sessions, commercial use
-- Enterprise: $299/month - Self-hosting allowed, modify plugins, SSO, priority support
-
-See [packages/sync-server/LICENSE.md](packages/sync-server/LICENSE.md) for details.  
-**Contact:** sales@token-beam.dev
-
----
-
-MIT License - Copyright (c) 2026 David Aerne (meodai)
+Copyright (c) 2026 David Aerne (meodai)

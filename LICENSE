@@ -12,6 +12,7 @@ For open source and non-commercial projects, this software is licensed under the
 - You comply with AGPL-3.0 terms (including source disclosure for network services)
 
 **AGPL-3.0 Requirements:**
+
 - You must open source your entire application
 - You must open source any modifications to this software
 - You must provide source code to users accessing your service over a network (Section 13)
@@ -24,12 +25,14 @@ See the full AGPL-3.0 license at: https://www.gnu.org/licenses/agpl-3.0.html
 For commercial, proprietary, or closed-source applications, you must obtain a commercial license.
 
 **You need a commercial license if:**
+
 - You want to use this in a closed-source application
 - You want to provide a SaaS/hosted service without disclosing source
 - You're integrating this into a commercial product or website
 - Your company revenue exceeds $0 and you don't want AGPL restrictions
 
 **Commercial License includes:**
+
 - Use in closed-source/proprietary applications
 - Deploy as SaaS without source disclosure
 - Self-host unlimited instances
@@ -41,11 +44,13 @@ For commercial, proprietary, or closed-source applications, you must obtain a co
 ### Pricing
 
 **Pro: $29/month**
+
 - Hosted service (we manage the infrastructure)
 - Unlimited sessions
 - Commercial use allowed
 
 **Enterprise: $299/month**
+
 - Self-hosting with commercial license
 - Modify and extend for your needs
 - Source code access
@@ -58,6 +63,7 @@ For commercial, proprietary, or closed-source applications, you must obtain a co
 Open source projects with an OSI-approved license can request a **free commercial license**.
 
 **Requirements:**
+
 - Project must be publicly available (e.g., GitHub)
 - Must use an OSI-approved open source license
 - Must not be a commercial/proprietary product
@@ -67,8 +73,8 @@ To apply, email: opensource@token-beam.dev
 ## Contact
 
 For commercial licensing inquiries:
-- Email: sales@token-beam.dev
-- Website: https://token-beam.dev
+
+- Email: token-beam@elastiq.ch
 
 ---
 

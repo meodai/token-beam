@@ -1,6 +1,7 @@
 {
   "name": "token-beam-demo",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "version": "0.1.0",
   "type": "module",
   "scripts": {

@@ -3,7 +3,7 @@
   "displayName": "Token Beam Blender Add-on",
   "description": "Sync design tokens (colors) from any web app to Blender in real-time",
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "private": true,
   "scripts": {
     "install:blender": "mkdir -p \"$HOME/Library/Application Support/Blender\" && SYNC_URL=\"${SYNC_SERVER_URL:-ws://localhost:8080}\" && INSTALLED=0 && for VERSION_DIR in \"$HOME/Library/Application Support/Blender\"/*; do if [ -d \"$VERSION_DIR\" ]; then TARGET=\"$VERSION_DIR/scripts/addons/token_beam\" && mkdir -p \"$TARGET\" && awk -v sync=\"$SYNC_URL\" '/^SYNC_SERVER_URL = \"/ { print \"SYNC_SERVER_URL = \\\"\" sync \"\\\"\"; next } { print }' token_beam/__init__.py > \"$TARGET/__init__.py\" && echo \"Installed to $TARGET\" && INSTALLED=1; fi; done && if [ \"$INSTALLED\" -eq 0 ]; then echo 'No Blender version directory found. Launch Blender once first.'; exit 1; fi",

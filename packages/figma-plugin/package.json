@@ -1,6 +1,7 @@
 {
   "name": "token-beam-figma-plugin",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "version": "0.1.0",
   "scripts": {
     "build": "npm run build:code && npm run build:ui",

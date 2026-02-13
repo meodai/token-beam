@@ -6,7 +6,7 @@
   "author": { "name": "Token Beam" },
   "contributors": [],
   "publisher": "token-beam",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "categories": [ "Scripts" ],
   "contributes": {
     "scripts": [

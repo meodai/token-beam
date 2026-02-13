@@ -1,6 +1,7 @@
 {
   "name": "token-beam-monorepo",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "packageManager": "npm@11.6.0",
   "engines": {
     "node": ">=20",

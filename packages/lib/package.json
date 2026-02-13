@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant.",
   "type": "module",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "author": "David Aerne (meodai)",
   "repository": {
     "type": "git",

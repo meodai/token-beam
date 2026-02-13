@@ -2,6 +2,7 @@
   "name": "token-beam-adobe-xd-plugin",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "build": "tsc -p tsconfig.json && cp manifest.json dist/manifest.json",
     "install:adobe-xd": "npm run build && mkdir -p \"$HOME/Library/Application Support/Adobe/UXP/Plugins/External/token-beam-adobe-xd\" && cp -f dist/manifest.json \"$HOME/Library/Application Support/Adobe/UXP/Plugins/External/token-beam-adobe-xd/manifest.json\" && cp -f dist/main.js \"$HOME/Library/Application Support/Adobe/UXP/Plugins/External/token-beam-adobe-xd/main.js\"",
