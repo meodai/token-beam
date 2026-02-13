@@ -163,6 +163,17 @@ def _sync_palette(colors):
             _linear_to_srgb(rgba[2]),
         )
 
+    # Auto-assign palette to all paint settings so it shows in our panel
+    # and in the brush color picker without manual selection
+    try:
+        ts = bpy.context.tool_settings
+        for attr in ("image_paint", "vertex_paint", "gpencil_paint"):
+            ps = getattr(ts, attr, None)
+            if ps is not None and ps.palette != palette:
+                ps.palette = palette
+    except Exception:
+        pass
+
 
 class TokenBeamState(bpy.types.PropertyGroup):
     pass
@@ -337,34 +348,15 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
 
         layout.separator()
 
-        # Show native Blender palette if it exists
-        palette = bpy.data.palettes.get(PALETTE_NAME)
-        if palette and len(palette.colors) > 0:
-            layout.label(text=f"Palette ({len(palette.colors)} colors)")
-            # Show palette grid via paint settings if available
-            ts = context.tool_settings
-            paint_settings = None
-            for attr in ("image_paint", "vertex_paint", "gpencil_paint"):
-                ps = getattr(ts, attr, None)
-                if ps is not None:
-                    if ps.palette == palette:
-                        paint_settings = ps
-                        break
-                    if ps.palette is None:
-                        ps.palette = palette
-                        paint_settings = ps
-                        break
-            if paint_settings is not None:
-                layout.template_palette(paint_settings, "palette", color=True)
-            layout.separator()
-
-        layout.label(text="Synced colors")
-
-        row = layout.row(align=True)
-        row.operator("token_beam.clear_colors", text="Clear Colors")
+        # Always show the synced color list first
+        num_colors = len(scene.token_beam_colors)
+        if num_colors > 0:
+            layout.label(text=f"Synced colors ({num_colors})")
+        else:
+            layout.label(text="Synced colors")
 
         box = layout.box()
-        if len(scene.token_beam_colors) == 0:
+        if num_colors == 0:
             box.label(text="No colors synced")
         else:
             for index, item in enumerate(scene.token_beam_colors):
@@ -372,10 +364,30 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
                 swatch = row.row(align=True)
                 swatch.ui_units_x = 2
                 swatch.prop(item, "value", text="")
-                label = item.token_name
-                row.label(text=label)
+                row.label(text=item.token_name)
                 apply_op = row.operator("token_beam.apply_color", text="Apply")
                 apply_op.color_index = index
+
+            row = layout.row(align=True)
+            row.operator("token_beam.clear_colors", text="Clear Colors")
+
+        # Show native Blender palette grid if available (paint modes only)
+        try:
+            palette = bpy.data.palettes.get(PALETTE_NAME)
+            if palette and len(palette.colors) > 0:
+                ts = context.tool_settings
+                paint_settings = None
+                for attr in ("image_paint", "vertex_paint", "gpencil_paint"):
+                    ps = getattr(ts, attr, None)
+                    if ps is not None and ps.palette == palette:
+                        paint_settings = ps
+                        break
+                if paint_settings is not None:
+                    layout.separator()
+                    layout.label(text="Palette")
+                    layout.template_palette(paint_settings, "palette", color=True)
+        except Exception:
+            pass
 
 
 class TOKENBEAM_OT_clear_colors(bpy.types.Operator):
