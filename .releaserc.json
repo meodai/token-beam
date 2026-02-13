@@ -1,0 +1,49 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version -w packages/lib && npm run build:lib"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "pkgRoot": "packages/lib"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md",
+          "packages/lib/package.json"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          { "path": "token-beam-figma.zip", "label": "Figma Plugin (${nextRelease.version})" },
+          { "path": "packages/sketch-plugin/token-beam-sketch.zip", "label": "Sketch Plugin (${nextRelease.version})" },
+          { "path": "packages/blender-plugin/token-beam-blender.zip", "label": "Blender Add-on (${nextRelease.version})" },
+          { "path": "packages/krita-plugin/token-beam-krita.zip", "label": "Krita Plugin (${nextRelease.version})" },
+          { "path": "packages/aseprite-plugin/token-beam-aseprite.zip", "label": "Aseprite Plugin (${nextRelease.version})" },
+          { "path": "packages/adobe-xd-plugin/token-beam-adobe-xd.zip", "label": "Adobe XD Plugin (${nextRelease.version})" }
+        ]
+      }
+    ]
+  ]
+}

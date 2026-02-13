@@ -53,11 +53,27 @@
     "install:adobe-xd": "npm run install:adobe-xd -w packages/adobe-xd-plugin",
     "uninstall:adobe-xd": "npm run uninstall:adobe-xd -w packages/adobe-xd-plugin",
     "format": "prettier --write \"packages/*/src/**/*.{ts,css}\" \"*.{json,md}\"",
-    "format:check": "prettier --check \"packages/*/src/**/*.{ts,css}\" \"*.{json,md}\""
+    "format:check": "prettier --check \"packages/*/src/**/*.{ts,css}\" \"*.{json,md}\"",
+    "commit": "cz",
+    "prepare": "husky"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "esbuild": "0.27.3",
+    "husky": "^9.1.7",
     "prettier": "^3.8.1",
+    "semantic-release": "^24.2.9",
     "typescript": "^5.7.0"
   }
 }
