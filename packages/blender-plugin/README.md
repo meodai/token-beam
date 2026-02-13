@@ -11,6 +11,8 @@ Sync design token colors into Blender in real-time.
 
 ## Installation
 
+For Blender 4.2+ extension zip import, the bundled archive includes both top-level `__init__.py` and `blender_manifest.toml`.
+
 ### Quick install (macOS)
 
 From the project root:

@@ -1,0 +1,19 @@
+schema_version = "1.0.0"
+
+id = "token_beam"
+version = "0.1.0"
+name = "Token Beam"
+tagline = "Sync design token colors via WebSocket"
+maintainer = "Token Beam"
+type = "add-on"
+
+website = "https://github.com/meodai/token-beam/releases"
+tags = ["Material", "User Interface"]
+blender_version_min = "4.2.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+
+[permissions]
+network = "Connect to a Token Beam sync server via WebSocket"

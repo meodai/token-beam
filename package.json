@@ -31,7 +31,7 @@
     "build:demo": "npm run build -w packages/demo",
     "build:marketing": "npm run build -w packages/marketing",
     "bundle:all": "npm run build:all && npm run bundle:figma && npm run bundle:sketch && npm run bundle:blender && npm run bundle:krita && npm run bundle:aseprite && npm run bundle:adobe-xd",
-    "bundle:figma": "cd packages/figma-plugin && zip -r ../../token-beam-figma.zip manifest.json dist/",
+    "bundle:figma": "rm -f token-beam-figma.zip && cd packages/figma-plugin && zip -r ../../token-beam-figma.zip manifest.json dist/",
     "bundle:sketch": "npm run bundle -w packages/sketch-plugin",
     "bundle:blender": "npm run bundle -w packages/blender-plugin",
     "bundle:krita": "npm run bundle -w packages/krita-plugin",
