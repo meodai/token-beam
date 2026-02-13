@@ -35,7 +35,7 @@ export class TokenSyncServer {
   private cleanupTimer?: ReturnType<typeof setInterval>;
   private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
   private readonly MAX_PAYLOAD_SIZE = 10 * 1024 * 1024; // 10MB - reasonable for design tokens with embedded assets
-  
+
   // Blocked origins - manually curate commercial users
   private readonly BLOCKED_ORIGINS = [
     // Example: 'big-company-design-system.com',
@@ -104,7 +104,7 @@ export class TokenSyncServer {
       }
     });
 
-    this.wss = new WebSocketServer({ 
+    this.wss = new WebSocketServer({
       server: this.httpServer,
       maxPayload: this.MAX_PAYLOAD_SIZE,
       verifyClient: (info: { origin: string; req: IncomingMessage }) => {
@@ -124,8 +124,8 @@ export class TokenSyncServer {
   private isOriginBlocked(origin: string): boolean {
     try {
       const hostname = new URL(origin).hostname;
-      return this.BLOCKED_ORIGINS.some(blocked => 
-        hostname === blocked || hostname.endsWith('.' + blocked)
+      return this.BLOCKED_ORIGINS.some(
+        (blocked) => hostname === blocked || hostname.endsWith('.' + blocked),
       );
     } catch {
       return false;
@@ -208,10 +208,13 @@ export class TokenSyncServer {
       if (message.icon) {
         webIcon = this.sanitizeIcon(message.icon);
         if (!webIcon) {
-          console.log(`Rejected invalid icon from ${message.origin ?? 'unknown'}: type=${(message.icon as Record<string, unknown>).type}`);
+          console.log(
+            `Rejected invalid icon from ${message.origin ?? 'unknown'}: type=${(message.icon as Record<string, unknown>).type}`,
+          );
           this.send(ws, {
             type: 'error',
-            error: '[warn] Icon rejected: invalid or unsafe content. Unicode icons must be 1–3 visible characters. SVG icons must be under 10KB with no scripts or event handlers.',
+            error:
+              '[warn] Icon rejected: invalid or unsafe content. Unicode icons must be 1–3 visible characters. SVG icons must be under 10KB with no scripts or event handlers.',
           });
         }
       }
@@ -273,7 +276,9 @@ export class TokenSyncServer {
         });
       }
 
-      console.log(`${clientType} client joined session: ${sessionToken} (${session.targetClients.length} target clients)`);
+      console.log(
+        `${clientType} client joined session: ${sessionToken} (${session.targetClients.length} target clients)`,
+      );
       return;
     }
 
@@ -320,7 +325,7 @@ export class TokenSyncServer {
           type: 'sync',
           payload: message.payload,
         });
-        const targetType = session.targetClients.find(t => t.ws === ws)?.type || 'unknown';
+        const targetType = session.targetClients.find((t) => t.ws === ws)?.type || 'unknown';
         console.log(`Synced from ${targetType} to web`);
       } else {
         this.sendError(ws, 'Web client not connected');
@@ -358,9 +363,9 @@ export class TokenSyncServer {
       }
     } else {
       // Target client disconnected - remove from array
-      const disconnectedTarget = session.targetClients.find(t => t.ws === ws);
-      session.targetClients = session.targetClients.filter(t => t.ws !== ws);
-      
+      const disconnectedTarget = session.targetClients.find((t) => t.ws === ws);
+      session.targetClients = session.targetClients.filter((t) => t.ws !== ws);
+
       if (disconnectedTarget && session.webClient?.readyState === WebSocket.OPEN) {
         this.send(session.webClient, {
           type: 'error',
@@ -371,14 +376,16 @@ export class TokenSyncServer {
         this.sessions.delete(session.id);
         console.log(`Session ${session.token} ended (last target disconnect)`);
       } else {
-        console.log(`${disconnectedTarget?.type || 'Target'} client disconnected from session ${session.token}`);
+        console.log(
+          `${disconnectedTarget?.type || 'Target'} client disconnected from session ${session.token}`,
+        );
       }
     }
   }
 
   private findSessionByClient(ws: WebSocket): SyncSession | undefined {
     return Array.from(this.sessions.values()).find(
-      (s) => s.webClient === ws || s.targetClients.some(t => t.ws === ws),
+      (s) => s.webClient === ws || s.targetClients.some((t) => t.ws === ws),
     );
   }
 
@@ -404,7 +411,8 @@ export class TokenSyncServer {
       if (trimmed.length === 0 || [...trimmed].length > 3) return undefined;
 
       // Reject dangerous unicode: control chars, bidi overrides, zero-width chars, tag chars
-      const forbidden = /[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF\uFFF9-\uFFFB]|\uDB40[\uDC01-\uDC7F]/;
+      const forbidden =
+        /[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF\uFFF9-\uFFFB]|\uDB40[\uDC01-\uDC7F]/;
       if (forbidden.test(trimmed)) return undefined;
 
       return { type: 'unicode', value: trimmed };
@@ -424,7 +432,10 @@ export class TokenSyncServer {
       // Remove on* event attributes (onclick, onload, onerror, etc.)
       clean = clean.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
       // Remove javascript: / data: in attribute values
-      clean = clean.replace(/(?:href|xlink:href|src|action)\s*=\s*(?:"(?:javascript|data):[^"]*"|'(?:javascript|data):[^']*')/gi, '');
+      clean = clean.replace(
+        /(?:href|xlink:href|src|action)\s*=\s*(?:"(?:javascript|data):[^"]*"|'(?:javascript|data):[^']*')/gi,
+        '',
+      );
       // Remove <foreignObject>, <iframe>, <embed>, <object> elements
       clean = clean.replace(/<\/?(foreignObject|iframe|embed|object)[^>]*>/gi, '');
       // Remove <set>, <animate*> that can trigger JS via attributeName="href" etc.

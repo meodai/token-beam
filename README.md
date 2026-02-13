@@ -141,23 +141,26 @@ The **`packages/aseprite-plugin`** package syncs color tokens to Aseprite palett
 ### Quick Start
 
 1. **Install the Aseprite extension:**
-   
+
    Quick install (macOS):
+
    ```bash
    npm run install:aseprite
    ```
-   
+
    Or manually link/copy `packages/aseprite-plugin` to Aseprite's scripts folder:
    - **macOS**: `~/Library/Application Support/Aseprite/scripts/`
    - **Windows**: `%APPDATA%\Aseprite\scripts\`
    - **Linux**: `~/.config/aseprite/scripts/`
 
    Example (macOS):
+
    ```bash
    ln -s "$(pwd)/packages/aseprite-plugin" ~/Library/Application\ Support/Aseprite/scripts/token-beam
    ```
 
 2. **Start the sync server:**
+
    ```bash
    npm run start:server
    ```
@@ -189,15 +192,15 @@ The **`packages/blender-plugin`** package syncs color tokens into Blender scene 
 
 1. **Install the Blender add-on (macOS):**
 
-  ```bash
-  npm run install:blender
-  ```
+```bash
+npm run install:blender
+```
 
 1. **Start the sync server:**
 
-  ```bash
-  npm run start:server
-  ```
+```bash
+npm run start:server
+```
 
 1. **Use in Blender:**
 

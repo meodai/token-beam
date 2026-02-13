@@ -29,17 +29,17 @@ function toVariableValue(varDef: FigmaSyncVariable): VariableValue {
 
 function validatePayload(payload: unknown): payload is FigmaCollectionPayload {
   if (!payload || typeof payload !== 'object') return false;
-  
+
   const p = payload as Partial<FigmaCollectionPayload>;
-  
+
   if (typeof p.collectionName !== 'string' || !p.collectionName) return false;
   if (!Array.isArray(p.modes) || p.modes.length === 0) return false;
-  
+
   for (const mode of p.modes) {
     if (!mode || typeof mode !== 'object') return false;
     if (typeof mode.name !== 'string' || !mode.name) return false;
     if (!Array.isArray(mode.variables)) return false;
-    
+
     for (const variable of mode.variables) {
       if (!variable || typeof variable !== 'object') return false;
       if (typeof variable.name !== 'string' || !variable.name) return false;
@@ -47,7 +47,7 @@ function validatePayload(payload: unknown): payload is FigmaCollectionPayload {
       if (variable.value === undefined || variable.value === null) return false;
     }
   }
-  
+
   return true;
 }
 
@@ -60,11 +60,11 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         throw new Error('Invalid payload structure');
       }
       const result = await syncVariables(msg);
-      figma.ui.postMessage({ 
-        type: 'sync-complete', 
+      figma.ui.postMessage({
+        type: 'sync-complete',
         collectionId: result.id,
         collectionName: result.name,
-        isNew: result.isNew
+        isNew: result.isNew,
       });
       const action = result.isNew ? 'Created' : 'Updated';
       figma.notify(`${action} collection: ${result.name}`);
@@ -76,14 +76,16 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
   }
 };
 
-async function syncVariables(msg: SyncMessage): Promise<{ id: string; name: string; isNew: boolean }> {
+async function syncVariables(
+  msg: SyncMessage,
+): Promise<{ id: string; name: string; isNew: boolean }> {
   const { payload } = msg;
   const collectionName = payload.collectionName;
 
   // Find existing collection by name or create new one
   const collections = await figma.variables.getLocalVariableCollectionsAsync();
   let collection = collections.find((c) => c.name === collectionName);
-  
+
   const existingVars = new Map<string, Variable>();
   const isNew = !collection;
 

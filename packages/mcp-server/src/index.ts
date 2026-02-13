@@ -10,11 +10,7 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  createCollection,
-  createMultiModeCollection,
-  TokenTypeSchema,
-} from 'token-beam';
+import { createCollection, createMultiModeCollection, TokenTypeSchema } from 'token-beam';
 import type { SyncMessage, TokenSyncPayload } from 'token-beam';
 import { z } from 'zod';
 import WebSocket from 'ws';
@@ -129,7 +125,7 @@ server.registerTool(
     description:
       'Start a new Token Beam sync session. Returns a beam:// token ' +
       'that the user pastes into Figma, Krita, Aseprite, or any Token Beam client. ' +
-      'You usually don\'t need to call this directly — sync_tokens auto-creates a session.',
+      "You usually don't need to call this directly — sync_tokens auto-creates a session.",
     inputSchema: {},
   },
   async () => {
@@ -145,9 +141,7 @@ server.registerTool(
       };
     } catch (e) {
       return {
-        content: [
-          { type: 'text' as const, text: `Failed to create session: ${e}` },
-        ],
+        content: [{ type: 'text' as const, text: `Failed to create session: ${e}` }],
       };
     }
   },
@@ -157,13 +151,15 @@ server.registerTool(
 
 const tokenEntrySchema = z.object({
   name: z.string().describe('Token name (e.g. "primary", "spacing/sm", "brand/red")'),
-  value: z.union([z.string(), z.number(), z.boolean()]).describe(
-    'Token value. Hex colors like "#ff3366" are auto-detected. ' +
-    'Numbers, booleans, and other strings are also supported.',
+  value: z
+    .union([z.string(), z.number(), z.boolean()])
+    .describe(
+      'Token value. Hex colors like "#ff3366" are auto-detected. ' +
+        'Numbers, booleans, and other strings are also supported.',
+    ),
+  type: TokenTypeSchema.optional().describe(
+    'Explicit token type. If omitted, type is inferred from the value.',
   ),
-  type: TokenTypeSchema
-    .optional()
-    .describe('Explicit token type. If omitted, type is inferred from the value.'),
 });
 
 server.registerTool(
@@ -178,10 +174,7 @@ server.registerTool(
       collection: z
         .string()
         .describe('Collection name (e.g. "my palette", "spacing", "brand tokens")'),
-      tokens: z
-        .array(tokenEntrySchema)
-        .min(1)
-        .describe('Array of tokens to sync'),
+      tokens: z.array(tokenEntrySchema).min(1).describe('Array of tokens to sync'),
       mode: z
         .string()
         .optional()
@@ -215,12 +208,11 @@ server.registerTool(
     const ok = sendSync(payload);
 
     if (ok) {
-      const summary = tokens
-        .map((t) => `  ${t.name}: ${t.value}`)
-        .join('\n');
-      const targetInfo = connectedTargets.length > 0
-        ? `\nConnected targets: ${connectedTargets.join(', ')}`
-        : '\nNo design tools connected yet.';
+      const summary = tokens.map((t) => `  ${t.name}: ${t.value}`).join('\n');
+      const targetInfo =
+        connectedTargets.length > 0
+          ? `\nConnected targets: ${connectedTargets.join(', ')}`
+          : '\nNo design tools connected yet.';
       return {
         content: [
           {
@@ -232,9 +224,7 @@ server.registerTool(
     }
 
     return {
-      content: [
-        { type: 'text' as const, text: 'Failed to send sync message.' },
-      ],
+      content: [{ type: 'text' as const, text: 'Failed to send sync message.' }],
     };
   },
 );
@@ -252,13 +242,10 @@ server.registerTool(
     inputSchema: {
       collection: z.string().describe('Collection name'),
       modes: z
-        .record(
-          z.string(),
-          z.array(tokenEntrySchema),
-        )
+        .record(z.string(), z.array(tokenEntrySchema))
         .describe(
           'Object mapping mode names to token arrays. ' +
-          'Example: { "Light": [...], "Dark": [...] }',
+            'Example: { "Light": [...], "Dark": [...] }',
         ),
     },
   },
@@ -279,7 +266,14 @@ server.registerTool(
       }
     }
 
-    const modeEntries: Record<string, { name: string; value: string | number | boolean; type?: 'color' | 'number' | 'string' | 'boolean' }[]> = {};
+    const modeEntries: Record<
+      string,
+      {
+        name: string;
+        value: string | number | boolean;
+        type?: 'color' | 'number' | 'string' | 'boolean';
+      }[]
+    > = {};
     for (const [modeName, tokenArr] of Object.entries(modes)) {
       modeEntries[modeName] = tokenArr.map((t) => ({
         name: t.name,
@@ -294,9 +288,10 @@ server.registerTool(
     if (ok) {
       const modeNames = Object.keys(modes).join(', ');
       const totalTokens = Object.values(modes).reduce((sum, arr) => sum + arr.length, 0);
-      const targetInfo = connectedTargets.length > 0
-        ? `\nConnected targets: ${connectedTargets.join(', ')}`
-        : '\nNo design tools connected yet.';
+      const targetInfo =
+        connectedTargets.length > 0
+          ? `\nConnected targets: ${connectedTargets.join(', ')}`
+          : '\nNo design tools connected yet.';
       return {
         content: [
           {
@@ -308,9 +303,7 @@ server.registerTool(
     }
 
     return {
-      content: [
-        { type: 'text' as const, text: 'Failed to send sync message.' },
-      ],
+      content: [{ type: 'text' as const, text: 'Failed to send sync message.' }],
     };
   },
 );
@@ -327,10 +320,7 @@ server.registerTool(
   },
   async () => {
     const connected = ws && ws.readyState === WebSocket.OPEN;
-    const lines = [
-      `Connected: ${connected ? 'yes' : 'no'}`,
-      `Server: ${serverUrl}`,
-    ];
+    const lines = [`Connected: ${connected ? 'yes' : 'no'}`, `Server: ${serverUrl}`];
     if (sessionToken) lines.push(`Session token: ${sessionToken}`);
     if (pairedOrigin) lines.push(`Paired origin: ${pairedOrigin}`);
     if (connectedTargets.length > 0)
@@ -353,9 +343,7 @@ server.registerTool(
   async () => {
     disconnect();
     return {
-      content: [
-        { type: 'text' as const, text: 'Session disconnected.' },
-      ],
+      content: [{ type: 'text' as const, text: 'Session disconnected.' }],
     };
   },
 );

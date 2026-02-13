@@ -13,12 +13,12 @@ function getSyncServerUrl(): string {
   if (import.meta.env.VITE_SYNC_SERVER_URL) {
     return import.meta.env.VITE_SYNC_SERVER_URL;
   }
-  
+
   // In development (localhost), use ws://localhost:8080
   if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
     return 'ws://localhost:8080';
   }
-  
+
   // In production, build wss:// URL from current location
   const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
   const port = location.port ? `:${location.port}` : '';
@@ -141,9 +141,8 @@ async function init() {
     <div id="payload-section"></div>
   `;
 
-  const syncStatus = getElement<HTMLDivElement>('app').querySelector<HTMLDivElement>(
-    '[data-dts="widget"]',
-  );
+  const syncStatus =
+    getElement<HTMLDivElement>('app').querySelector<HTMLDivElement>('[data-dts="widget"]');
   if (!syncStatus) return;
 
   const tokenEl = syncStatus.querySelector<HTMLButtonElement>('[data-dts="token"]');
@@ -321,7 +320,7 @@ function updateSyncStatus(status: DemoSyncStatus, token?: string, error?: string
     'dts-widget--waiting',
     'dts-widget--connected',
     'dts-widget--error',
-    'dts-widget--message'
+    'dts-widget--message',
   );
   statusEl.classList.remove('is-visible');
   statusEl.textContent = '';

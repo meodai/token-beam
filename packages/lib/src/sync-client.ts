@@ -45,7 +45,7 @@ export class SyncClient<T = unknown> {
     return new Promise((resolve, reject) => {
       try {
         this.manualDisconnect = false;
-        
+
         // Clean up existing connection if any
         if (this.ws) {
           this.ws.onclose = null;
@@ -54,9 +54,9 @@ export class SyncClient<T = unknown> {
           this.ws.close();
           this.ws = undefined;
         }
-        
+
         this.ws = new WebSocket(this.options.serverUrl);
-        
+
         // Set connection timeout
         this.connectionTimeout = setTimeout(() => {
           if (this.ws?.readyState !== WebSocket.OPEN) {
@@ -70,10 +70,10 @@ export class SyncClient<T = unknown> {
             clearTimeout(this.connectionTimeout);
             this.connectionTimeout = undefined;
           }
-          
+
           // Reset reconnect attempts on successful connection
           this.reconnectAttempts = 0;
-          
+
           this.options.onConnected?.();
 
           const resolvedOrigin =
@@ -186,11 +186,11 @@ export class SyncClient<T = unknown> {
     if (this.reconnectTimer) return;
 
     this.reconnectAttempts++;
-    
+
     // Exponential backoff: min(1000 * 2^attempts, 30000)
     const delay = Math.min(
       this.INITIAL_RECONNECT_DELAY * Math.pow(2, this.reconnectAttempts - 1),
-      this.MAX_RECONNECT_DELAY
+      this.MAX_RECONNECT_DELAY,
     );
 
     this.reconnectTimer = setTimeout(() => {

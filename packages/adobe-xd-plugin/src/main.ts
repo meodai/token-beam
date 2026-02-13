@@ -31,7 +31,9 @@ const assets = require('assets') as {
 
 const { Color } = require('scenegraph') as { Color: new (hex: string) => unknown };
 
-const SYNC_SERVER_URL = (globalThis as Record<string, unknown>).__SYNC_SERVER_URL__ as string || 'wss://token-beam.fly.dev';
+const SYNC_SERVER_URL =
+  ((globalThis as Record<string, unknown>).__SYNC_SERVER_URL__ as string) ||
+  'wss://token-beam.fly.dev';
 
 let panel: HTMLDivElement | undefined;
 let ws: WebSocket | null = null;
@@ -100,7 +102,9 @@ function create() {
   const applyColors = (colorTokens: Array<{ name: string; hex: string }>) => {
     if (!colorTokens.length) return 0;
 
-    const existing = assets.colors.get().map((c: { toHex: (includeAlpha: boolean) => string }) => c.toHex(true).toLowerCase());
+    const existing = assets.colors
+      .get()
+      .map((c: { toHex: (includeAlpha: boolean) => string }) => c.toHex(true).toLowerCase());
     const existingSet = new Set(existing);
     const toAdd = colorTokens.filter((token) => !existingSet.has(token.hex.toLowerCase()));
 
@@ -119,8 +123,7 @@ function create() {
     if (ws) {
       try {
         ws.close();
-      } catch {
-      }
+      } catch {}
       ws = null;
     }
 
@@ -150,7 +153,9 @@ function create() {
       const colorTokens = collectHexColors(message.payload as TokenSyncPayload);
       const count = applyColors(colorTokens);
       setResult(
-        count > 0 ? `Added ${count} color${count === 1 ? '' : 's'} to XD assets` : 'No new colors to add',
+        count > 0
+          ? `Added ${count} color${count === 1 ? '' : 's'} to XD assets`
+          : 'No new colors to add',
       );
       setStatus(`Connected${pairedOrigin ? ` to ${pairedOrigin}` : ''}`);
       return;
@@ -199,8 +204,7 @@ function create() {
     ws.addEventListener('message', (event) => {
       try {
         handleMessage(JSON.parse(event.data) as SyncMessage);
-      } catch {
-      }
+      } catch {}
     });
 
     ws.addEventListener('close', () => {

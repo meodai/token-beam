@@ -16,7 +16,7 @@ function getSyncServerUrl(): string {
   if (import.meta.env.VITE_SYNC_SERVER_URL) {
     return import.meta.env.VITE_SYNC_SERVER_URL;
   }
-  
+
   // Figma plugins don't have window.location, so default to production URL
   // Users can override via VITE_SYNC_SERVER_URL at build time
   return 'wss://token-beam.fly.dev';
@@ -91,7 +91,10 @@ function updateSyncStatus(text: string, state: SyncStatusState) {
 
 function showResult(text: string, isSuccess: boolean) {
   resultEl.classList.remove('plugin__hidden', 'plugin__result--success', 'plugin__result--error');
-  resultEl.classList.add('plugin__result', isSuccess ? 'plugin__result--success' : 'plugin__result--error');
+  resultEl.classList.add(
+    'plugin__result',
+    isSuccess ? 'plugin__result--success' : 'plugin__result--error',
+  );
   resultTextEl.textContent = text;
   lastResultAt = Date.now();
   resultTimeEl.textContent = formatRelativeResultTime(lastResultAt);
@@ -201,7 +204,10 @@ connectBtn.addEventListener('click', () => {
 
       // Show user-friendly messages for known errors
       if (error === 'Invalid session token') {
-        showResult('Session not found — check the token or start a new session from the web app', false);
+        showResult(
+          'Session not found — check the token or start a new session from the web app',
+          false,
+        );
       } else {
         showResult(error, false);
       }
