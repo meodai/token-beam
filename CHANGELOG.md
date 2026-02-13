@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/meodai/token-beam/compare/v1.0.0...v1.0.1) (2026-02-13)
+
+
+### Bug Fixes
+
+* update repository URL format in package.json ([abfe1d5](https://github.com/meodai/token-beam/commit/abfe1d5de89ca1f09462f240c07184dafd23973f))
+
 # 1.0.0 (2026-02-13)
 
 
