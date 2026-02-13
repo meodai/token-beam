@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/meodai/token-beam/compare/v1.0.1...v1.0.2) (2026-02-13)
+
+
+### Bug Fixes
+
+* **manifest:** add description to the plugin manifest ([ba9bbfe](https://github.com/meodai/token-beam/commit/ba9bbfef67e276a2012c9faae3e22371bd303401))
+
 ## [1.0.1](https://github.com/meodai/token-beam/compare/v1.0.0...v1.0.1) (2026-02-13)
 
 
