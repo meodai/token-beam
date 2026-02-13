@@ -328,15 +328,40 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
 
         layout.prop(state, "session_token", text="Token")
 
-        row = layout.row(align=True)
-        row.operator("token_beam.connect", text="Connect")
-        row.operator("token_beam.disconnect", text="Disconnect")
+        if state.is_connected:
+            layout.operator("token_beam.disconnect", text="Disconnect", icon="CANCEL")
+        else:
+            layout.operator("token_beam.connect", text="Connect", icon="LINKED")
 
         layout.label(text=f"Status: {state.status}")
 
         layout.separator()
+
+        # Show native Blender palette if it exists
+        palette = bpy.data.palettes.get(PALETTE_NAME)
+        if palette and len(palette.colors) > 0:
+            layout.label(text=f"Palette ({len(palette.colors)} colors)")
+            # Show palette grid via paint settings if available
+            ts = context.tool_settings
+            paint_settings = None
+            for attr in ("image_paint", "vertex_paint", "gpencil_paint"):
+                ps = getattr(ts, attr, None)
+                if ps is not None:
+                    if ps.palette == palette:
+                        paint_settings = ps
+                        break
+                    if ps.palette is None:
+                        ps.palette = palette
+                        paint_settings = ps
+                        break
+            if paint_settings is not None:
+                layout.template_palette(paint_settings, "palette", color=True)
+            layout.separator()
+
         layout.label(text="Synced colors")
-        layout.operator("token_beam.clear_colors", text="Clear Colors")
+
+        row = layout.row(align=True)
+        row.operator("token_beam.clear_colors", text="Clear Colors")
 
         box = layout.box()
         if len(scene.token_beam_colors) == 0:
@@ -348,8 +373,6 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
                 swatch.ui_units_x = 2
                 swatch.prop(item, "value", text="")
                 label = item.token_name
-                if item.collection:
-                    label = f"{item.collection} / {label}"
                 row.label(text=label)
                 apply_op = row.operator("token_beam.apply_color", text="Apply")
                 apply_op.color_index = index
@@ -362,6 +385,10 @@ class TOKENBEAM_OT_clear_colors(bpy.types.Operator):
 
     def execute(self, context):
         context.scene.token_beam_colors.clear()
+        palette = bpy.data.palettes.get(PALETTE_NAME)
+        if palette is not None:
+            while len(palette.colors) > 0:
+                palette.colors.remove(palette.colors[0])
         return {"FINISHED"}
 
 

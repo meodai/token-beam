@@ -64,10 +64,22 @@ subprocess.check_call([sys.executable, "-m", "pip", "install", "websocket-client
 
 4. Color tokens are synced into `Scene > Token Beam > Colors`.
 
+## Where to find color palettes in Blender
+
+Blender palettes are tied to paint contexts — they're not globally visible.
+
+1. Switch to **Texture Paint** (or Vertex/Weight Paint)
+2. Press **N** to open the right sidebar
+3. Look for the **Color Palette** panel
+4. If empty, click **New** to create one
+
+Token Beam automatically creates a palette called **"Token Beam"** when colors are synced. You'll find it in the palette dropdown once you're in a paint context.
+
 ## Notes
 
-- This first version syncs and stores colors as scene properties.
-- You can use those properties in your own scripts/nodes/workflows.
+- Synced colors are stored both as scene properties and as a native Blender palette
+- The palette persists when you save your `.blend` file
+- Materials are also created for each color so you can apply them to meshes directly
 
 ## Project Structure
 
