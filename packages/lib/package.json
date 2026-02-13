@@ -7,7 +7,7 @@
   "author": "David Aerne (meodai)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/meodai/token-beam.git",
+    "url": "git+https://github.com/meodai/token-beam.git",
     "directory": "packages/lib"
   },
   "homepage": "https://github.com/meodai/token-beam#readme",
