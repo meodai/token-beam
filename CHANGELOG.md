@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/meodai/token-beam/compare/v1.4.0...v1.4.1) (2026-02-13)
+
+### Bug Fixes
+
+- ensure previous bundle zip is removed before creating a new one ([11f8717](https://github.com/meodai/token-beam/commit/11f8717efba4e0d7f5289faee63d7926f10587ce))
+- remove existing zip files before bundling plugins ([e2a2635](https://github.com/meodai/token-beam/commit/e2a2635e0a906ed569c99226ddda6fe68ff8d23b))
+
 # [1.4.0](https://github.com/meodai/token-beam/compare/v1.3.0...v1.4.0) (2026-02-13)
 
 ### Features
