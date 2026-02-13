@@ -35,7 +35,7 @@ export function servePayload(
 
     server.listen(port, hostname, () => {
       const url = `http://${hostname}:${port}`;
-      console.log(`token-sync serving at ${url}`);
+      console.log(`token-beam serving at ${url}`);
       resolve({ server, url });
     });
   });

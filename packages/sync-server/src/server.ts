@@ -66,7 +66,7 @@ export class TokenSyncServer {
         );
       } else if (req.method === 'GET' && req.url === '/') {
         res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('Token Sync Server is running');
+        res.end('Token Beam Sync Server is running');
       } else if (req.method === 'GET' && req.url === '/plugins.json') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(

@@ -10,7 +10,7 @@ export function generateRandomRamp(): { name: string; colors: Record<string, str
     colors[String(step)] = hex;
   }
 
-  return { name: 'token-sync-demo', colors };
+  return { name: 'token-beam-demo', colors };
 }
 
 function hslToHex(h: number, s: number, l: number): string {

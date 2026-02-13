@@ -12,7 +12,7 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use('/api/colors', (_req, res) => {
           const { colors } = generateRandomRamp();
-          const payload = createCollection('token-sync-demo', colors);
+          const payload = createCollection('token-beam-demo', colors);
           res.setHeader('Content-Type', 'application/json');
           res.setHeader('Access-Control-Allow-Origin', '*');
           res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
