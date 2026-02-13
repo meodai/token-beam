@@ -15,7 +15,9 @@
   "scripts": {
     "dev": "tsx watch src/cli.ts",
     "build": "tsc",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js",
+    "predeploy": "rm -rf lib-dist && mkdir -p lib-dist/dist && cp ../lib/package.json lib-dist/package.json && cp -r ../lib/dist/* lib-dist/dist/",
+    "deploy": "flyctl deploy"
   },
   "dependencies": {
     "token-beam": "*",
