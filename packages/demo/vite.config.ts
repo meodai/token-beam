@@ -3,6 +3,7 @@ import { createCollection } from '../lib/dist/token-beam.js';
 import { generateRandomRamp } from './src/colors';
 
 export default defineConfig({
+  base: process.env.DEMO_BASE || '/',
   server: {
     port: 5173,
   },
