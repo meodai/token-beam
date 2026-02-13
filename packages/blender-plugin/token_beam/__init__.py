@@ -20,7 +20,7 @@ SYNC_SERVER_URL = "ws://localhost:8080"
 
 try:
     import websocket
-except Exception:
+except ImportError:
     websocket = None
 
 
@@ -83,7 +83,8 @@ def _extract_colors(payload):
                     continue
                 try:
                     rgba = _hex_to_rgba(str(token.get("value", "")))
-                except Exception:
+                except (ValueError, IndexError):
+                    print(f"[Token Beam] Skipping invalid color: {token.get('name', '?')} = {token.get('value', '?')}")
                     continue
 
                 colors.append(
@@ -97,15 +98,22 @@ def _extract_colors(payload):
     return colors
 
 
-def _token_material_name(token_name):
-    safe_name = re.sub(r"[^a-zA-Z0-9_]+", "_", token_name).strip("_")
+def _token_material_name(token_name, collection="", mode=""):
+    parts = []
+    if collection:
+        parts.append(collection)
+    parts.append(token_name)
+    if mode and mode != "Value":
+        parts.append(mode)
+    combined = "_".join(parts)
+    safe_name = re.sub(r"[^a-zA-Z0-9_]+", "_", combined).strip("_")
     if not safe_name:
         safe_name = "unnamed"
     return f"TB_{safe_name}"
 
 
-def _ensure_token_material(token_name, rgba):
-    material_name = _token_material_name(token_name)
+def _ensure_token_material(token_name, rgba, collection="", mode=""):
+    material_name = _token_material_name(token_name, collection, mode)
     material = bpy.data.materials.get(material_name)
     if material is None:
         material = bpy.data.materials.new(name=material_name)
@@ -134,7 +142,6 @@ TokenBeamState.__annotations__ = {
     "session_token": bpy.props.StringProperty(name="Token", default=""),
     "status": bpy.props.StringProperty(name="Status", default="Disconnected"),
     "is_connected": bpy.props.BoolProperty(name="Connected", default=False),
-    "client_id": bpy.props.StringProperty(name="Client ID", default=""),
 }
 
 
@@ -148,6 +155,7 @@ class TokenBeamRuntime:
 class TOKENBEAM_OT_connect(bpy.types.Operator):
     bl_idname = "token_beam.connect"
     bl_label = "Connect"
+    bl_description = "Connect to Token Beam sync server"
 
     def execute(self, context):
         state = context.scene.token_beam_state
@@ -235,7 +243,6 @@ class TOKENBEAM_OT_connect(bpy.types.Operator):
         def on_close(ws, close_status_code, close_message):
             TokenBeamRuntime.event_queue.put(("connected", False))
             TokenBeamRuntime.event_queue.put(("status", "Disconnected"))
-            TokenBeamRuntime.event_queue.put(("client_id", ""))
             TokenBeamRuntime.ws_app = None
             TokenBeamRuntime.ws_thread = None
 
@@ -260,6 +267,7 @@ class TOKENBEAM_OT_connect(bpy.types.Operator):
 class TOKENBEAM_OT_disconnect(bpy.types.Operator):
     bl_idname = "token_beam.disconnect"
     bl_label = "Disconnect"
+    bl_description = "Disconnect from Token Beam sync server"
 
     def execute(self, context):
         state = context.scene.token_beam_state
@@ -273,7 +281,6 @@ class TOKENBEAM_OT_disconnect(bpy.types.Operator):
         TokenBeamRuntime.ws_thread = None
         state.is_connected = False
         state.status = "Disconnected"
-        state.client_id = ""
         return {"FINISHED"}
 
 
@@ -296,8 +303,6 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
         row.operator("token_beam.disconnect", text="Disconnect")
 
         layout.label(text=f"Status: {state.status}")
-        if state.client_id:
-            layout.label(text=f"Client: {state.client_id}")
 
         layout.separator()
         layout.label(text="Synced colors")
@@ -310,8 +315,12 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
             for index, item in enumerate(scene.token_beam_colors):
                 row = box.row(align=True)
                 swatch = row.row(align=True)
+                swatch.ui_units_x = 2
                 swatch.prop(item, "value", text="")
-                row.label(text=item.token_name)
+                label = item.token_name
+                if item.collection:
+                    label = f"{item.collection} / {label}"
+                row.label(text=label)
                 apply_op = row.operator("token_beam.apply_color", text="Apply")
                 apply_op.color_index = index
 
@@ -319,6 +328,7 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
 class TOKENBEAM_OT_clear_colors(bpy.types.Operator):
     bl_idname = "token_beam.clear_colors"
     bl_label = "Clear Colors"
+    bl_description = "Remove all synced colors from the list"
 
     def execute(self, context):
         context.scene.token_beam_colors.clear()
@@ -328,6 +338,7 @@ class TOKENBEAM_OT_clear_colors(bpy.types.Operator):
 class TOKENBEAM_OT_apply_color(bpy.types.Operator):
     bl_idname = "token_beam.apply_color"
     bl_label = "Apply Color"
+    bl_description = "Apply this color as a material on the active mesh"
 
     color_index: bpy.props.IntProperty(default=-1)
 
@@ -348,7 +359,7 @@ class TOKENBEAM_OT_apply_color(bpy.types.Operator):
         color_item = scene.token_beam_colors[self.color_index]
 
         material_name = color_item.material_name or _ensure_token_material(
-            color_item.token_name, color_item.value
+            color_item.token_name, color_item.value, color_item.collection, color_item.mode
         )
         material = bpy.data.materials.get(material_name)
         if material is None:
@@ -376,12 +387,12 @@ def _drain_events():
             state.status = value
         elif kind == "connected":
             state.is_connected = bool(value)
-        elif kind == "client_id":
-            state.client_id = str(value)
         elif kind == "colors":
             scene.token_beam_colors.clear()
             for color in value:
-                material_name = _ensure_token_material(color["name"], color["value"])
+                material_name = _ensure_token_material(
+                    color["name"], color["value"], color.get("collection", ""), color.get("mode", "")
+                )
                 item = scene.token_beam_colors.add()
                 item.token_name = color["name"]
                 item.value = color["value"]
