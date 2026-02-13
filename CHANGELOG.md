@@ -1,3 +1,9 @@
+## [1.2.2](https://github.com/meodai/token-beam/compare/v1.2.1...v1.2.2) (2026-02-13)
+
+### Bug Fixes
+
+- remove description field from plugin manifest ([a3ca8dd](https://github.com/meodai/token-beam/commit/a3ca8ddd8fd1f02f200512ba4be31bc4a59f6c90))
+
 ## [1.2.1](https://github.com/meodai/token-beam/compare/v1.2.0...v1.2.1) (2026-02-13)
 
 ### Bug Fixes
