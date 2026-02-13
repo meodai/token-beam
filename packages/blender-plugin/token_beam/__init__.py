@@ -365,11 +365,8 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
                 swatch.ui_units_x = 2
                 swatch.prop(item, "value", text="")
                 row.label(text=item.token_name)
-                apply_op = row.operator("token_beam.apply_color", text="Apply")
+                apply_op = row.operator("token_beam.apply_color", text="", icon="FORWARD")
                 apply_op.color_index = index
-
-            row = layout.row(align=True)
-            row.operator("token_beam.clear_colors", text="Clear Colors")
 
         # Show native Blender palette grid if available (paint modes only)
         try:
@@ -384,24 +381,10 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
                         break
                 if paint_settings is not None:
                     layout.separator()
-                    layout.label(text="Palette")
+                    layout.label(text=f"Palette: {PALETTE_NAME}")
                     layout.template_palette(paint_settings, "palette", color=True)
         except Exception:
             pass
-
-
-class TOKENBEAM_OT_clear_colors(bpy.types.Operator):
-    bl_idname = "token_beam.clear_colors"
-    bl_label = "Clear Colors"
-    bl_description = "Remove all synced colors from the list"
-
-    def execute(self, context):
-        context.scene.token_beam_colors.clear()
-        palette = bpy.data.palettes.get(PALETTE_NAME)
-        if palette is not None:
-            while len(palette.colors) > 0:
-                palette.colors.remove(palette.colors[0])
-        return {"FINISHED"}
 
 
 class TOKENBEAM_OT_apply_color(bpy.types.Operator):
@@ -411,18 +394,14 @@ class TOKENBEAM_OT_apply_color(bpy.types.Operator):
 
     color_index: bpy.props.IntProperty(default=-1)
 
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        return obj is not None and obj.type == "MESH"
+
     def execute(self, context):
         scene = context.scene
         if self.color_index < 0 or self.color_index >= len(scene.token_beam_colors):
-            return {"CANCELLED"}
-
-        active_obj = context.active_object
-        if active_obj is None:
-            self.report({"WARNING"}, "No active object")
-            return {"CANCELLED"}
-
-        if active_obj.type != "MESH":
-            self.report({"WARNING"}, "Active object must be a mesh")
             return {"CANCELLED"}
 
         color_item = scene.token_beam_colors[self.color_index]
@@ -435,8 +414,8 @@ class TOKENBEAM_OT_apply_color(bpy.types.Operator):
             self.report({"WARNING"}, "Token material not found")
             return {"CANCELLED"}
 
-        active_obj.active_material = material
-        self.report({"INFO"}, f"Applied {color_item.token_name} ({material_name})")
+        context.active_object.active_material = material
+        self.report({"INFO"}, f"Applied {color_item.token_name}")
         return {"FINISHED"}
 
 
@@ -485,7 +464,6 @@ classes = (
     TokenBeamState,
     TOKENBEAM_OT_connect,
     TOKENBEAM_OT_disconnect,
-    TOKENBEAM_OT_clear_colors,
     TOKENBEAM_OT_apply_color,
     TOKENBEAM_PT_panel,
 )
