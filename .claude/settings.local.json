@@ -19,7 +19,8 @@
       "WebFetch(domain:developer.sketch.com)",
       "Bash(find:*)",
       "Bash(sort:*)",
-      "Bash(du -sh:*)"
+      "Bash(du -sh:*)",
+      "Bash(npx esbuild:*)"
     ]
   }
 }
