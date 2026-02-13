@@ -1,6 +1,6 @@
 {
   "name": "token-beam",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant.",
   "type": "module",
   "license": "AGPL-3.0-or-later",
