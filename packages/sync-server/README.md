@@ -195,42 +195,6 @@ Session Lifecycle:
 
 - `PORT`: Server port (default: `8080`)
 
-## Pricing & Licensing
+## License
 
-**Free (AGPL-3.0)**: Personal projects, self-hosted
-
-**Pro: $29/month**
-- Hosted service (we manage the infrastructure)
-- Unlimited sessions
-- Commercial use allowed
-- Standard plugins only
-
-**Enterprise: $299/month**
-- Self-hosting with commercial license
-- Modify plugins for your needs
-- Source code access
-- SSO & SAML
-- Priority support (24h SLA)
-- Custom integrations
-
-### Open Source Exception
-
-Open source projects with an OSI-approved license can request a **free commercial license**.
-
-**Requirements:**
-- Project must be publicly available (e.g., GitHub)
-- Must use an OSI-approved open source license
-- Must not be a commercial/proprietary product
-
-To apply, email: opensource@token-beam.dev
-
-## Contact
-
-For commercial licensing inquiries:
-- Email: sales@token-beam.dev
-- Website: https://token-beam.dev
-
----
-
-Copyright (c) 2026 David Aerne (meodai)
-All rights reserved.
+AGPL-3.0 OR Commercial. See [LICENSE](../../LICENSE) for details.

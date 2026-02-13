@@ -158,4 +158,4 @@ This plugin uses Aseprite's native [WebSocket API](https://www.aseprite.org/api/
 
 ## License
 
-MIT
+AGPL-3.0 OR Commercial. See [LICENSE](../../LICENSE) for details.

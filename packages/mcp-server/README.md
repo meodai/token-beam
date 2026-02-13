@@ -214,4 +214,4 @@ mcp-server/
 
 ## License
 
-SEE LICENSE IN LICENSE.md
+AGPL-3.0 OR Commercial. See [LICENSE](../../LICENSE) for details.

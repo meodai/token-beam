@@ -81,12 +81,6 @@ Token Beam automatically creates a palette called **"Token Beam"** when colors a
 - The palette persists when you save your `.blend` file
 - Materials are also created for each color so you can apply them to meshes directly
 
-## Project Structure
+## License
 
-```text
-blender-plugin/
-├── package.json
-├── README.md
-└── token_beam/
-    └── __init__.py
-```
+AGPL-3.0 OR Commercial. See [LICENSE](../../LICENSE) for details.
