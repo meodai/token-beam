@@ -1,3 +1,9 @@
+# [1.4.0](https://github.com/meodai/token-beam/compare/v1.3.0...v1.4.0) (2026-02-13)
+
+### Features
+
+- update plugin URLs to point to token-beam releases ([420c6eb](https://github.com/meodai/token-beam/commit/420c6eb112f8eaf0b7f40b86a5b6d8b7fc59ec9d))
+
 # [1.3.0](https://github.com/meodai/token-beam/compare/v1.2.4...v1.3.0) (2026-02-13)
 
 ### Features
