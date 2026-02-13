@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/meodai/token-beam/compare/v1.0.2...v1.0.3) (2026-02-13)
+
+
+### Bug Fixes
+
+* **release:** update workflow to use npm 11 ([4aac3ac](https://github.com/meodai/token-beam/commit/4aac3acf2c17ab8be084df3479140a1dba323a28))
+
 ## [1.0.2](https://github.com/meodai/token-beam/compare/v1.0.1...v1.0.2) (2026-02-13)
 
 ### Bug Fixes
