@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/meodai/token-beam/compare/v1.1.0...v1.1.1) (2026-02-13)
+
+### Bug Fixes
+
+- **changelog:** remove unnecessary blank line in version 1.1.0 section ([21392f6](https://github.com/meodai/token-beam/commit/21392f6f3c1a7183ef42bfbfee43e7c93e85d5e9))
+- **pages:** remove environment configuration from deploy job ([f8658a3](https://github.com/meodai/token-beam/commit/f8658a3bb394b4728b12a7f055de3110001c94d7))
+- **release:** update prepare command to format changelog and package.json ([0aff28c](https://github.com/meodai/token-beam/commit/0aff28cc5963dddc2b7ef065783d113564b0e219))
+
 # [1.1.0](https://github.com/meodai/token-beam/compare/v1.0.3...v1.1.0) (2026-02-13)
 
 ### Features
