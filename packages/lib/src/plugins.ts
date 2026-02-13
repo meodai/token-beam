@@ -8,11 +8,26 @@ export const pluginLinks: PluginLink[] = [
   {
     id: 'figma',
     name: 'Figma',
-    url: 'https://example.com/figma-plugin',
+    url: 'https://github.com/meodai/token-beam/releases',
+  },
+  {
+    id: 'sketch',
+    name: 'Sketch',
+    url: 'https://github.com/meodai/token-beam/releases',
   },
   {
     id: 'aseprite',
     name: 'Aseprite',
-    url: 'https://www.aseprite.org/',
+    url: 'https://github.com/meodai/token-beam/releases',
+  },
+  {
+    id: 'krita',
+    name: 'Krita',
+    url: 'https://github.com/meodai/token-beam/releases',
+  },
+  {
+    id: 'adobe-xd',
+    name: 'Adobe XD',
+    url: 'https://github.com/meodai/token-beam/releases',
   },
 ];
