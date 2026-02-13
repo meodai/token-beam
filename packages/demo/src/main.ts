@@ -1,5 +1,6 @@
 import type { TokenSyncPayload } from 'token-beam';
-import { SyncClient } from 'token-beam';
+import { createCollection, SyncClient } from 'token-beam';
+import { generateRandomRamp } from './colors';
 
 type PluginLink = {
   id: string;
@@ -19,10 +20,8 @@ function getSyncServerUrl(): string {
     return 'ws://localhost:8080';
   }
 
-  // In production, build wss:// URL from current location
-  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const port = location.port ? `:${location.port}` : '';
-  return `${protocol}//${location.hostname}${port}`;
+  // In production, default to hosted sync server
+  return 'wss://token-sync.fly.dev';
 }
 
 const API_PATH = '/api/colors';
@@ -209,8 +208,17 @@ async function init() {
 }
 
 async function fetchAndRender() {
-  const res = await fetch(API_PATH);
-  const payload = (await res.json()) as TokenSyncPayload;
+  let payload: TokenSyncPayload;
+
+  // Dev server has /api/colors middleware; static builds (e.g. GitHub Pages) don't.
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    const res = await fetch(API_PATH);
+    payload = (await res.json()) as TokenSyncPayload;
+  } else {
+    const { colors } = generateRandomRamp();
+    payload = createCollection('token-beam-demo', colors);
+  }
+
   currentPayload = payload;
   renderPayload(payload);
 }
