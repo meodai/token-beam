@@ -21,7 +21,7 @@ function getSyncServerUrl(): string {
   }
 
   // In production, default to hosted sync server
-  return 'wss://token-sync.fly.dev';
+  return 'wss://token-beam.fly.dev';
 }
 
 const API_PATH = '/api/colors';
