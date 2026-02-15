@@ -144,7 +144,7 @@ PALETTE_NAME = "Token Beam"
 
 
 def _sync_palette(colors):
-    """Sync colors to a native Blender palette (sRGB gamma space, RGB only)."""
+    """Sync colors to a native Blender palette (linear RGB, RGB only)."""
     palette = bpy.data.palettes.get(PALETTE_NAME)
     if palette is None:
         palette = bpy.data.palettes.new(PALETTE_NAME)
@@ -156,11 +156,10 @@ def _sync_palette(colors):
     for color in colors:
         entry = palette.colors.new()
         rgba = color["value"]
-        # Convert linear → sRGB gamma for the palette (Blender palettes are in gamma space)
         entry.color = (
-            _linear_to_srgb(rgba[0]),
-            _linear_to_srgb(rgba[1]),
-            _linear_to_srgb(rgba[2]),
+            rgba[0],
+            rgba[1],
+            rgba[2],
         )
 
     # Auto-assign palette to all paint settings so it shows in our panel
@@ -279,7 +278,10 @@ class TOKENBEAM_OT_connect(bpy.types.Operator):
                     pass
 
         def on_error(ws, error):
+            TokenBeamRuntime.event_queue.put(("connected", False))
             TokenBeamRuntime.event_queue.put(("status", f"Error: {error}"))
+            TokenBeamRuntime.ws_app = None
+            TokenBeamRuntime.ws_thread = None
 
         def on_close(ws, close_status_code, close_message):
             TokenBeamRuntime.event_queue.put(("connected", False))
@@ -425,6 +427,13 @@ def _drain_events():
         return 0.5
 
     state = scene.token_beam_state
+    ws_thread = TokenBeamRuntime.ws_thread
+    if state.is_connected and ws_thread is not None and not ws_thread.is_alive():
+        state.is_connected = False
+        state.status = "Disconnected"
+        TokenBeamRuntime.ws_app = None
+        TokenBeamRuntime.ws_thread = None
+
     while True:
         try:
             kind, value = TokenBeamRuntime.event_queue.get_nowait()
