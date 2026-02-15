@@ -192,6 +192,12 @@ class TokenBeamRuntime:
     timer_running = False
 
 
+def _runtime_is_connected():
+    ws_app = TokenBeamRuntime.ws_app
+    ws_thread = TokenBeamRuntime.ws_thread
+    return ws_app is not None and ws_thread is not None and ws_thread.is_alive()
+
+
 class TOKENBEAM_OT_connect(bpy.types.Operator):
     bl_idname = "token_beam.connect"
     bl_label = "Connect"
@@ -338,10 +344,11 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
         layout = self.layout
         scene = context.scene
         state = scene.token_beam_state
+        runtime_connected = _runtime_is_connected() and state.is_connected
 
         layout.prop(state, "session_token", text="Token")
 
-        if state.is_connected:
+        if runtime_connected:
             layout.operator("token_beam.disconnect", text="Disconnect", icon="CANCEL")
         else:
             layout.operator("token_beam.connect", text="Connect", icon="LINKED")
@@ -427,8 +434,7 @@ def _drain_events():
         return 0.5
 
     state = scene.token_beam_state
-    ws_thread = TokenBeamRuntime.ws_thread
-    if state.is_connected and ws_thread is not None and not ws_thread.is_alive():
+    if state.is_connected and not _runtime_is_connected():
         state.is_connected = False
         state.status = "Disconnected"
         TokenBeamRuntime.ws_app = None
