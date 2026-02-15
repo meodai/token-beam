@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/meodai/token-beam/compare/v1.4.1...v1.4.2) (2026-02-15)
+
+### Bug Fixes
+
+- remove npm plugin from release configuration ([d2dc93b](https://github.com/meodai/token-beam/commit/d2dc93b3f06174b9180675911e18366a4f7b3052))
+- update color sync documentation and improve WebSocket connection handling ([fdcfef4](https://github.com/meodai/token-beam/commit/fdcfef4502f1a2463c567fd7ff64756b1d7ba88d))
+
 ## [1.4.1](https://github.com/meodai/token-beam/compare/v1.4.0...v1.4.1) (2026-02-13)
 
 ### Bug Fixes
