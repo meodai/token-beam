@@ -22,6 +22,13 @@ PORT=9000 npm start
 
 ## Usage
 
+### Transport security
+
+- Recommended (modern clients): `wss://token-beam.fly.dev`
+- Legacy compatibility (not recommended): `ws://token-beam.fly.dev`
+
+`ws://` is enabled only so older tools can still connect. It is unencrypted and should be considered legacy transport.
+
 ### Web Client
 
 ```typescript
