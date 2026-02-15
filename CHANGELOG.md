@@ -1,3 +1,9 @@
+## [1.4.3](https://github.com/meodai/token-beam/compare/v1.4.2...v1.4.3) (2026-02-15)
+
+### Bug Fixes
+
+- improve WebSocket connection handling and update connection status logic ([30ce07e](https://github.com/meodai/token-beam/commit/30ce07e479a458846efcd779999a5b22820d98e0))
+
 ## [1.4.2](https://github.com/meodai/token-beam/compare/v1.4.1...v1.4.2) (2026-02-15)
 
 ### Bug Fixes
