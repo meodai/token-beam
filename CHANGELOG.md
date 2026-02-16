@@ -1,3 +1,13 @@
+# [1.5.0](https://github.com/meodai/token-beam/compare/v1.4.5...v1.5.0) (2026-02-16)
+
+### Bug Fixes
+
+- update installation instructions and improve reset UI logic in Aseprite plugin ([ed7311d](https://github.com/meodai/token-beam/commit/ed7311d773fe9d0b821ac9f94297a4f450d62da1))
+
+### Features
+
+- add Blender plugin to supported applications list ([de9bc9d](https://github.com/meodai/token-beam/commit/de9bc9dd88aea3646dd2d7e421ea17230d5a1b81))
+
 ## [1.4.5](https://github.com/meodai/token-beam/compare/v1.4.4...v1.4.5) (2026-02-16)
 
 ### Bug Fixes
