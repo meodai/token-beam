@@ -399,7 +399,11 @@ class TOKENBEAM_PT_panel(bpy.types.Panel):
 class TOKENBEAM_OT_apply_color(bpy.types.Operator):
     bl_idname = "token_beam.apply_color"
     bl_label = "Apply Color"
-    bl_description = "Apply this color as a material on the active mesh"
+    bl_description = (
+        "Apply this color to the active mesh. "
+        "If the mesh already has a material, sets its Base Color (like the eyedropper). "
+        "If no material exists, assigns a new one"
+    )
 
     color_index: bpy.props.IntProperty(default=-1)
 
@@ -408,13 +412,40 @@ class TOKENBEAM_OT_apply_color(bpy.types.Operator):
         obj = context.active_object
         return obj is not None and obj.type == "MESH"
 
+    def _find_principled(self, material):
+        """Find the Principled BSDF node in a material's node tree."""
+        if not material or not material.use_nodes or not material.node_tree:
+            return None
+        for node in material.node_tree.nodes:
+            if node.type == "BSDF_PRINCIPLED":
+                return node
+        return None
+
     def execute(self, context):
         scene = context.scene
         if self.color_index < 0 or self.color_index >= len(scene.token_beam_colors):
             return {"CANCELLED"}
 
         color_item = scene.token_beam_colors[self.color_index]
+        rgba = tuple(color_item.value)
+        obj = context.active_object
 
+        # If the object already has a material, set the color on it
+        # (like the eyedropper would) instead of replacing the material
+        existing_mat = obj.active_material
+        if existing_mat is not None:
+            # Enable nodes if not already
+            if not existing_mat.use_nodes:
+                existing_mat.use_nodes = True
+
+            principled = self._find_principled(existing_mat)
+            if principled is not None:
+                principled.inputs["Base Color"].default_value = rgba
+            existing_mat.diffuse_color = rgba
+            self.report({"INFO"}, f"Set {color_item.token_name} on {existing_mat.name}")
+            return {"FINISHED"}
+
+        # No material on the object — create/assign a Token Beam material
         material_name = color_item.material_name or _ensure_token_material(
             color_item.token_name, color_item.value, color_item.collection, color_item.mode
         )
@@ -423,7 +454,7 @@ class TOKENBEAM_OT_apply_color(bpy.types.Operator):
             self.report({"WARNING"}, "Token material not found")
             return {"CANCELLED"}
 
-        context.active_object.active_material = material
+        obj.active_material = material
         self.report({"INFO"}, f"Applied {color_item.token_name}")
         return {"FINISHED"}
 
