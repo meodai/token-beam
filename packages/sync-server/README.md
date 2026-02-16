@@ -198,6 +198,156 @@ Session Lifecycle:
 5. Auto-cleanup on timeout/disconnect
 ```
 
+## Deployment
+
+The server runs on a Hetzner VPS (Ubuntu 24.04) with Nginx as a TLS-terminating reverse proxy.
+
+### Infrastructure
+
+| Component | Details |
+|---|---|
+| VPS | Hetzner CPX22 (Nuremberg) |
+| Domain | `tokenbeam.dev` (Cloudflare DNS, **DNS-only mode** — no proxy) |
+| Node.js | v20 LTS |
+| Process manager | systemd |
+| TLS | Let's Encrypt via Certbot + Nginx |
+
+### Endpoints
+
+| URL | Port | For |
+|---|---|---|
+| `wss://tokenbeam.dev` | 443 | Browsers, Figma, Blender, Krita, Sketch (TLS via Nginx) |
+| `ws://tokenbeam.dev:8080` | 8080 | Aseprite (direct to Node.js, no TLS — required because Aseprite's IXWebSocket has no TLS support) |
+
+### Server setup (from scratch)
+
+```bash
+# 1. SSH into the VPS
+ssh root@<IP>
+
+# 2. Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt-get install -y nodejs
+
+# 3. Deploy the app to /opt/token-beam
+mkdir -p /opt/token-beam
+# Copy package.json, tsconfig.json, src/, lib-dist/ to /opt/token-beam
+# Rewrite the token-beam dependency to use the local copy:
+cd /opt/token-beam
+sed -i 's|"token-beam": "\*"|"token-beam": "file:./lib-dist"|' package.json
+npm install
+npm run build
+
+# 4. Create systemd service
+cat > /etc/systemd/system/token-beam.service << 'EOF'
+[Unit]
+Description=Token Beam WebSocket Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/token-beam
+ExecStart=/usr/bin/node dist/cli.js
+Restart=on-failure
+RestartSec=5
+Environment=PORT=8080
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable token-beam
+systemctl start token-beam
+
+# 5. Install Nginx + Certbot
+apt-get install -y nginx certbot python3-certbot-nginx
+
+# 6. Configure Nginx (WebSocket proxy)
+cat > /etc/nginx/sites-available/tokenbeam.dev << 'EOF'
+server {
+    listen 80;
+    server_name tokenbeam.dev;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 86400;
+        proxy_send_timeout 86400;
+    }
+}
+EOF
+
+ln -sf /etc/nginx/sites-available/tokenbeam.dev /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default
+systemctl reload nginx
+
+# 7. Get TLS certificate (auto-configures Nginx for HTTPS + redirect)
+certbot --nginx -d tokenbeam.dev --non-interactive --agree-tos --email <EMAIL>
+```
+
+### Redeployment
+
+```bash
+# On your local machine — build and upload:
+cd packages/sync-server
+npm run predeploy
+tar czf /tmp/tb-deploy.tar.gz -C . package.json tsconfig.docker.json src/ lib-dist/
+scp /tmp/tb-deploy.tar.gz root@<IP>:/tmp/
+
+# On the VPS — extract and rebuild:
+ssh root@<IP>
+cd /opt/token-beam
+rm -rf src lib-dist
+tar xzf /tmp/tb-deploy.tar.gz
+sed -i 's|"token-beam": "\*"|"token-beam": "file:./lib-dist"|' package.json
+npm install
+npm run build
+systemctl restart token-beam
+```
+
+### Useful commands
+
+```bash
+# Check server status
+systemctl status token-beam
+
+# View logs (live)
+journalctl -u token-beam -f
+
+# Restart after code changes
+systemctl restart token-beam
+
+# Test WebSocket handshake
+curl -v -m 5 --http1.1 \
+  -H "Connection: Upgrade" -H "Upgrade: websocket" \
+  -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" \
+  -H "Sec-WebSocket-Version: 13" \
+  https://tokenbeam.dev
+
+# TLS certificate auto-renews via certbot timer:
+systemctl list-timers certbot.timer
+```
+
+### DNS (Cloudflare)
+
+| Type | Name | Content | Proxy |
+|---|---|---|---|
+| A | `@` | `<VPS IP>` | DNS only (grey cloud) |
+
+Cloudflare proxy **must** be off (DNS only). Cloudflare's HTTP proxy lowercases WebSocket upgrade headers, which breaks Aseprite's IXWebSocket client.
+
+### Why not Fly.io?
+
+The server was originally deployed on Fly.io, but Fly's HTTP proxy lowercases WebSocket upgrade response headers (`Upgrade:` → `upgrade:`). This is valid per HTTP spec, but Aseprite bundles an older IXWebSocket (v11.4.x) that cannot parse these modified responses, failing with "Failed reading HTTP status line". A direct VPS avoids any intermediary proxy.
+
 ## Environment Variables
 
 - `PORT`: Server port (default: `8080`)
