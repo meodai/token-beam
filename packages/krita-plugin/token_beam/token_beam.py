@@ -20,7 +20,7 @@ from krita import DockWidget, DockWidgetFactory, DockWidgetFactoryBase, \
     Krita, ManagedColor
 
 
-SYNC_SERVER_URL = "wss://token-beam.fly.dev"
+SYNC_SERVER_URL = "wss://tokenbeam.dev"
 
 
 # ---------------------------------------------------------------------------

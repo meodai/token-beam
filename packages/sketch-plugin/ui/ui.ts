@@ -1,5 +1,5 @@
 declare const __SYNC_SERVER_URL__: string | undefined;
-const SYNC_SERVER_URL = typeof __SYNC_SERVER_URL__ !== 'undefined' ? __SYNC_SERVER_URL__ : 'wss://token-beam.fly.dev';
+const SYNC_SERVER_URL = typeof __SYNC_SERVER_URL__ !== 'undefined' ? __SYNC_SERVER_URL__ : 'wss://tokenbeam.dev';
 
 const tokenInput = document.getElementById('token-input') as HTMLInputElement;
 const connectBtn = document.getElementById('connect-btn') as HTMLButtonElement;

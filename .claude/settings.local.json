@@ -20,7 +20,8 @@
       "Bash(find:*)",
       "Bash(sort:*)",
       "Bash(du -sh:*)",
-      "Bash(npx esbuild:*)"
+      "Bash(npx esbuild:*)",
+      "WebFetch(domain:community.fly.io)"
     ]
   }
 }

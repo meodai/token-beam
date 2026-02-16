@@ -15,7 +15,7 @@ import queue
 
 import bpy
 
-SYNC_SERVER_URL = "wss://token-beam.fly.dev"
+SYNC_SERVER_URL = "wss://tokenbeam.dev"
 
 
 try:

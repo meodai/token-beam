@@ -24,8 +24,8 @@ PORT=9000 npm start
 
 ### Transport security
 
-- Recommended (modern clients): `wss://token-beam.fly.dev`
-- Legacy compatibility (not recommended): `ws://token-beam.fly.dev`
+- Recommended (modern clients): `wss://tokenbeam.dev`
+- Legacy compatibility (no TLS, e.g. Aseprite): `ws://tokenbeam.dev:8080`
 
 `ws://` is enabled only so older tools can still connect. It is unencrypted and should be considered legacy transport.
 

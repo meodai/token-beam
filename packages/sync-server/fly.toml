@@ -24,6 +24,7 @@ primary_region = 'fra'
     handlers = ["tls", "http"]
     port = 443
 
+
 [[vm]]
   memory = '1gb'
   cpu_kind = 'shared'

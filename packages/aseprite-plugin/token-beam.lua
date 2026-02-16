@@ -15,15 +15,16 @@ end
 local dlg = Dialog("Token Beam")
 local tokenValue = ""
 local ws = nil
+local connected = false
 local statusText = "Disconnected"
-local syncServerUrl = "wss://token-beam.fly.dev"
+local syncServerUrl = "ws://tokenbeam.dev:8080"
 local generation = 0
 
 -- Convert hex color to Aseprite Color
 function hexToColor(hex)
   local r, g, b
   hex = hex:gsub("#", "")
-  
+
   if #hex == 3 then
     r = tonumber(hex:sub(1,1) .. hex:sub(1,1), 16)
     g = tonumber(hex:sub(2,2) .. hex:sub(2,2), 16)
@@ -33,18 +34,18 @@ function hexToColor(hex)
     g = tonumber(hex:sub(3,4), 16)
     b = tonumber(hex:sub(5,6), 16)
   end
-  
+
   return Color{ r=r, g=g, b=b, a=255 }
 end
 
 -- Extract colors from token payload
 function extractColors(payload)
   local colors = {}
-  
+
   if not payload.collections then
     return colors
   end
-  
+
   for _, collection in ipairs(payload.collections) do
     for _, mode in ipairs(collection.modes) do
       for _, token in ipairs(mode.tokens) do
@@ -59,7 +60,7 @@ function extractColors(payload)
       end
     end
   end
-  
+
   return colors
 end
 
@@ -70,34 +71,44 @@ function applyColorsToPalette(colors)
     app.alert("No active sprite. Please open or create a sprite first.")
     return
   end
-  
+
   local palette = spr.palettes[1]
-  
+
   app.transaction(function()
     -- Resize palette to fit all colors plus one for transparency
     palette:resize(#colors + 1)
-    
+
     -- Apply colors (index 0 is usually transparent)
     for i, colorData in ipairs(colors) do
       local color = hexToColor(colorData.value)
       palette:setColor(i, color)
     end
   end)
-  
+
   app.refresh()
   return #colors
 end
 
+-- Reset UI to disconnected state
+function resetUI()
+  connected = false
+  ws = nil
+  dlg:modify{ id="connectBtn", text="Connect" }
+end
+
 -- WebSocket message handler
+-- Aseprite's IXWebSocket passes 3 args: (messageType, data, errorReason)
 function createMessageHandler(gen)
-  return function(messageType, data)
+  return function(messageType, data, errorReason)
     -- Ignore callbacks from stale connections
     if gen ~= generation then return end
 
     if messageType == WebSocketMessageType.OPEN then
       if not ws then return end
+      connected = true
       statusText = "Connected - pairing..."
       dlg:modify{ id="status", text=statusText }
+      dlg:modify{ id="connectBtn", text="Disconnect" }
 
       -- Send pair message with token
       local pairMsg = json.encode({
@@ -110,11 +121,16 @@ function createMessageHandler(gen)
     elseif messageType == WebSocketMessageType.TEXT then
       if not ws then return end
       -- Parse message
-      local msg = json.decode(data)
+      local ok, msg = pcall(json.decode, data)
+      if not ok or not msg then
+        statusText = "Error: bad server message"
+        dlg:modify{ id="status", text=statusText }
+        return
+      end
 
       if msg.type == "pair" then
         local origin = msg.origin or "unknown"
-        statusText = "Paired with " .. origin .. " - waiting for data..."
+        statusText = "Paired with " .. origin
         dlg:modify{ id="status", text=statusText }
 
       elseif msg.type == "sync" then
@@ -128,37 +144,49 @@ function createMessageHandler(gen)
           statusText = "Applied " .. count .. " colors"
           dlg:modify{ id="status", text=statusText }
         else
-          statusText = "No colors found in payload"
+          statusText = "No colors found"
           dlg:modify{ id="status", text=statusText }
         end
 
       elseif msg.type == "error" then
         local err = msg.error or "Unknown error"
 
-        -- Non-fatal warnings — just update status, don't disconnect
         if err:sub(1, 6) == "[warn]" then
           statusText = err:sub(8)
           dlg:modify{ id="status", text=statusText }
         elseif err == "Invalid session token" then
           statusText = "Session not found"
           dlg:modify{ id="status", text=statusText }
-          app.alert("Session not found — check the token or start a new session from the web app")
+          app.alert("Session not found")
           if ws then ws:close() end
-          ws = nil
-          dlg:modify{ id="connectBtn", text="Connect" }
+          resetUI()
         else
           statusText = "Error: " .. err
           dlg:modify{ id="status", text=statusText }
         end
       end
 
+    elseif messageType == WebSocketMessageType.ERROR then
+      local reason = ""
+      if errorReason and errorReason ~= "" then
+        reason = errorReason
+      elseif data and data ~= "" then
+        reason = data
+      else
+        reason = "Connection error"
+      end
+      statusText = "Error: " .. reason
+      dlg:modify{ id="status", text=statusText }
+
     elseif messageType == WebSocketMessageType.CLOSE then
-      -- Only update UI if this is still the active connection
       if gen ~= generation then return end
-      statusText = "Disconnected"
-      dlg:modify{ id="status", text="Disconnected" }
-      dlg:modify{ id="connectBtn", text="Connect" }
-      ws = nil
+      local reason = ""
+      if errorReason and errorReason ~= "" then
+        reason = " (" .. errorReason .. ")"
+      end
+      statusText = "Disconnected" .. reason
+      dlg:modify{ id="status", text=statusText }
+      resetUI()
     end
   end
 end
@@ -166,42 +194,36 @@ end
 -- Connect button handler
 function onConnect()
   if ws then
-    -- Disconnect: bump generation so old callbacks are ignored
     generation = generation + 1
     local oldWs = ws
-    ws = nil
+    resetUI()
     oldWs:close()
     statusText = "Disconnected"
     dlg:modify{ id="status", text="Disconnected" }
-    dlg:modify{ id="connectBtn", text="Connect" }
     return
   end
 
   if tokenValue == "" then
-    app.alert("Please enter a session token")
+    app.alert("Enter a session token")
     return
   end
 
-  -- Validate: strip beam:// prefix and check for hex chars only
   local stripped = tokenValue:gsub("^beam://", "")
   if not stripped:match("^[0-9a-fA-F]+$") then
-    statusText = "Invalid token format"
+    statusText = "Invalid token"
     dlg:modify{ id="status", text=statusText }
-    app.alert("Invalid token format — paste the token from the web app")
+    app.alert("Invalid token format")
     return
   end
 
-  -- Normalize token
   if not tokenValue:match("^beam://") then
     tokenValue = "beam://" .. tokenValue:upper()
   end
 
-  -- Bump generation for the new connection
   generation = generation + 1
 
-  -- Create WebSocket connection
   statusText = "Connecting..."
-  dlg:modify{ id="status", text="Connecting..." }
+  dlg:modify{ id="status", text=statusText }
   dlg:modify{ id="connectBtn", text="Connecting..." }
 
   ws = WebSocket{
@@ -211,33 +233,28 @@ function onConnect()
   }
 
   ws:connect()
-
-  dlg:modify{ id="connectBtn", text="Disconnect" }
 end
 
 -- Build dialog
-dlg:separator{ text="Session Token" }
-dlg:entry{ 
-  id="token", 
+dlg:separator{ text="Token" }
+dlg:entry{
+  id="token",
   text=tokenValue,
   onchange=function()
     tokenValue = dlg.data.token
   end
 }
-dlg:button{ 
+dlg:button{
   id="connectBtn",
   text="Connect",
   onclick=onConnect
 }
 dlg:separator{}
-dlg:label{ 
+dlg:label{
   id="status",
   text=statusText,
   label=""
 }
 dlg:button{ text="Close" }
 
--- Show dialog
 dlg:show{ wait=false }
-local bounds = dlg.bounds
-dlg.bounds = Rectangle(bounds.x, bounds.y, math.max(bounds.width, 320), bounds.height)
