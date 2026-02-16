@@ -1,3 +1,10 @@
+## [1.4.5](https://github.com/meodai/token-beam/compare/v1.4.4...v1.4.5) (2026-02-16)
+
+### Bug Fixes
+
+- update fly.toml to configure services and ports for HTTP and TLS ([de77236](https://github.com/meodai/token-beam/commit/de77236520c306a93d7f34704db6900c6ff499d8))
+- update WebSocket server URLs across multiple plugins and configurations ([ad07446](https://github.com/meodai/token-beam/commit/ad0744656735bc5ae98ffa8a13353b0c1e873f8d))
+
 ## [1.4.4](https://github.com/meodai/token-beam/compare/v1.4.3...v1.4.4) (2026-02-16)
 
 ### Bug Fixes
