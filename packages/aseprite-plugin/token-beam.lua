@@ -19,6 +19,7 @@ local connected = false
 local statusText = "Disconnected"
 local syncServerUrl = "ws://tokenbeam.dev:8080"
 local generation = 0
+local initialDialogBounds = Rectangle(120, 120, 420, 180)
 
 -- Convert hex color to Aseprite Color
 function hexToColor(hex)
@@ -89,11 +90,13 @@ function applyColorsToPalette(colors)
   return #colors
 end
 
--- Reset UI to disconnected state
-function resetUI()
+-- Reset UI to initial disconnected state
+function resetUI(status)
   connected = false
   ws = nil
+  statusText = status or "Disconnected"
   dlg:modify{ id="connectBtn", text="Connect" }
+  dlg:modify{ id="status", text=statusText }
 end
 
 -- WebSocket message handler
@@ -175,18 +178,15 @@ function createMessageHandler(gen)
       else
         reason = "Connection error"
       end
-      statusText = "Error: " .. reason
-      dlg:modify{ id="status", text=statusText }
+      resetUI("Disconnected: " .. reason)
 
     elseif messageType == WebSocketMessageType.CLOSE then
       if gen ~= generation then return end
-      local reason = ""
+      local reason = "Disconnected"
       if errorReason and errorReason ~= "" then
-        reason = " (" .. errorReason .. ")"
+        reason = "Disconnected: " .. errorReason
       end
-      statusText = "Disconnected" .. reason
-      dlg:modify{ id="status", text=statusText }
-      resetUI()
+      resetUI(reason)
     end
   end
 end
@@ -198,8 +198,6 @@ function onConnect()
     local oldWs = ws
     resetUI()
     oldWs:close()
-    statusText = "Disconnected"
-    dlg:modify{ id="status", text="Disconnected" }
     return
   end
 
@@ -257,4 +255,4 @@ dlg:label{
 }
 dlg:button{ text="Close" }
 
-dlg:show{ wait=false }
+dlg:show{ wait=false, bounds=initialDialogBounds }

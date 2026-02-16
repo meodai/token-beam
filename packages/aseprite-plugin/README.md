@@ -33,7 +33,7 @@ Run the install script from the root of the project:
 npm run install:aseprite
 ```
 
-This copies the Lua script and package.json to `~/Library/Application Support/Aseprite/scripts/token-beam/`.
+This copies the Lua script to `~/Library/Application Support/Aseprite/scripts/token-beam.lua`.
 
 **Note:** This script is currently macOS-specific. For Windows/Linux, use Option B or C below.
 
@@ -47,7 +47,7 @@ npm run uninstall:aseprite
 
 **Option B: Manual Symlink (Development)**
 
-Create a symlink to this directory in Aseprite's scripts folder:
+Create a symlink to the Lua script in Aseprite's scripts folder:
 
 - **macOS**: `~/Library/Application Support/Aseprite/scripts/`
 - **Windows**: `%APPDATA%\Aseprite\scripts\`
@@ -55,15 +55,15 @@ Create a symlink to this directory in Aseprite's scripts folder:
 
 ```bash
 # macOS/Linux
-ln -s "$(pwd)" ~/Library/Application\ Support/Aseprite/scripts/token-beam
+ln -s "$(pwd)/token-beam.lua" ~/Library/Application\ Support/Aseprite/scripts/token-beam.lua
 
 # Windows (PowerShell as Admin)
-New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Aseprite\scripts\token-beam" -Target "$(pwd)"
+New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Aseprite\scripts\token-beam.lua" -Target "$(pwd)\token-beam.lua"
 ```
 
 **Option C: Manual Copy**
 
-Copy `token-beam.lua` and `package.json` to Aseprite's scripts directory.
+Copy `token-beam.lua` to Aseprite's scripts directory.
 
 Restart Aseprite after installation.
 

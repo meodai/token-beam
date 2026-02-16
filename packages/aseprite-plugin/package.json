@@ -15,7 +15,7 @@
   },
   "scripts": {
     "bundle": "rm -f token-beam-aseprite.zip && mkdir -p bundle/token-beam && cp token-beam.lua package.json bundle/token-beam/ && cd bundle && zip -r ../token-beam-aseprite.zip token-beam/ && cd .. && rm -rf bundle",
-    "install:aseprite": "mkdir -p \"$HOME/Library/Application Support/Aseprite/scripts/token-beam\" && SYNC_URL=\"${SYNC_SERVER_URL:-ws://localhost:8080}\" && sed \"s|^local syncServerUrl = \\\".*\\\"|local syncServerUrl = \\\"$SYNC_URL\\\"|\" token-beam.lua > \"$HOME/Library/Application Support/Aseprite/scripts/token-beam/token-beam.lua\" && cp -f package.json \"$HOME/Library/Application Support/Aseprite/scripts/token-beam/\"",
-    "uninstall:aseprite": "rm -rf \"$HOME/Library/Application Support/Aseprite/scripts/token-beam\""
+    "install:aseprite": "mkdir -p \"$HOME/Library/Application Support/Aseprite/scripts\" && SYNC_URL=\"${SYNC_SERVER_URL:-ws://localhost:8080}\" && sed \"s|^local syncServerUrl = \\\".*\\\"|local syncServerUrl = \\\"$SYNC_URL\\\"|\" token-beam.lua > \"$HOME/Library/Application Support/Aseprite/scripts/token-beam.lua\"",
+    "uninstall:aseprite": "rm -f \"$HOME/Library/Application Support/Aseprite/scripts/token-beam.lua\""
   }
 }
