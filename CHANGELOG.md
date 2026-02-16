@@ -1,3 +1,9 @@
+## [1.4.4](https://github.com/meodai/token-beam/compare/v1.4.3...v1.4.4) (2026-02-16)
+
+### Bug Fixes
+
+- enhance color application logic in TOKENBEAM_OT_apply_color operator ([d7402d9](https://github.com/meodai/token-beam/commit/d7402d91ccf0286e4788971e9be19bda7224c831))
+
 ## [1.4.3](https://github.com/meodai/token-beam/compare/v1.4.2...v1.4.3) (2026-02-15)
 
 ### Bug Fixes
