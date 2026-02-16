@@ -82,6 +82,11 @@ export class TokenSyncServer {
               url: 'https://github.com/meodai/token-beam/tree/main/packages/sketch-plugin',
             },
             {
+              id: 'blender',
+              name: 'Blender',
+              url: 'https://github.com/meodai/token-beam/tree/main/packages/blender-plugin',
+            },
+            {
               id: 'aseprite',
               name: 'Aseprite',
               url: 'https://github.com/meodai/token-beam/tree/main/packages/aseprite-plugin',
