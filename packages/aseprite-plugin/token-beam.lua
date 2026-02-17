@@ -21,6 +21,14 @@ local syncServerUrl = "ws://tokenbeam.dev:8080"
 local generation = 0
 local initialDialogBounds = Rectangle(120, 120, 420, 180)
 
+-- Check clipboard for a beam:// token and prefill
+if app.clipboard and app.clipboard.hasText then
+  local clip = app.clipboard.text
+  if clip and clip:match("^beam://[0-9a-fA-F]+$") then
+    tokenValue = clip
+  end
+end
+
 -- Convert hex color to Aseprite Color
 function hexToColor(hex)
   local r, g, b
@@ -90,10 +98,19 @@ function applyColorsToPalette(colors)
   return #colors
 end
 
+-- Safely close and discard the current WebSocket
+function closeWebSocket()
+  if ws then
+    local oldWs = ws
+    ws = nil
+    pcall(function() oldWs:close() end)
+  end
+end
+
 -- Reset UI to initial disconnected state
 function resetUI(status)
   connected = false
-  ws = nil
+  closeWebSocket()
   statusText = status or "Disconnected"
   dlg:modify{ id="connectBtn", text="Connect" }
   dlg:modify{ id="status", text=statusText }
@@ -158,11 +175,8 @@ function createMessageHandler(gen)
           statusText = err:sub(8)
           dlg:modify{ id="status", text=statusText }
         elseif err == "Invalid session token" then
-          statusText = "Session not found"
-          dlg:modify{ id="status", text=statusText }
           app.alert("Session not found")
-          if ws then ws:close() end
-          resetUI()
+          resetUI("Session not found")
         else
           statusText = "Error: " .. err
           dlg:modify{ id="status", text=statusText }
@@ -195,9 +209,7 @@ end
 function onConnect()
   if ws then
     generation = generation + 1
-    local oldWs = ws
     resetUI()
-    oldWs:close()
     return
   end
 
