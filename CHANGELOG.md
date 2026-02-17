@@ -1,3 +1,17 @@
+# [1.9.0](https://github.com/meodai/token-beam/compare/v1.8.0...v1.9.0) (2026-02-17)
+
+### Features
+
+- add npm plugin configuration to release process ([c475be9](https://github.com/meodai/token-beam/commit/c475be97cf73bbc5d24fc7fdf4d1053e5c941441))
+- add rampensau color ramp generator link to marketing page ([f48a208](https://github.com/meodai/token-beam/commit/f48a2084ce921af6714b7d279b3e0c3df436b386))
+- **docker:** add healthcheck to Dockerfile ([f36416c](https://github.com/meodai/token-beam/commit/f36416ca9b4175df0150d06d16d820130e8d780d))
+- enhance SyncClient and TokenSyncServer with improved session handling and payload validation ([7bf1eed](https://github.com/meodai/token-beam/commit/7bf1eedde3a150eeb2a783619ba4069c2aea973a))
+- enhance WebSocket management and improve clipboard token handling ([04ee50e](https://github.com/meodai/token-beam/commit/04ee50e5e0f6cc88c76d873ad94090c4709ba2b8))
+- refactor color token validation and enhance session error handling ([6dc4e80](https://github.com/meodai/token-beam/commit/6dc4e80688f0f8b635d2fb451b3d7343bdd55485))
+- remove npm plugin configuration from release process ([00833be](https://github.com/meodai/token-beam/commit/00833beec4d9752472229b90b6253eb2458c9040))
+- update package versions and enhance marketing page with new developer section ([1cd8b35](https://github.com/meodai/token-beam/commit/1cd8b355148631ea8d4d09ec495f6e777f8053f6))
+- update prepare command in release configuration to use npm pkg set version ([2e63d6c](https://github.com/meodai/token-beam/commit/2e63d6c5d8c294fb254bd8912f1c9fd83833c025))
+
 # [1.8.0](https://github.com/meodai/token-beam/compare/v1.7.0...v1.8.0) (2026-02-17)
 
 ### Features
