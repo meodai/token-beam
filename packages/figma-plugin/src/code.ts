@@ -110,6 +110,22 @@ async function syncVariables(
     }
   }
 
+  // Collect all incoming variable names across all modes
+  const incomingNames = new Set<string>();
+  for (const modeDef of payload.modes) {
+    for (const varDef of modeDef.variables) {
+      incomingNames.add(varDef.name);
+    }
+  }
+
+  // Remove variables that are no longer in the payload
+  for (const [name, variable] of existingVars) {
+    if (!incomingNames.has(name)) {
+      variable.remove();
+      existingVars.delete(name);
+    }
+  }
+
   // Create/update variables for each mode
   for (let i = 0; i < payload.modes.length; i++) {
     const modeDef = payload.modes[i];
