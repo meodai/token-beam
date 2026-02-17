@@ -25,7 +25,7 @@ RUN npm run build
 # Remove dev dependencies
 RUN npm prune --production
 
-# Expose port (Fly.io will inject PORT env var)
+# Expose application port
 EXPOSE 8080
 
 # Start the server
