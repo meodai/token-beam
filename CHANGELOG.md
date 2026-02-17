@@ -1,3 +1,9 @@
+# [1.10.0](https://github.com/meodai/token-beam/compare/v1.9.0...v1.10.0) (2026-02-17)
+
+### Features
+
+- **blender:** bundle websocket ([3561337](https://github.com/meodai/token-beam/commit/3561337acbff2a3e2fb3c8d25e621d73b7f57bfd))
+
 # [1.9.0](https://github.com/meodai/token-beam/compare/v1.8.0...v1.9.0) (2026-02-17)
 
 ### Features
