@@ -175,8 +175,48 @@ export class TokenSyncServer {
       console.log(`Session paired with origin: ${message.origin}`);
     }
 
-    // Web client creates new session
+    // Web client — rejoin existing session or create new one
     if (clientType === 'web') {
+      // If the web client provides a session token, try to rejoin
+      if (sessionToken) {
+        const existing = this.getSessionByToken(sessionToken);
+        if (existing && !existing.webClient) {
+          // Rejoin: restore the web client on the existing session
+          existing.webClient = ws;
+          existing.lastActivity = new Date();
+          this.clientToSessionId.set(ws, existing.id);
+
+          // Update origin and icon if provided
+          if (message.origin) existing.webOrigin = message.origin;
+          if (message.icon) {
+            const webIcon = this.sanitizeIcon(message.icon);
+            if (webIcon) existing.webIcon = webIcon;
+          }
+
+          this.send(ws, {
+            type: 'pair',
+            sessionToken: existing.token,
+            clientType: 'web',
+          });
+
+          // Notify connected targets that web client is back
+          for (const target of existing.targetClients) {
+            if (target.ws.readyState === WebSocket.OPEN) {
+              this.send(target.ws, {
+                type: 'pair',
+                clientType: 'web',
+                origin: existing.webOrigin,
+                icon: existing.webIcon,
+              });
+            }
+          }
+
+          console.log(`Web client rejoined session: ${existing.token}`);
+          return;
+        }
+        // Token invalid or session already has a web client — fall through to create new
+      }
+
       const token = this.generateToken();
 
       // Sanitize icon — warn client if it was rejected
@@ -297,6 +337,14 @@ export class TokenSyncServer {
       }
       console.log(`Synced from web to ${sentCount} target client(s)`);
     } else {
+      // Validate payload from target client before forwarding
+      const targetValidation = validateTokenPayload(message.payload);
+      if (!targetValidation.success) {
+        console.error('Invalid payload from target client:', targetValidation.error);
+        this.sendError(ws, 'Invalid payload structure');
+        return;
+      }
+
       // Send to web client
       if (session.webClient && session.webClient.readyState === WebSocket.OPEN) {
         this.send(session.webClient, {
@@ -327,11 +375,15 @@ export class TokenSyncServer {
     this.clientToSessionId.delete(ws);
 
     if (ws === session.webClient) {
-      // Web client disconnected - keep session until all targets disconnect
+      // Web client disconnected - keep session for potential rejoin
       session.webClient = undefined;
       for (const target of session.targetClients) {
         if (target.ws.readyState === WebSocket.OPEN) {
-          this.sendError(target.ws, 'Web client disconnected');
+          this.send(target.ws, {
+            type: 'peer-disconnected',
+            clientType: 'web',
+            reason: 'Web client disconnected',
+          });
         }
       }
 
@@ -430,16 +482,19 @@ export class TokenSyncServer {
       // Must look like an SVG element
       if (!value.trim().startsWith('<svg')) return undefined;
 
-      // Strip anything dangerous: <script>, on* attributes, javascript: URLs,
-      // <foreignObject>, <iframe>, <embed>, <object>, data: URIs, <use> with external hrefs
+      // Strip anything dangerous
       let clean = value;
       // Remove <script>…</script> blocks
       clean = clean.replace(/<script[\s\S]*?<\/script\s*>/gi, '');
       // Remove standalone <script.../> or unclosed <script
       clean = clean.replace(/<script[^>]*\/?>/gi, '');
+      // Remove <style>…</style> blocks (can contain url(), expression(), etc.)
+      clean = clean.replace(/<style[\s\S]*?<\/style\s*>/gi, '');
+      clean = clean.replace(/<style[^>]*\/?>/gi, '');
       // Remove on* event attributes (onclick, onload, onerror, etc.)
-      clean = clean.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
-      // Remove javascript: / data: in attribute values
+      // Use [\s/] prefix to catch attributes after whitespace or in self-closing tags
+      clean = clean.replace(/[\s/]+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+      // Remove javascript: / data: in any attribute value
       clean = clean.replace(
         /(?:href|xlink:href|src|action)\s*=\s*(?:"(?:javascript|data):[^"]*"|'(?:javascript|data):[^']*')/gi,
         '',
@@ -448,6 +503,16 @@ export class TokenSyncServer {
       clean = clean.replace(/<\/?(foreignObject|iframe|embed|object)[^>]*>/gi, '');
       // Remove <set>, <animate*> that can trigger JS via attributeName="href" etc.
       clean = clean.replace(/<\/?(set|animate\w*)[^>]*>/gi, '');
+      // Remove <use> elements with external references (http://, https://, //, data:)
+      clean = clean.replace(
+        /<use[^>]*(?:href|xlink:href)\s*=\s*(?:"(?:https?:|\/\/|data:)[^"]*"|'(?:https?:|\/\/|data:)[^']*')[^>]*\/?>/gi,
+        '',
+      );
+      // Remove inline style attributes containing url() (can exfiltrate data)
+      clean = clean.replace(
+        /\s+style\s*=\s*(?:"[^"]*url\s*\([^)]*\)[^"]*"|'[^']*url\s*\([^)]*\)[^']*')/gi,
+        '',
+      );
 
       // Cap size at 10KB for an icon
       if (clean.length > 10240) return undefined;

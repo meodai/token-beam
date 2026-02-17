@@ -17,6 +17,8 @@ export interface SyncClientOptions<T = unknown> {
   serverUrl: string;
   clientType: string;
   sessionToken?: string;
+  /** Called on reconnect to get the latest session token (e.g. after pairing). */
+  getSessionToken?: () => string | undefined;
   /** Display name for this client (e.g. "Token Beam Demo"). Defaults to location.hostname. */
   origin?: string;
   /** Optional icon for this client — shown in paired design tool plugins. */
@@ -47,9 +49,24 @@ export class SyncClient<T = unknown> {
 
   public connect(): Promise<void> {
     return new Promise((resolve, reject) => {
-      try {
-        this.manualDisconnect = false;
+      // Guard against reconnection after manual disconnect
+      if (this.manualDisconnect) {
+        reject(new Error('Client was manually disconnected'));
+        return;
+      }
 
+      let settled = false;
+      const settle = (fn: () => void) => {
+        if (settled) return;
+        settled = true;
+        if (this.connectionTimeout) {
+          clearTimeout(this.connectionTimeout);
+          this.connectionTimeout = undefined;
+        }
+        fn();
+      };
+
+      try {
         // Clean up existing connection if any
         if (this.ws) {
           this.ws.onclose = null;
@@ -65,16 +82,11 @@ export class SyncClient<T = unknown> {
         this.connectionTimeout = setTimeout(() => {
           if (this.ws?.readyState !== WebSocket.OPEN) {
             this.ws?.close();
-            reject(new Error('Connection timeout'));
+            settle(() => reject(new Error('Connection timeout')));
           }
         }, this.CONNECTION_TIMEOUT);
 
         this.ws.onopen = () => {
-          if (this.connectionTimeout) {
-            clearTimeout(this.connectionTimeout);
-            this.connectionTimeout = undefined;
-          }
-
           // Reset reconnect attempts on successful connection
           this.reconnectAttempts = 0;
 
@@ -87,30 +99,30 @@ export class SyncClient<T = unknown> {
           this.send({
             type: 'pair',
             clientType: this.options.clientType,
-            sessionToken: this.options.sessionToken,
+            sessionToken: this.options.getSessionToken?.() ?? this.options.sessionToken,
             origin: resolvedOrigin,
             icon: this.options.icon,
           });
 
           this.startPing();
-          resolve();
+          settle(() => resolve());
         };
 
         this.ws.onmessage = (event) => {
           try {
             const message: SyncMessage<T> = JSON.parse(event.data);
-            this.handleMessage(message);
+            try {
+              this.handleMessage(message);
+            } catch (handlerError) {
+              console.error('[token-beam] Error in message handler:', handlerError);
+            }
           } catch {
-            // ignore malformed messages
+            // ignore malformed JSON
           }
         };
 
         this.ws.onerror = () => {
-          if (this.connectionTimeout) {
-            clearTimeout(this.connectionTimeout);
-            this.connectionTimeout = undefined;
-          }
-          reject(new Error('WebSocket connection failed'));
+          settle(() => reject(new Error('WebSocket connection failed')));
         };
 
         this.ws.onclose = () => {
@@ -125,11 +137,7 @@ export class SyncClient<T = unknown> {
           }
         };
       } catch (error) {
-        if (this.connectionTimeout) {
-          clearTimeout(this.connectionTimeout);
-          this.connectionTimeout = undefined;
-        }
-        reject(error);
+        settle(() => reject(error));
       }
     });
   }

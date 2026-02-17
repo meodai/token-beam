@@ -208,6 +208,7 @@ class SessionBase<TPayload = unknown> {
       serverUrl: this.options.serverUrl,
       clientType: this.options.clientType,
       sessionToken: this.sessionToken,
+      getSessionToken: () => this.sessionToken,
       origin: this.options.origin,
       icon: this.options.icon,
       onConnected: () => {
