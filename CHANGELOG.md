@@ -1,11 +1,8 @@
-## [Unreleased]
+# [1.6.0](https://github.com/meodai/token-beam/compare/v1.5.0...v1.6.0) (2026-02-17)
 
 ### Features
 
-- add high-level `SourceSession` and `TargetSession` APIs in `token-beam` lib
-- add shared consumer helpers for token parsing and payload filtering
-- migrate Figma, Sketch, and marketing JS/TS consumers to session APIs
-- update root/package docs for class-first integration and server URL defaults
+- **lib:** add high-level session API for token sync ([3207391](https://github.com/meodai/token-beam/commit/32073918d91d638676bc4f6a80f5389e17e77b60)), closes [hi#level](https://github.com/hi/issues/level)
 
 # [1.5.0](https://github.com/meodai/token-beam/compare/v1.4.5...v1.5.0) (2026-02-16)
 
