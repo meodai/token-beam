@@ -12,12 +12,6 @@
       }
     ],
     [
-      "@semantic-release/npm",
-      {
-        "npmPublish": false
-      }
-    ],
-    [
       "@semantic-release/exec",
       {
         "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version -w packages/lib && npm run build:lib && npx prettier --write CHANGELOG.md packages/lib/package.json"
