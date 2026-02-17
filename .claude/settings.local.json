@@ -21,7 +21,13 @@
       "Bash(sort:*)",
       "Bash(du -sh:*)",
       "Bash(npx esbuild:*)",
-      "WebFetch(domain:community.fly.io)"
+      "WebFetch(domain:community.fly.io)",
+      "Bash(xargs:*)",
+      "WebSearch",
+      "Bash(pip3 show:*)",
+      "Bash(pip show:*)",
+      "WebFetch(domain:docs.blender.org)",
+      "WebFetch(domain:fossies.org)"
     ]
   }
 }
