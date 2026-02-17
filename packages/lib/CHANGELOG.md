@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `SourceSession` and `TargetSession` high-level sync APIs
+- Typed session event model (`paired`, `peer-connected`, `peer-disconnected`, `sync`, `warning`, `error`, `state`)
+- `DEFAULT_SYNC_SERVER_URL` constant (`wss://tokenbeam.dev`)
+- Consumer helpers: `normalizeSessionToken`, `isWarningError`, `isSyncMessage`, `parseSyncMessage`, `flattenPayload`, `filterPayloadByType`, `extractColorTokens`
+
+### Changed
+- `SourceSessionOptions` and `TargetSessionOptions` now accept optional `serverUrl` and default to `wss://tokenbeam.dev`
+- README updated to document class-first usage, migration guidance, naming strategy, and advanced server override behavior
+
 ## [0.1.0] - 2026-02-11
 
 ### Added
