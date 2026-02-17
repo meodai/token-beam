@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/meodai/token-beam/compare/v1.6.0...v1.7.0) (2026-02-17)
+
+### Features
+
+- **lib:** bump token-beam version to 1.6.0 and update dependencies ([b911df3](https://github.com/meodai/token-beam/commit/b911df38caac43002f988b7a626d002dbb6aaaba))
+- **lib:** update changelog with new high-level session APIs and consumer helpers ([3326f4c](https://github.com/meodai/token-beam/commit/3326f4c37ec4b1aebfff14a8ea5d31168e7da746)), closes [hi#level](https://github.com/hi/issues/level)
+
 # [1.6.0](https://github.com/meodai/token-beam/compare/v1.5.0...v1.6.0) (2026-02-17)
 
 ### Features
