@@ -1,0 +1,336 @@
+/* --- Token Beam Widget --- */
+
+.demo__widget-wrap {
+  max-width: 36rem;
+  margin: 0 auto 2rem;
+}
+
+.demo__swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 4px;
+  margin-bottom: 1.5rem;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.demo__swatch {
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: flex-end;
+  padding: 0.35rem;
+  transition:
+    transform 0.3s var(--ease),
+    background-color 0.4s var(--ease);
+}
+
+.demo__swatch:hover {
+  transform: translateY(-2px);
+}
+
+.demo__swatch-label {
+  font-size: 0.5rem;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  word-break: break-all;
+  letter-spacing: 0.02em;
+}
+
+.demo #regen-btn {
+  max-width: 36rem;
+  margin: 0 auto;
+  display: block;
+}
+
+.dts-widget {
+  padding: 0;
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  position: relative;
+}
+
+.dts-widget--message {
+  gap: 0;
+}
+.dts-widget--offline .dts-widget__offline {
+  display: flex;
+}
+
+.dts-widget__row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: -1px;
+}
+
+.dts-widget__label {
+  position: relative;
+  font-size: 0.65rem;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  white-space: nowrap;
+  padding: 0.15em 1.5em 0 3em;
+  line-height: 1;
+}
+
+.dts-widget__label::before {
+  content: '\2237';
+  font-size: 2em;
+  transform: translateY(-50%) rotate(45deg);
+  position: absolute;
+  top: 50%;
+  left: 0.5em;
+}
+
+.dts-widget__token {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg);
+  border: 2px solid var(--text);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: var(--text);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  height: 32px;
+}
+
+.dts-widget__token-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.dts-widget__token-wrap .dts-widget__token {
+  width: 100%;
+  padding-right: 3.6rem;
+}
+
+.dts-widget__token:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.dts-widget__token:hover,
+.dts-widget__token:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.5);
+  }
+}
+
+.dts-widget__unlink {
+  display: inline-flex;
+  align-items: center;
+  background: var(--text);
+  border: 2px solid var(--text);
+  border-left: 0;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.6rem;
+  color: var(--bg);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.2s var(--ease);
+  height: 32px;
+}
+
+.dts-widget__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px lime;
+}
+
+.dts-widget__unlink-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    max-width 0.2s var(--ease),
+    opacity 0.2s linear,
+    margin-left 0.2s var(--ease);
+  margin-left: 0;
+}
+
+.dts-widget__unlink:hover .dts-widget__dot {
+  background: #c4342d;
+  box-shadow: 0 0 0 1px #c4342d;
+  animation-play-state: paused;
+}
+
+.dts-widget__unlink:hover {
+  color: #fff;
+}
+
+.dts-widget__unlink:hover .dts-widget__unlink-label {
+  max-width: 60px;
+  opacity: 1;
+  margin-left: 0.35rem;
+}
+
+.dts-widget__help {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dts-widget__help-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid var(--text);
+  border-left: 0;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.65rem;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.dts-widget__help-btn:hover,
+.dts-widget__help-btn:focus {
+  transform: none;
+  box-shadow: none;
+  opacity: 1;
+}
+
+.dts-widget__tooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% - 1px);
+  width: 240px;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--text);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.65rem;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: all 0.2s var(--ease);
+  z-index: 5;
+}
+
+.dts-widget__help.is-open .dts-widget__tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.dts-widget__tooltip p {
+  margin-bottom: 0.4rem;
+  color: var(--text);
+  font-size: 0.65rem;
+}
+
+.dts-widget__plugins {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dts-widget__plugins a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--line);
+}
+
+.dts-widget__plugins a:hover {
+  opacity: 0.7;
+}
+
+.dts-widget__error {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 0.65rem;
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  top: 100%;
+  z-index: 2;
+}
+
+.dts-widget__error--error {
+  border-color: #c4342d;
+  color: #c4342d;
+}
+.dts-widget__error--info {
+  border-color: var(--line);
+  opacity: 0.7;
+}
+
+.dts-widget__offline {
+  display: none;
+  position: absolute;
+  inset: -1px;
+  z-index: 6;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.65rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  pointer-events: auto;
+}
+
+.dts-widget__status {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  padding: 0.15rem 0.35rem 0.1rem;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s var(--ease);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.dts-widget__status.is-visible {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+
+.dts-widget--connected {
+  box-shadow: inset 0 0 0 1px var(--success);
+  border-color: var(--success);
+}
+
+.dts-widget--error {
+  box-shadow: inset 0 0 0 1px #c4342d;
+  border-color: #c4342d;
+}

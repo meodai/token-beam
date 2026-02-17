@@ -72,6 +72,35 @@ This ensures type safety end-to-end while keeping the core library tool-agnostic
 - **HTTP-based**: REST API serving JSON payloads (one-time fetch)
 - **Real-time sync**: WebSocket server for live design-to-code updates via token-based pairing
 
+### Consumer API (JS/TS plugin side)
+
+The core library now exposes high-level session facades so most integrations do not need to manage low-level WebSocket lifecycle code:
+
+- `SourceSession` (website/app side)
+- `TargetSession` (plugin/design-tool side)
+
+Both classes provide:
+
+- pairing state (`getState()`, `isPaired()`)
+- peer tracking (`getPeers()`, `hasPeers()`)
+- typed events (`paired`, `peer-connected`, `peer-disconnected`, `sync`, `warning`, `error`)
+
+For advanced workflows, the library still ships reusable low-level helpers:
+
+- `normalizeSessionToken(raw)`
+- `parseSyncMessage(raw)` / `isSyncMessage(value)`
+- `isWarningError(error)`
+- `filterPayloadByType(payload, allowedTypes)`
+- `extractColorTokens(payload)`
+
+The session classes are currently used in:
+
+- `packages/figma-plugin/src/ui/ui.ts`
+- `packages/sketch-plugin/ui/ui.ts`
+- `packages/marketing/src/scripts/demo.ts`
+
+See `packages/lib/README.md` for class-based and helper-level examples.
+
 ## Real-Time Sync
 
 The **`packages/sync-server`** package provides a WebSocket server for real-time bidirectional synchronization between the web demo and Figma plugin.

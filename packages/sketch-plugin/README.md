@@ -34,6 +34,8 @@ npm run uninstall:sketch
 
 The plugin creates a WebView window that connects to the sync server via WebSocket. When colors are synced from the web demo, they're automatically added to your document's color variables.
 
+Consumer-side sync logic is built on the `TargetSession` class from `token-beam` (with shared payload helpers where needed), so pairing state, peer tracking, and sync events are consistent with other JS/TS integrations.
+
 ## Development
 
 The plugin is built using:

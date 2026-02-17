@@ -1,5 +1,11 @@
+import {
+  filterPayloadByType,
+  TargetSession,
+} from 'token-beam';
+
 declare const __SYNC_SERVER_URL__: string | undefined;
-const SYNC_SERVER_URL = typeof __SYNC_SERVER_URL__ !== 'undefined' ? __SYNC_SERVER_URL__ : 'wss://tokenbeam.dev';
+const SYNC_SERVER_URL =
+  typeof __SYNC_SERVER_URL__ !== 'undefined' ? __SYNC_SERVER_URL__ : 'wss://tokenbeam.dev';
 
 const tokenInput = document.getElementById('token-input') as HTMLInputElement;
 const connectBtn = document.getElementById('connect-btn') as HTMLButtonElement;
@@ -9,10 +15,6 @@ const resultTextEl = document.getElementById('result-text') as HTMLSpanElement;
 const resultTimeEl = document.getElementById('result-time') as HTMLSpanElement;
 
 type SyncMessage = {
-  type: 'pair' | 'sync' | 'ping' | 'error';
-  sessionToken?: string;
-  origin?: string;
-  error?: string;
   payload?: {
     collections?: Array<{
       name: string;
@@ -28,9 +30,8 @@ type SyncMessage = {
   };
 };
 
-let ws: WebSocket | null = null;
+let session: TargetSession<SyncMessage['payload']> | null = null;
 let isConnected = false;
-let sessionToken: string | null = null;
 let lastResultAt: number | null = null;
 let resultTimer: number | null = null;
 const resultRtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
@@ -52,65 +53,76 @@ function connect() {
   const raw = tokenInput.value.trim();
   if (!raw) return;
 
-  // Validate: must be hex chars (with optional beam:// prefix)
-  const stripped = raw.replace(/^beam:\/\//i, '');
-  if (!/^[0-9a-f]+$/i.test(stripped)) {
-    showStatus('Invalid token format — paste the token from the web app', 'error');
-    return;
-  }
-
-  // Normalize token
-  sessionToken = raw.startsWith('beam://') ? raw : `beam://${raw.toUpperCase()}`;
-
   showStatus('Connecting...', 'connecting');
   connectBtn.disabled = true;
 
-  try {
-    ws = new WebSocket(SYNC_SERVER_URL);
+  session = new TargetSession<SyncMessage['payload']>({
+    serverUrl: SYNC_SERVER_URL,
+    clientType: 'sketch',
+    sessionToken: raw,
+    origin: 'Sketch',
+  });
 
-    ws.onopen = () => {
-      // Send pair message
-      ws?.send(
-        JSON.stringify({
-          type: 'pair',
-          clientType: 'sketch',
-          sessionToken: sessionToken,
-          origin: 'Sketch',
-        }),
-      );
-    };
+  session.on('paired', ({ origin }) => {
+    isConnected = true;
+    tokenInput.disabled = true;
+    connectBtn.disabled = false;
+    connectBtn.textContent = 'Disconnect';
+    showStatus(`Paired with ${origin || 'unknown source'}`, 'connected');
+  });
 
-    ws.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data) as SyncMessage;
-        handleMessage(message);
-      } catch (err) {
-        console.error('Failed to parse message:', err);
-      }
-    };
+  session.on('sync', ({ payload }) => {
+    if (payload && payload.collections) {
+      showStatus('Syncing colors...', 'connected');
 
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      showStatus('Connection failed', 'error');
-      disconnect();
-    };
+      const filteredPayload = filterPayloadByType(payload, ['color']);
+      const collections = filteredPayload?.collections ?? [];
 
-    ws.onclose = () => {
-      if (isConnected) {
-        showStatus('Disconnected', 'error');
-      }
-      disconnect();
-    };
-  } catch (_err) {
+      window.postMessage('syncColors', JSON.stringify(collections));
+
+      const collectionName = collections[0]?.name || 'Unknown';
+      showResult(`Updated collection: ${collectionName}`);
+
+      setTimeout(() => {
+        const peers = session?.getPeers() ?? [];
+        const origin = peers[0]?.origin || 'web';
+        showStatus('Paired with ' + origin, 'connected');
+      }, 1000);
+    }
+  });
+
+  session.on('warning', ({ message }) => {
+    console.warn('[token-beam]', message.slice(7));
+  });
+
+  session.on('error', ({ message }) => {
+    if (message === 'Invalid session token') {
+      showStatus('Session not found — check the token or start a new session from the web app', 'error');
+    } else if (message === 'Invalid session token format') {
+      showStatus('Invalid token format — paste the token from the web app', 'error');
+    } else {
+      showStatus(message || 'Unknown error', 'error');
+    }
+    disconnect();
+  });
+
+  session.on('disconnected', () => {
+    if (isConnected) {
+      showStatus('Disconnected', 'error');
+    }
+    disconnect();
+  });
+
+  session.connect().catch(() => {
     showStatus('Failed to connect', 'error');
     disconnect();
-  }
+  });
 }
 
 function disconnect(clearStatus = false) {
-  if (ws) {
-    ws.close();
-    ws = null;
+  if (session) {
+    session.disconnect();
+    session = null;
   }
 
   isConnected = false;
@@ -124,74 +136,6 @@ function disconnect(clearStatus = false) {
     if (resultTimeEl) resultTimeEl.textContent = '';
     lastResultAt = null;
   }
-}
-
-function handleMessage(message: SyncMessage) {
-  switch (message.type) {
-    case 'pair':
-      if (message.sessionToken) {
-        // Successfully paired
-        isConnected = true;
-        tokenInput.disabled = true;
-        connectBtn.disabled = false;
-        connectBtn.textContent = 'Disconnect';
-
-        const origin = message.origin || 'unknown source';
-        showStatus(`Paired with ${origin}`, 'connected');
-      }
-      break;
-
-    case 'sync':
-      if (message.payload && message.payload.collections) {
-        showStatus('Syncing colors...', 'connected');
-
-        // Transform payload for Sketch
-        const collections = transformPayload(message.payload);
-
-        // Send to Sketch plugin via postMessage bridge (sketch-module-web-view)
-        window.postMessage('syncColors', JSON.stringify(collections));
-
-        const collectionName = collections[0]?.name || 'Unknown';
-        showResult(`Updated collection: ${collectionName}`);
-
-        setTimeout(() => {
-          showStatus('Paired with ' + (message.origin || 'web'), 'connected');
-        }, 1000);
-      }
-      break;
-
-    case 'error':
-      // Non-fatal warnings — log but stay connected
-      if (message.error && message.error.startsWith('[warn]')) {
-        console.warn('[token-beam]', message.error.slice(7));
-        break;
-      }
-      if (message.error === 'Invalid session token') {
-        showStatus('Session not found — check the token or start a new session from the web app', 'error');
-      } else {
-        showStatus(message.error || 'Unknown error', 'error');
-      }
-      disconnect();
-      break;
-
-    case 'ping':
-      // Respond to ping
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'ping' }));
-      }
-      break;
-  }
-}
-
-function transformPayload(payload: NonNullable<SyncMessage['payload']>) {
-  // Transform the token payload to match Sketch's expected format
-  return payload.collections?.map((collection) => ({
-    name: collection.name,
-    modes: collection.modes.map((mode) => ({
-      name: mode.name,
-      tokens: mode.tokens.filter((token) => token.type === 'color'),
-    })),
-  })) ?? [];
 }
 
 function showStatus(text: string, state: 'connecting' | 'connected' | 'error') {

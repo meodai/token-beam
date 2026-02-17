@@ -115,56 +115,94 @@ const description = 'Real-time design token synchronization between web and desi
         </div>
       </section>
 
-      <section class="demo">
+      <section class="demo" id="demo">
         <div class="container">
-          <h2>See It In Action</h2>
-          <div class="demo__grid">
-            <div class="demo__card">
-              <h3>Your Design System</h3>
-              <div class="demo__token-gen">
-                <div class="demo__color-preview" id="colorPreview"></div>
-                <div class="demo__token-info">
-                  <div class="demo__label">Token</div>
-                  <code class="demo__code" id="tokenCode">beam://k8x9m2p4n7q5</code>
-                  <div class="demo__label" style="margin-top: 0.75rem;">Color Value</div>
-                  <div class="demo__value" id="tokenValue">#0066cc</div>
-                </div>
-                <button class="btn btn--primary btn--block" id="updateColorBtn">Update Color</button>
-              </div>
-            </div>
+          <h2>Try It Now</h2>
+          <p class="section-intro">This is a live demo. Install a plugin below, paste the token, and watch your design tool update in real-time.</p>
 
-            <div class="demo__arrow">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 24H40M40 24L28 12M40 24L28 36" stroke="currentColor" stroke-width="2"/>
-              </svg>
-            </div>
+          <div class="demo__widget-wrap">
+            <div id="swatches" class="demo__swatches"></div>
+            <button class="btn btn--primary btn--block" id="regen-btn">Regenerate Colors</button>
+          </div>
 
-            <div class="demo__card">
-              <h3>Design Tool (Figma)</h3>
-              <div class="demo__tool">
-                <div class="demo__tool-header">
-                  <span class="demo__tool-tab demo__tool-tab--active">Design</span>
-                  <span class="demo__tool-tab">Prototype</span>
+          <div class="demo__widget-wrap">
+            <div class="dts-widget" data-dts="widget">
+              <div class="dts-widget__row">
+                <span class="dts-widget__label">Session</span>
+                <div class="dts-widget__token-wrap">
+                  <button class="dts-widget__token" data-dts="token" disabled>Connecting...</button>
+                  <span class="dts-widget__status" data-dts="status"></span>
                 </div>
-                <div class="demo__tool-canvas">
-                  <div class="demo__tool-sidebar">
-                    <div class="demo__label">Layers</div>
-                    <div class="demo__tool-layer">Button</div>
-                    <div class="demo__tool-layer">Card</div>
+                <button class="dts-widget__unlink" data-dts="unlink" style="display:none">
+                  <span class="dts-widget__dot"></span>
+                  <span class="dts-widget__unlink-label">Unlink</span>
+                </button>
+                <div class="dts-widget__help" data-dts="help-wrap">
+                  <button class="dts-widget__help-btn" data-dts="help-btn" aria-expanded="false">?</button>
+                  <div class="dts-widget__tooltip">
+                    <p>Copy the session token and paste it into your design tool's Token Beam plugin to start syncing.</p>
+                    <p>Available plugins:</p>
+                    <ul class="dts-widget__plugins" data-dts="plugin-list">
+                      <li>Loading&hellip;</li>
+                    </ul>
                   </div>
-                  <div class="demo__tool-viewport">
-                    <div class="demo__tool-btn" id="designElement">Click me</div>
-                  </div>
-                  <div class="demo__tool-props">
-                    <div class="demo__label">Fill</div>
-                    <div class="demo__tool-swatch" id="propertyColor"></div>
-                  </div>
-                </div>
-                <div class="demo__tool-status" id="syncStatus">
-                  <span class="demo__status-dot"></span>
-                  <span class="demo__status-text">Waiting for changes...</span>
                 </div>
               </div>
+              <div class="dts-widget__error" data-dts="error" style="display:none"></div>
+              <div class="dts-widget__offline">Offline &mdash; click to reconnect</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="plugins" id="plugins">
+        <div class="container">
+          <h2>Supported Design Tools</h2>
+          <p class="section-intro">Install the plugin for your tool. Paste the session token. That's it.</p>
+          <div class="plugins__grid">
+            <a href="https://www.figma.com/community/plugin/888-token-beam" class="plugins__card" target="_blank" rel="noreferrer">
+              <h3>Figma</h3>
+              <p>Community plugin. Works with Figma and FigJam.</p>
+            </a>
+            <a href="https://github.com/nicolecomputer/token-beam-for-sketch" class="plugins__card" target="_blank" rel="noreferrer">
+              <h3>Sketch</h3>
+              <p>Native macOS plugin with toolbar integration.</p>
+            </a>
+            <a href="https://github.com/meodai/token-beam/tree/main/packages/krita" class="plugins__card" target="_blank" rel="noreferrer">
+              <h3>Krita</h3>
+              <p>Python plugin for color palette sync.</p>
+            </a>
+            <a href="https://github.com/meodai/token-beam/tree/main/packages/aseprite" class="plugins__card" target="_blank" rel="noreferrer">
+              <h3>Aseprite</h3>
+              <p>Lua extension for pixel art workflows.</p>
+            </a>
+            <a href="https://github.com/meodai/token-beam/tree/main/packages/blender" class="plugins__card" target="_blank" rel="noreferrer">
+              <h3>Blender</h3>
+              <p>Python add-on for 3D material colors.</p>
+            </a>
+            <a href="https://github.com/nicolecomputer/token-beam-for-xd" class="plugins__card" target="_blank" rel="noreferrer">
+              <h3>Adobe XD</h3>
+              <p>UXP-based plugin for Adobe XD.</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="websites" id="websites">
+        <div class="container">
+          <h2>Websites Using Token Beam</h2>
+          <div class="websites__grid">
+            <a href="https://farbvelo.elastiq.ch" class="websites__card" target="_blank" rel="noreferrer">
+              <h3>farbvelo</h3>
+              <p>Generative color palette tool. Sync palettes to any design app.</p>
+            </a>
+            <a href="https://okpalette.app" class="websites__card" target="_blank" rel="noreferrer">
+              <h3>OKPalette</h3>
+              <p>Perceptually uniform color palette generator.</p>
+            </a>
+            <div class="websites__card websites__card--cta">
+              <h3>+ Your Website</h3>
+              <p>Add Token Beam to your project in minutes. See the developer section below.</p>
             </div>
           </div>
         </div>

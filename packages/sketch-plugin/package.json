@@ -12,6 +12,7 @@
     "uninstall:sketch": "rm -rf ~/Library/Application\\ Support/com.bohemiancoding.sketch3/Plugins/'Token Beam.sketchplugin'"
   },
   "dependencies": {
-    "sketch-module-web-view": "^3.5.1"
+    "sketch-module-web-view": "^3.5.1",
+    "token-beam": "*"
   }
 }

@@ -1,5 +1,5 @@
-import type { TokenSyncPayload, SyncIcon } from 'token-beam';
-import { SyncClient } from 'token-beam';
+import type { TokenSyncPayload } from 'token-beam';
+import { TargetSession } from 'token-beam';
 import { figmaCollectionAdapter } from '../adapter';
 import type { FigmaCollectionPayload } from '../adapter';
 
@@ -42,7 +42,7 @@ const resultEl = getElement<HTMLDivElement>('result');
 const resultTextEl = getElement<HTMLSpanElement>('result-text');
 const resultTimeEl = getElement<HTMLSpanElement>('result-time');
 
-let syncClient: SyncClient<TokenSyncPayload> | null = null;
+let session: TargetSession<TokenSyncPayload> | null = null;
 let pairedOrigin: string | null = null;
 let lastResultAt: number | null = null;
 let resultTimer: number | null = null;
@@ -147,9 +147,9 @@ function forwardToSandbox(figmaPayload: FigmaCollectionPayload) {
 // --- Connect & Sync ---
 
 connectBtn.addEventListener('click', () => {
-  if (syncClient) {
-    syncClient.disconnect();
-    syncClient = null;
+  if (session) {
+    session.disconnect();
+    session = null;
     unlockUI(true);
     return;
   }
@@ -157,77 +157,75 @@ connectBtn.addEventListener('click', () => {
   const raw = tokenInput.value.trim();
   if (!raw) return;
 
-  // Validate: must be hex chars (with optional beam:// prefix)
-  const stripped = raw.replace(/^beam:\/\//i, '');
-  if (!/^[0-9a-f]+$/i.test(stripped)) {
-    showResult('Invalid token format — paste the token from the web app', false);
-    return;
-  }
-
-  // Normalise: accept "beam://ABC123", "ABC123", or "beam://abc123"
-  const token = raw.startsWith('beam://') ? raw : `beam://${raw.toUpperCase()}`;
-
   resultEl.classList.add('plugin__hidden');
   clearResultTime();
   updateSyncStatus('Connecting...', 'connecting');
   lockUI();
 
-  syncClient = new SyncClient<TokenSyncPayload>({
+  session = new TargetSession<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'figma',
-    sessionToken: token,
-    onPaired: (_token, origin, icon?: SyncIcon) => {
-      pairedOrigin = origin ?? null;
-      const label = pairedOrigin ?? 'unknown source';
-      const iconPrefix = icon?.type === 'unicode' ? `${icon.value} ` : '';
-      updateSyncStatus(`Paired with ${iconPrefix}${label} — waiting for data...`, 'connected');
-      connectBtn.textContent = 'Disconnect';
-      connectBtn.disabled = false;
-    },
-    onSync: (payload) => {
-      const recvLabel = pairedOrigin ? `Receiving from ${pairedOrigin}...` : 'Receiving data...';
-      updateSyncStatus(recvLabel, 'connected');
-
-      const figmaCollections = figmaCollectionAdapter.transform(payload);
-
-      for (const collection of figmaCollections) {
-        forwardToSandbox(collection);
-      }
-    },
-    onError: (error) => {
-      // Non-fatal warnings — log but stay connected
-      if (error.startsWith('[warn]')) {
-        console.warn('[token-beam]', error.slice(7));
-        return;
-      }
-      console.warn('[token-beam]', error);
-
-      // Show user-friendly messages for known errors
-      if (error === 'Invalid session token') {
-        showResult(
-          'Session not found — check the token or start a new session from the web app',
-          false,
-        );
-      } else {
-        showResult(error, false);
-      }
-      updateSyncStatus('', 'error');
-      unlockUI();
-      syncClient = null;
-    },
-    onDisconnected: () => {
-      console.warn('[token-beam] disconnected');
-      updateSyncStatus('Disconnected', 'disconnected');
-      unlockUI();
-      syncClient = null;
-    },
+    sessionToken: raw,
   });
 
-  syncClient.connect().catch((err: unknown) => {
-    console.warn('[token-beam] connection failed', err);
-    showResult('Could not connect to sync server', false);
+  session.on('paired', ({ origin, icon }) => {
+    pairedOrigin = origin ?? null;
+    const label = pairedOrigin ?? 'unknown source';
+    const iconPrefix = icon?.type === 'unicode' ? `${icon.value} ` : '';
+    updateSyncStatus(`Paired with ${iconPrefix}${label} — waiting for data...`, 'connected');
+    connectBtn.textContent = 'Disconnect';
+    connectBtn.disabled = false;
+  });
+
+  session.on('sync', ({ payload }) => {
+    const recvLabel = pairedOrigin ? `Receiving from ${pairedOrigin}...` : 'Receiving data...';
+    updateSyncStatus(recvLabel, 'connected');
+
+    const figmaCollections = figmaCollectionAdapter.transform(payload);
+
+    for (const collection of figmaCollections) {
+      forwardToSandbox(collection);
+    }
+  });
+
+  session.on('warning', ({ message }) => {
+    console.warn('[token-beam]', message.slice(7));
+  });
+
+  session.on('error', ({ message }) => {
+    console.warn('[token-beam]', message);
+
+    if (message === 'Invalid session token') {
+      showResult(
+        'Session not found — check the token or start a new session from the web app',
+        false,
+      );
+    } else if (message === 'Invalid session token format') {
+      showResult('Invalid token format — paste the token from the web app', false);
+    } else {
+      showResult(message, false);
+    }
+    updateSyncStatus('', 'error');
     unlockUI();
-    syncClient = null;
+    session = null;
+  });
+
+  session.on('disconnected', () => {
+    console.warn('[token-beam] disconnected');
+    updateSyncStatus('Disconnected', 'disconnected');
+    unlockUI();
+    session = null;
+  });
+
+  session.connect().catch((err: unknown) => {
+    console.warn('[token-beam] connection failed', err);
+    if (err instanceof Error && err.message === 'Invalid session token format') {
+      showResult('Invalid token format — paste the token from the web app', false);
+    } else {
+      showResult('Could not connect to sync server', false);
+    }
+    unlockUI();
+    session = null;
   });
 });
 
