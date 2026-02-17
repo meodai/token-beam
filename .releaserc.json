@@ -14,7 +14,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version -w packages/lib && npm run build:lib && npx prettier --write CHANGELOG.md packages/lib/package.json"
+        "prepareCmd": "npm pkg set version=${nextRelease.version} -w packages/lib && npm run build:lib && npx prettier --write CHANGELOG.md packages/lib/package.json"
       }
     ],
     [
