@@ -344,10 +344,6 @@ systemctl list-timers certbot.timer
 
 Cloudflare proxy **must** be off (DNS only). Cloudflare's HTTP proxy lowercases WebSocket upgrade headers, which breaks Aseprite's IXWebSocket client.
 
-### Why not Fly.io?
-
-The server was originally deployed on Fly.io, but Fly's HTTP proxy lowercases WebSocket upgrade response headers (`Upgrade:` → `upgrade:`). This is valid per HTTP spec, but Aseprite bundles an older IXWebSocket (v11.4.x) that cannot parse these modified responses, failing with "Failed reading HTTP status line". A direct VPS avoids any intermediary proxy.
-
 ## Environment Variables
 
 - `PORT`: Server port (default: `8080`)
