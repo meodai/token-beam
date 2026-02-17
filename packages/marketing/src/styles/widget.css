@@ -1,10 +1,5 @@
 /* --- Token Beam Widget --- */
 
-.demo__widget-wrap {
-  max-width: 36rem;
-  margin: 0 auto 2rem;
-}
-
 .demo__swatches {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -36,12 +31,6 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   word-break: break-all;
   letter-spacing: 0.02em;
-}
-
-.demo #regen-btn {
-  max-width: 36rem;
-  margin: 0 auto;
-  display: block;
 }
 
 .dts-widget {

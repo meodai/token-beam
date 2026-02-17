@@ -11,6 +11,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.17.1"
+    "astro": "^5.17.1",
+    "rampensau": "^2.3.0",
+    "token-beam": "^1.9.0"
   }
 }

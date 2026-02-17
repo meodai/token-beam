@@ -1,4 +1,5 @@
 ---
+import '../styles/widget.css';
 const title = '⊷ Token Beam - W3C Design Token Synchronization';
 const description = 'Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant. MIT-licensed plugins, enterprise sync server.';
 ---
@@ -22,10 +23,11 @@ const description = 'Real-time design token synchronization between web and desi
       <div class="container header-content">
         <a href="/" class="logo"><span class="logo__icon" aria-hidden="true">⊷</span> Token Beam</a>
         <nav>
-          <a href="#features">Features</a>
+          <a href="#demo">Demo</a>
+          <a href="#plugins">Plugins</a>
+          <a href="#developers">Developers</a>
           <a href="#pricing">Pricing</a>
-          <a href="https://github.com/meodai/token-beam">Docs</a>
-          <a href="mailto:token-beam@elastiq.ch">Contact</a>
+          <a href="https://github.com/meodai/token-beam">GitHub</a>
         </nav>
       </div>
     </header>
@@ -263,20 +265,45 @@ const description = 'Real-time design token synchronization between web and desi
         </div>
       </section>
 
+      <section class="developers" id="developers">
+        <div class="container">
+          <h2>For Developers</h2>
+          <p class="section-intro">Add real-time design token sync to your website or tool in a few lines of code. The <code>token-beam</code> library is MIT-licensed.</p>
+          <div class="developers__example">
+            <pre><code>import &lbrace; SyncClient, createCollection &rbrace; from 'token-beam';
+
+const client = new SyncClient('wss://tokenbeam.dev');
+
+// Create a W3C DTCG collection from your design tokens
+const payload = createCollection('brand', &lbrace;
+  'primary':   '#0066cc',
+  'secondary': '#cc6600',
+  'surface':   '#f5f5f5',
+&rbrace;);
+
+// Push to all connected design tools
+client.on('paired', () =&gt; client.push(payload));</code></pre>
+          </div>
+          <div class="developers__links">
+            <a href="https://github.com/meodai/token-beam" class="btn">Read the Docs</a>
+            <a href="https://www.npmjs.com/package/token-beam" class="btn">npm install token-beam</a>
+          </div>
+        </div>
+      </section>
+
       <section class="pricing" id="pricing">
         <div class="container">
-          <h2>Pricing</h2>
+          <h2>Commercial Infrastructure Pricing</h2>
+          <p class="section-intro">End users never pay. These plans are for website owners who want hosted sync infrastructure.</p>
           <div class="pricing__grid">
             <div class="pricing__card">
               <h3>Free</h3>
               <div class="pricing__price">$0</div>
               <div class="pricing__detail">Forever</div>
               <ul>
-                <li>Personal projects only</li>
-                <li>Limited sessions</li>
                 <li>Self-hosted (AGPL-3.0)</li>
                 <li>MIT library (<code>token-beam</code> on npm)</li>
-                <li>Use plugins as-is (cannot modify)</li>
+                <li>All plugins included (MIT)</li>
                 <li>Community support</li>
               </ul>
               <a href="https://github.com/meodai/token-beam" class="btn btn--block">Get Started</a>
@@ -287,25 +314,21 @@ const description = 'Real-time design token synchronization between web and desi
               <div class="pricing__price">$29</div>
               <div class="pricing__detail">per month</div>
               <ul>
-                <li>Commercial use allowed</li>
-                <li>Hosted by us (no setup required)</li>
+                <li>Hosted by us (no setup)</li>
                 <li>Unlimited sessions</li>
                 <li>99.9% uptime SLA</li>
                 <li>Email support</li>
-                <li>Use plugins as-is (cannot modify)</li>
               </ul>
               <a href="mailto:token-beam@elastiq.ch" class="btn btn--primary btn--block">Get Started</a>
             </div>
 
             <div class="pricing__card">
               <h3>Enterprise</h3>
-              <div class="pricing__price">$299</div>
-              <div class="pricing__detail">per month</div>
+              <div class="pricing__price">Custom</div>
+              <div class="pricing__detail">contact us</div>
               <ul>
                 <li>Everything in Pro</li>
-                <li>Self-hosting with commercial license</li>
-                <li>Modify plugins for your needs</li>
-                <li>Source code access</li>
+                <li>Commercial self-hosting license</li>
                 <li>SSO & SAML authentication</li>
                 <li>Priority support (24h SLA)</li>
                 <li>Custom integrations</li>
@@ -315,8 +338,8 @@ const description = 'Real-time design token synchronization between web and desi
           </div>
 
           <div class="pricing__note">
-            <p><strong>Open Source Exception:</strong> OSI-approved open source projects get Pro license free.</p>
-            <p>Email <a href="mailto:token-beam@elastiq.ch">token-beam@elastiq.ch</a> to apply.</p>
+            <p><strong>100% Open Source.</strong> The server (AGPL-3.0), library and all plugins (MIT) are fully open source.</p>
+            <p><strong>OSS Exception:</strong> Open source projects get Pro hosting free. <a href="mailto:token-beam@elastiq.ch">Apply here</a>.</p>
           </div>
         </div>
       </section>
@@ -324,11 +347,11 @@ const description = 'Real-time design token synchronization between web and desi
 
     <footer>
       <div class="container">
-        <p>&copy; 2025 ⊷ Token Beam by <a href="https://github.com/meodai">David Aerne (meodai)</a></p>
+        <p>&copy; 2026 ⊷ Token Beam by <a href="https://github.com/meodai">David Aerne (meodai)</a></p>
         <p class="footer__links">
           <a href="mailto:token-beam@elastiq.ch">token-beam@elastiq.ch</a> &middot;
-          <a href="mailto:token-beam@elastiq.ch">token-beam@elastiq.ch</a> &middot;
-          <a href="https://github.com/meodai/token-beam">GitHub</a>
+          <a href="https://github.com/meodai/token-beam">GitHub</a> &middot;
+          Server, library & plugins are open source
         </p>
       </div>
     </footer>
@@ -612,6 +635,15 @@ const description = 'Real-time design token synchronization between web and desi
       }
     }
 
+    /* --- Section intro --- */
+
+    .section-intro {
+      text-align: center;
+      font-size: 0.95rem;
+      opacity: 0.7;
+      margin-bottom: 2.5rem;
+    }
+
     /* --- Demo Section --- */
 
     .demo {
@@ -620,187 +652,126 @@ const description = 'Real-time design token synchronization between web and desi
       border-bottom: 1px solid var(--line);
     }
 
-    .demo__grid {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 1.5rem;
-      align-items: center;
+    .demo__widget-wrap {
+      max-width: 36rem;
+      margin: 0 auto 1.5rem;
     }
 
-    .demo__card {
+    .demo__widget-wrap:last-child {
+      margin-bottom: 0;
+    }
+
+    /* --- Plugins Section --- */
+
+    .plugins {
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .plugins__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      border: 2px solid var(--line);
+      background: var(--line);
+    }
+
+    .plugins__card {
+      padding: 1.5rem;
+      background: var(--bg);
+      text-decoration: none;
+      transition: background 0.2s var(--ease);
+    }
+
+    .plugins__card:hover {
+      background: var(--line);
+      opacity: 1;
+    }
+
+    .plugins__card::after {
+      content: none !important;
+    }
+
+    .plugins__card p {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      margin: 0;
+    }
+
+    /* --- Websites Section --- */
+
+    .websites {
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .websites__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      border: 2px solid var(--line);
+      background: var(--line);
+    }
+
+    .websites__card {
+      padding: 1.5rem;
+      background: var(--bg);
+      text-decoration: none;
+      transition: background 0.2s var(--ease);
+    }
+
+    .websites__card:hover {
+      background: var(--line);
+      opacity: 1;
+    }
+
+    .websites__card::after {
+      content: none !important;
+    }
+
+    .websites__card p {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      margin: 0;
+    }
+
+    .websites__card--cta {
+      border-left: 2px solid currentColor;
+      opacity: 0.6;
+    }
+
+    /* --- Developers Section --- */
+
+    .developers {
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .developers__example {
+      max-width: 40rem;
+      margin: 0 auto 2rem;
+    }
+
+    .developers__example pre {
       border: 2px solid var(--line);
       padding: 1.5rem;
-    }
-
-    .demo__card h3 {
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .demo__arrow {
-      opacity: 0.3;
-      display: flex;
-      align-items: center;
-    }
-
-    .demo__token-gen {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .demo__color-preview {
-      width: 100%;
-      height: 140px;
-      background: #0066cc;
-      border: 1px solid var(--line);
-      transition: background-color 0.4s var(--ease);
-    }
-
-    .demo__token-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .demo__label {
-      font-size: 0.65rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      opacity: 0.5;
-      margin-bottom: 0.25rem;
-    }
-
-    .demo__code {
-      display: block;
-      padding: 0.5rem 0.7rem;
+      overflow-x: auto;
       font-size: 0.8rem;
-      word-break: break-all;
+      line-height: 1.7;
     }
 
-    .demo__value {
-      font-size: 1.4rem;
-      font-weight: 200;
-      font-family: inherit;
-      letter-spacing: 0.04em;
-      transition: color 0.4s var(--ease);
-    }
-
-    /* --- Tool mockup --- */
-
-    .demo__tool {
-      border: 1px solid var(--line);
-      overflow: hidden;
-    }
-
-    .demo__tool-header {
-      display: flex;
-      gap: 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .demo__tool-tab {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      opacity: 0.4;
-      border-right: 1px solid var(--line);
-    }
-
-    .demo__tool-tab--active {
-      opacity: 1;
-      font-weight: 400;
-      border-bottom: 2px solid currentColor;
-    }
-
-    .demo__tool-canvas {
-      display: grid;
-      grid-template-columns: 90px 1fr 70px;
-      min-height: 200px;
-    }
-
-    .demo__tool-sidebar {
-      border-right: 1px solid var(--line);
-      padding: 0.6rem;
-    }
-
-    .demo__tool-layer {
-      padding: 0.3rem 0.5rem;
-      font-size: 0.7rem;
-      border: 1px solid var(--line);
-      margin-bottom: 0.25rem;
-    }
-
-    .demo__tool-viewport {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      background: color-mix(in lab, var(--bg) 95%, var(--text));
-    }
-
-    .demo__tool-btn {
-      background: #0066cc;
-      color: #fff;
-      padding: 0.5rem 1.5rem;
-      font-family: inherit;
-      font-size: 0.8rem;
-      font-weight: 400;
+    .developers__example code {
+      background: none;
       border: none;
-      transition: background-color 0.6s var(--ease);
+      padding: 0;
+      font-size: inherit;
+      color: inherit;
     }
 
-    .demo__tool-props {
-      border-left: 1px solid var(--line);
-      padding: 0.6rem;
-    }
-
-    .demo__tool-swatch {
-      width: 48px;
-      height: 48px;
-      background: #0066cc;
-      border: 1px solid var(--line);
-      transition: background-color 0.6s var(--ease);
-    }
-
-    .demo__tool-status {
-      border-top: 1px solid var(--line);
-      padding: 0.5rem 0.8rem;
+    .developers__links {
       display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.7rem;
-    }
-
-    .demo__status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-      opacity: 0.3;
-      transition: all 0.3s var(--ease);
-    }
-
-    .demo__status-dot.syncing {
-      background: #b07d16;
-      opacity: 1;
-      animation: blink 1s ease-in-out infinite;
-    }
-
-    .demo__status-dot.synced {
-      background: var(--success);
-      opacity: 1;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .demo__status-text {
-      opacity: 0.5;
+      gap: 0.75rem;
+      justify-content: center;
     }
 
     /* --- Features --- */
@@ -954,19 +925,14 @@ const description = 'Real-time design token synchronization between web and desi
         padding: 4rem 0 3rem;
       }
 
-      .demo__grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+      .plugins__grid,
+      .websites__grid {
+        grid-template-columns: 1fr 1fr;
       }
 
-      .demo__arrow {
-        transform: rotate(90deg);
-        justify-content: center;
-      }
-
-      .demo__tool-canvas {
-        grid-template-columns: 70px 1fr 60px;
-        min-height: 160px;
+      .developers__links {
+        flex-direction: column;
+        align-items: center;
       }
 
       .features__grid {
@@ -989,103 +955,6 @@ const description = 'Real-time design token synchronization between web and desi
   </style>
 
   <script>
-    // Generate random colors
-    function generateRandomColor() {
-      const hue = Math.floor(Math.random() * 360);
-      const saturation = Math.floor(Math.random() * 40) + 60;
-      const lightness = Math.floor(Math.random() * 30) + 40;
-
-      const h = hue / 360;
-      const s = saturation / 100;
-      const l = lightness / 100;
-
-      let r: number, g: number, b: number;
-      if (s === 0) {
-        r = g = b = l;
-      } else {
-        const hue2rgb = (p: number, q: number, t: number) => {
-          if (t < 0) t += 1;
-          if (t > 1) t -= 1;
-          if (t < 1 / 6) return p + (q - p) * 6 * t;
-          if (t < 1 / 2) return q;
-          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-          return p;
-        };
-
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1 / 3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
-      }
-
-      const toHex = (x: number) => {
-        const hex = Math.round(x * 255).toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-      };
-
-      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    }
-
-    // Initialize demo
-    let currentColor = '#0066cc';
-
-    const colorPreview = document.getElementById('colorPreview');
-    const tokenValue = document.getElementById('tokenValue');
-    const designBtn = document.getElementById('designElement');
-    const propertyColor = document.getElementById('propertyColor');
-    const statusDot = document.querySelector('.demo__status-dot');
-    const statusText = document.querySelector('.demo__status-text');
-    const updateBtn = document.getElementById('updateColorBtn');
-
-    function updateColor(color: string) {
-      currentColor = color;
-
-      // Update token side immediately
-      if (colorPreview) colorPreview.style.backgroundColor = color;
-      if (tokenValue) {
-        tokenValue.textContent = color;
-        tokenValue.style.color = color;
-      }
-
-      // Show syncing status
-      if (statusDot) statusDot.classList.add('syncing');
-      if (statusText) statusText.textContent = 'Syncing...';
-
-      // Update design tool almost instantly
-      setTimeout(() => {
-        if (designBtn instanceof HTMLElement) {
-          designBtn.style.backgroundColor = color;
-        }
-        if (propertyColor) propertyColor.style.backgroundColor = color;
-
-        // Show synced status
-        if (statusDot) {
-          statusDot.classList.remove('syncing');
-          statusDot.classList.add('synced');
-        }
-        if (statusText) statusText.textContent = 'Synced!';
-
-        // Reset status
-        setTimeout(() => {
-          if (statusDot) statusDot.classList.remove('synced');
-          if (statusText) statusText.textContent = 'Waiting for changes...';
-        }, 2000);
-      }, 50);
-    }
-
-    // Button click handler
-    if (updateBtn) {
-      updateBtn.addEventListener('click', () => {
-        const newColor = generateRandomColor();
-        updateColor(newColor);
-      });
-    }
-
-    // Auto-update every 5 seconds
-    setInterval(() => {
-      const newColor = generateRandomColor();
-      updateColor(newColor);
-    }, 5000);
+    import '../scripts/demo';
   </script>
 </html>
