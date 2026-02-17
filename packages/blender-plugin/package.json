@@ -6,7 +6,7 @@
   "license": "AGPL-3.0-or-later",
   "private": true,
   "scripts": {
-    "bundle": "rm -f token-beam-blender.zip && zip -j token-beam-blender.zip token_beam/__init__.py blender_manifest.toml",
+    "bundle": "rm -f token-beam-blender.zip && zip token-beam-blender.zip blender_manifest.toml token_beam/__init__.py wheels/*.whl",
     "install:blender": "mkdir -p \"$HOME/Library/Application Support/Blender\" && SYNC_URL=\"${SYNC_SERVER_URL:-ws://localhost:8080}\" && INSTALLED=0 && for VERSION_DIR in \"$HOME/Library/Application Support/Blender\"/*; do if [ -d \"$VERSION_DIR\" ]; then TARGET=\"$VERSION_DIR/scripts/addons/token_beam\" && mkdir -p \"$TARGET\" && awk -v sync=\"$SYNC_URL\" '/^SYNC_SERVER_URL = \"/ { print \"SYNC_SERVER_URL = \\\"\" sync \"\\\"\"; next } { print }' token_beam/__init__.py > \"$TARGET/__init__.py\" && echo \"Installed to $TARGET\" && INSTALLED=1; fi; done && if [ \"$INSTALLED\" -eq 0 ]; then echo 'No Blender version directory found. Launch Blender once first.'; exit 1; fi",
     "uninstall:blender": "for ADDON_DIR in \"$HOME/Library/Application Support/Blender\"/*/scripts/addons/token_beam; do if [ -d \"$ADDON_DIR\" ]; then rm -rf \"$ADDON_DIR\" && echo \"Removed $ADDON_DIR\"; fi; done"
   }

@@ -15,5 +15,9 @@ license = [
   "SPDX:GPL-3.0-or-later",
 ]
 
+wheels = [
+  "./wheels/websocket_client-1.9.0-py3-none-any.whl",
+]
+
 [permissions]
 network = "Connect to a Token Beam sync server via WebSocket"

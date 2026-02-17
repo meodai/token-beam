@@ -2,7 +2,7 @@ bl_info = {
     "name": "Token Beam",
     "author": "Token Beam",
     "version": (0, 1, 0),
-    "blender": (3, 0, 0),
+    "blender": (4, 2, 0),
     "location": "View3D > Sidebar > Token Beam",
     "description": "Sync design token colors via WebSocket",
     "category": "3D View",
@@ -207,7 +207,8 @@ class TOKENBEAM_OT_connect(bpy.types.Operator):
         state = context.scene.token_beam_state
 
         if websocket is None:
-            state.status = "Missing dependency: websocket-client"
+            state.status = "Error: websocket-client not found"
+            self.report({"ERROR"}, "websocket-client not found. Reinstall the extension from the .zip file.")
             return {"CANCELLED"}
 
         normalized = _normalize_token(state.session_token)

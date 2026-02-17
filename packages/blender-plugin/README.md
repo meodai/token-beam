@@ -11,9 +11,18 @@ Sync design token colors into Blender in real-time.
 
 ## Installation
 
-For Blender 4.2+ extension zip import, the bundled archive includes both top-level `__init__.py` and `blender_manifest.toml`.
+### From the release zip (recommended)
 
-### Quick install (macOS)
+1. Download `token-beam-blender.zip` from the
+   [latest release](https://github.com/meodai/token-beam/releases)
+2. In Blender, go to **Edit > Preferences > Get Extensions**
+3. Click the dropdown arrow (top-right) and select **Install from Disk**
+4. Select the downloaded `.zip` file
+
+The extension and its Python dependencies (`websocket-client`) are installed
+automatically.
+
+### Quick install for development (macOS)
 
 From the project root:
 
@@ -21,33 +30,20 @@ From the project root:
 npm run install:blender
 ```
 
-This installs the add-on into your latest Blender user scripts folder under:
-
-`~/Library/Application Support/Blender/<version>/scripts/addons/token_beam`
-
-To uninstall:
-
-```bash
-npm run uninstall:blender
-```
-
-## Enable in Blender
-
-1. Open Blender
-2. Go to **Edit → Preferences → Add-ons**
-3. Search for **Token Beam**
-4. Enable **Token Beam: Sync design token colors via WebSocket**
-
-## Python Dependency
-
-This add-on uses `websocket-client` inside Blender's Python environment.
-
-Install once from Blender's Python console or terminal:
+This copies the add-on into your Blender user scripts folder. When using this
+method you need to install the Python dependency manually once from Blender's
+Python console:
 
 ```python
 import ensurepip, subprocess, sys
 ensurepip.bootstrap()
 subprocess.check_call([sys.executable, "-m", "pip", "install", "websocket-client"])
+```
+
+To uninstall:
+
+```bash
+npm run uninstall:blender
 ```
 
 ## Usage
