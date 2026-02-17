@@ -334,6 +334,90 @@ class TOKENBEAM_OT_disconnect(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class TOKENBEAM_OT_add_color_ramp(bpy.types.Operator):
+    bl_idname = "token_beam.add_color_ramp"
+    bl_label = "Add Color Ramp"
+    bl_description = "Add a Color Ramp node with synced Token Beam colors"
+
+    @classmethod
+    def poll(cls, context):
+        sd = context.space_data
+        if sd is None or sd.type != 'NODE_EDITOR' or sd.edit_tree is None:
+            return False
+        return len(context.scene.token_beam_colors) > 0
+
+    def execute(self, context):
+        scene = context.scene
+        colors = scene.token_beam_colors
+        node_tree = context.space_data.edit_tree
+
+        node = node_tree.nodes.new("ShaderNodeValToRGB")
+        ramp = node.color_ramp
+
+        n = len(colors)
+
+        # Adjust element count to match color count
+        while len(ramp.elements) < n:
+            ramp.elements.new(0.0)
+        while len(ramp.elements) > n:
+            ramp.elements.remove(ramp.elements[-1])
+
+        # Distribute colors evenly
+        for i, item in enumerate(colors):
+            el = ramp.elements[i]
+            el.position = (i / (n - 1)) if n > 1 else 0.5
+            el.color = tuple(item.value)
+
+        # Position node offset from existing nodes
+        max_x = 0
+        for existing in node_tree.nodes:
+            if existing != node:
+                right = existing.location.x + existing.width
+                if right > max_x:
+                    max_x = right
+        node.location = (max_x + 50, 0)
+
+        # Select only the new node
+        for existing in node_tree.nodes:
+            existing.select = False
+        node.select = True
+        node_tree.nodes.active = node
+
+        self.report({"INFO"}, f"Added Color Ramp with {n} colors")
+        return {"FINISHED"}
+
+
+class TOKENBEAM_PT_shader_panel(bpy.types.Panel):
+    bl_label = "Token Beam"
+    bl_idname = "TOKENBEAM_PT_shader_panel"
+    bl_space_type = "NODE_EDITOR"
+    bl_region_type = "UI"
+    bl_category = "Token Beam"
+
+    @classmethod
+    def poll(cls, context):
+        return (context.space_data
+                and context.space_data.tree_type == "ShaderNodeTree")
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        colors = scene.token_beam_colors
+
+        if len(colors) == 0:
+            layout.label(text="No colors synced")
+            return
+
+        # Compact swatch grid
+        grid = layout.grid_flow(columns=6, align=True, even_columns=True)
+        for item in colors:
+            grid.prop(item, "value", text="")
+
+        # Add Color Ramp button
+        layout.separator()
+        layout.operator("token_beam.add_color_ramp", icon="COLOR")
+
+
 class TOKENBEAM_PT_panel(bpy.types.Panel):
     bl_label = "Token Beam"
     bl_idname = "TOKENBEAM_PT_panel"
@@ -512,7 +596,9 @@ classes = (
     TOKENBEAM_OT_connect,
     TOKENBEAM_OT_disconnect,
     TOKENBEAM_OT_apply_color,
+    TOKENBEAM_OT_add_color_ramp,
     TOKENBEAM_PT_panel,
+    TOKENBEAM_PT_shader_panel,
 )
 
 
