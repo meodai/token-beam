@@ -1,3 +1,4 @@
+import { isHexColor } from './format';
 import { validateTokenPayload } from './schema';
 import type { SyncMessage } from './sync-client';
 import type { DesignToken, TokenSyncPayload, TokenType } from './types';
@@ -13,7 +14,6 @@ const SYNC_MESSAGE_TYPES: readonly SyncMessageType[] = [
   'peer-disconnected',
 ];
 const SESSION_TOKEN_PATTERN = /^(?:beam:\/\/)?([0-9a-f]+)$/i;
-const HEX_COLOR_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 
 export interface TokenPath {
   collectionName: string;
@@ -98,9 +98,7 @@ export function filterPayloadByType(
 export function extractColorTokens(payload: unknown): ColorTokenPath[] {
   return flattenPayload(payload)
     .filter((entry) => entry.token.type === 'color')
-    .filter(
-      (entry) => typeof entry.token.value === 'string' && HEX_COLOR_PATTERN.test(entry.token.value),
-    )
+    .filter((entry) => typeof entry.token.value === 'string' && isHexColor(entry.token.value))
     .map((entry) => ({
       ...entry,
       hex: entry.token.value as string,

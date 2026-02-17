@@ -3,9 +3,7 @@ import type { IncomingMessage } from 'http';
 import { createServer, type Server as HTTPServer } from 'http';
 import { randomBytes } from 'crypto';
 import { pluginLinks, validateTokenPayload } from 'token-beam';
-
-/** Icon provided by the source app — either a single unicode character or an SVG string. */
-export type SyncIcon = { type: 'unicode'; value: string } | { type: 'svg'; value: string };
+import type { SyncMessage, SyncIcon } from 'token-beam';
 
 export interface SyncSession {
   id: string;
@@ -16,18 +14,6 @@ export interface SyncSession {
   webIcon?: SyncIcon;
   createdAt: Date;
   lastActivity: Date;
-}
-
-export interface SyncMessage {
-  type: 'pair' | 'sync' | 'ping' | 'error' | 'warning' | 'peer-disconnected';
-  sessionToken?: string;
-  clientType?: string;
-  origin?: string;
-  icon?: SyncIcon;
-  payload?: unknown;
-  error?: string;
-  warning?: string;
-  reason?: string;
 }
 
 export class TokenSyncServer {

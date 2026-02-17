@@ -14,7 +14,7 @@ export function servePayload(
   const hostname = options.hostname ?? 'localhost';
   const json = JSON.stringify(payload);
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const server = createServer((req, res) => {
       if (req.method === 'OPTIONS') {
         res.writeHead(204, {
@@ -32,6 +32,8 @@ export function servePayload(
       });
       res.end(json);
     });
+
+    server.on('error', reject);
 
     server.listen(port, hostname, () => {
       const url = `http://${hostname}:${port}`;

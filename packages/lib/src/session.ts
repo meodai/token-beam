@@ -104,12 +104,16 @@ class TypedEmitter<TPayload> {
     const handlerSet = this.handlers.get(eventName);
     if (!handlerSet) return;
     for (const handler of handlerSet) {
-      handler(event);
+      try {
+        handler(event);
+      } catch (error) {
+        console.warn(`[token-beam] Error in "${String(eventName)}" handler:`, error);
+      }
     }
   }
 }
 
-export interface SessionOptions<TPayload = unknown> {
+export interface SessionOptions {
   serverUrl: string;
   clientType: string;
   sessionToken?: string;
@@ -117,18 +121,12 @@ export interface SessionOptions<TPayload = unknown> {
   icon?: SyncIcon;
 }
 
-export interface SourceSessionOptions<TPayload = unknown> extends Omit<
-  SessionOptions<TPayload>,
-  'serverUrl' | 'sessionToken'
-> {
+export interface SourceSessionOptions extends Omit<SessionOptions, 'serverUrl' | 'sessionToken'> {
   serverUrl?: string;
   sessionToken?: string;
 }
 
-export interface TargetSessionOptions<TPayload = unknown> extends Omit<
-  SessionOptions<TPayload>,
-  'serverUrl'
-> {
+export interface TargetSessionOptions extends Omit<SessionOptions, 'serverUrl'> {
   serverUrl?: string;
   sessionToken: string;
 }
@@ -140,7 +138,7 @@ class SessionBase<TPayload = unknown> {
   private sessionToken?: string;
   private readonly peers = new Map<string, SessionPeer>();
 
-  constructor(private readonly options: SessionOptions<TPayload>) {
+  constructor(private readonly options: SessionOptions) {
     this.sessionToken = options.sessionToken;
   }
 
@@ -296,7 +294,7 @@ class SessionBase<TPayload = unknown> {
 }
 
 export class SourceSession<TPayload = unknown> extends SessionBase<TPayload> {
-  constructor(options: SourceSessionOptions<TPayload>) {
+  constructor(options: SourceSessionOptions) {
     super({
       ...options,
       serverUrl: options.serverUrl ?? DEFAULT_SYNC_SERVER_URL,
@@ -305,7 +303,7 @@ export class SourceSession<TPayload = unknown> extends SessionBase<TPayload> {
 }
 
 export class TargetSession<TPayload = unknown> extends SessionBase<TPayload> {
-  constructor(options: TargetSessionOptions<TPayload>) {
+  constructor(options: TargetSessionOptions) {
     super({
       ...options,
       serverUrl: options.serverUrl ?? DEFAULT_SYNC_SERVER_URL,

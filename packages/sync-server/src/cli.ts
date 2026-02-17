@@ -9,14 +9,16 @@ server.start().catch((error) => {
   process.exit(1);
 });
 
-process.on('SIGINT', async () => {
-  console.log('\nShutting down...');
+async function gracefulShutdown(signal: string) {
+  console.log(`\n${signal} received, shutting down...`);
+  const forceExit = setTimeout(() => {
+    console.error('Graceful shutdown timed out, forcing exit');
+    process.exit(1);
+  }, 5000);
+  forceExit.unref();
   await server.stop();
   process.exit(0);
-});
+}
 
-process.on('SIGTERM', async () => {
-  console.log('\nShutting down...');
-  await server.stop();
-  process.exit(0);
-});
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
