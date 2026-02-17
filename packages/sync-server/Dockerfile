@@ -28,5 +28,8 @@ RUN npm prune --production
 # Expose application port
 EXPOSE 8080
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD node -e "fetch('http://localhost:8080/health').then(r=>{if(!r.ok)throw r;process.exit(0)}).catch(()=>process.exit(1))"
+
 # Start the server
 CMD ["node", "dist/cli.js"]
