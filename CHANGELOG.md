@@ -1,3 +1,9 @@
+# [1.6.0](https://github.com/meodai/token-beam/compare/v1.5.0...v1.6.0) (2026-02-17)
+
+### Features
+
+- **lib:** add high-level session API for token sync ([3207391](https://github.com/meodai/token-beam/commit/32073918d91d638676bc4f6a80f5389e17e77b60)), closes [hi#level](https://github.com/hi/issues/level)
+
 # [1.5.0](https://github.com/meodai/token-beam/compare/v1.4.5...v1.5.0) (2026-02-16)
 
 ### Bug Fixes
