@@ -1,3 +1,9 @@
+# [1.8.0](https://github.com/meodai/token-beam/compare/v1.7.0...v1.8.0) (2026-02-17)
+
+### Features
+
+- enhance token synchronization with new session management and warning handling ([1af6762](https://github.com/meodai/token-beam/commit/1af6762b034896f50866f8354fbeb2478b8deef8))
+
 # [1.7.0](https://github.com/meodai/token-beam/compare/v1.6.0...v1.7.0) (2026-02-17)
 
 ### Features
