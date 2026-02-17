@@ -2,13 +2,15 @@
 export type SyncIcon = { type: 'unicode'; value: string } | { type: 'svg'; value: string };
 
 export interface SyncMessage<T = unknown> {
-  type: 'pair' | 'sync' | 'ping' | 'error';
+  type: 'pair' | 'sync' | 'ping' | 'error' | 'warning' | 'peer-disconnected';
   sessionToken?: string;
   clientType?: string;
   origin?: string;
   icon?: SyncIcon;
   payload?: T;
   error?: string;
+  warning?: string;
+  reason?: string;
 }
 
 export interface SyncClientOptions<T = unknown> {
@@ -22,6 +24,8 @@ export interface SyncClientOptions<T = unknown> {
   onPaired?: (token: string, origin?: string, icon?: SyncIcon) => void;
   onTargetConnected?: (clientType: string, origin?: string) => void;
   onSync?: (payload: T) => void;
+  onWarning?: (warning: string) => void;
+  onPeerDisconnected?: (clientType: string, reason?: string) => void;
   onError?: (error: string) => void;
   onDisconnected?: () => void;
   onConnected?: () => void;
@@ -150,7 +154,23 @@ export class SyncClient<T = unknown> {
 
       case 'error':
         if (message.error) {
+          if (message.error.startsWith('[warn]')) {
+            this.options.onWarning?.(message.error);
+            return;
+          }
           this.options.onError?.(message.error);
+        }
+        break;
+
+      case 'warning':
+        if (message.warning) {
+          this.options.onWarning?.(message.warning);
+        }
+        break;
+
+      case 'peer-disconnected':
+        if (message.clientType) {
+          this.options.onPeerDisconnected?.(message.clientType, message.reason);
         }
         break;
 

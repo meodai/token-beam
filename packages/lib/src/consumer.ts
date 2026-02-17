@@ -4,7 +4,14 @@ import type { DesignToken, TokenSyncPayload, TokenType } from './types';
 
 type SyncMessageType = SyncMessage['type'];
 
-const SYNC_MESSAGE_TYPES: readonly SyncMessageType[] = ['pair', 'sync', 'ping', 'error'];
+const SYNC_MESSAGE_TYPES: readonly SyncMessageType[] = [
+  'pair',
+  'sync',
+  'ping',
+  'error',
+  'warning',
+  'peer-disconnected',
+];
 const SESSION_TOKEN_PATTERN = /^(?:beam:\/\/)?([0-9a-f]+)$/i;
 const HEX_COLOR_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 

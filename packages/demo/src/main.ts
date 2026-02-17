@@ -268,20 +268,20 @@ function initSync() {
       updateSyncStatus('ready', sessionToken ?? undefined);
       setOfflineState(true);
     },
+    onPeerDisconnected: (clientType) => {
+      connectedTargets.delete(clientType);
+      isPaired = connectedTargets.size > 0;
+      updateSyncStatus(isPaired ? 'syncing' : 'ready', sessionToken ?? undefined);
+      const capitalizedType = clientType.charAt(0).toUpperCase() + clientType.slice(1);
+      showTemporaryMessage(`${capitalizedType} disconnected`);
+    },
+    onWarning: (warning) => {
+      const normalized = warning.startsWith('[warn]') ? warning.slice(7) : warning;
+      console.warn('[token-beam]', normalized);
+    },
     onError: (error) => {
-      // Non-fatal warnings (e.g. icon rejected) — log but don't break UI
       if (error.startsWith('[warn]')) {
         console.warn('[token-beam]', error.slice(7));
-        return;
-      }
-      if (error.includes('client disconnected')) {
-        // Extract client type from message like "figma client disconnected"
-        const clientType = error.split(' ')[0];
-        connectedTargets.delete(clientType);
-        isPaired = connectedTargets.size > 0;
-        updateSyncStatus(isPaired ? 'syncing' : 'ready', sessionToken ?? undefined);
-        const capitalizedType = clientType.charAt(0).toUpperCase() + clientType.slice(1);
-        showTemporaryMessage(`${capitalizedType} disconnected`);
         return;
       }
       updateSyncStatus('error', undefined, error);

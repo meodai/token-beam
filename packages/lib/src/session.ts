@@ -133,8 +133,6 @@ export interface TargetSessionOptions<TPayload = unknown> extends Omit<
   sessionToken: string;
 }
 
-const CLIENT_DISCONNECTED_PATTERN = /^([a-z0-9-]+) client disconnected$/i;
-
 class SessionBase<TPayload = unknown> {
   private readonly events = new TypedEmitter<TPayload>();
   private syncClient: SyncClient<TPayload> | null = null;
@@ -237,19 +235,19 @@ class SessionBase<TPayload = unknown> {
       onSync: (payload) => {
         this.events.emit('sync', { payload });
       },
+      onWarning: (warningMessage) => {
+        this.events.emit('warning', { message: warningMessage });
+      },
+      onPeerDisconnected: (clientType, reason) => {
+        this.removePeerByType(clientType);
+        this.events.emit('peer-disconnected', {
+          clientType,
+          reason: reason ?? `${clientType} client disconnected`,
+        });
+      },
       onError: (errorMessage) => {
         if (isWarningError(errorMessage)) {
           this.events.emit('warning', { message: errorMessage });
-          return;
-        }
-
-        const disconnectedClientType = this.extractDisconnectedClientType(errorMessage);
-        if (disconnectedClientType) {
-          this.removePeerByType(disconnectedClientType);
-          this.events.emit('peer-disconnected', {
-            clientType: disconnectedClientType,
-            reason: errorMessage,
-          });
           return;
         }
 
@@ -293,12 +291,6 @@ class SessionBase<TPayload = unknown> {
         this.peers.delete(key);
       }
     }
-  }
-
-  private extractDisconnectedClientType(errorMessage: string): string | null {
-    const match = CLIENT_DISCONNECTED_PATTERN.exec(errorMessage.trim());
-    if (!match) return null;
-    return match[1];
   }
 }
 

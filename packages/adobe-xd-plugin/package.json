@@ -4,12 +4,15 @@
   "private": true,
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "build": "tsc -p tsconfig.json && cp manifest.json dist/manifest.json",
+    "build": "mkdir -p dist && esbuild src/main.ts --bundle --format=cjs --platform=browser --target=es2020 --external:application --external:assets --external:scenegraph --outfile=dist/main.js && cp manifest.json dist/manifest.json",
     "bundle": "npm run build && rm -f token-beam-adobe-xd.zip && mkdir -p bundle && cp dist/manifest.json bundle/ && cp dist/main.js bundle/ && cd bundle && zip -r ../token-beam-adobe-xd.zip . && cd ..",
     "install:adobe-xd": "npm run build && mkdir -p \"$HOME/Library/Application Support/Adobe/UXP/Plugins/External/token-beam-adobe-xd\" && cp -f dist/manifest.json \"$HOME/Library/Application Support/Adobe/UXP/Plugins/External/token-beam-adobe-xd/manifest.json\" && cp -f dist/main.js \"$HOME/Library/Application Support/Adobe/UXP/Plugins/External/token-beam-adobe-xd/main.js\"",
     "uninstall:adobe-xd": "rm -rf \"$HOME/Library/Application Support/Adobe/UXP/Plugins/External/token-beam-adobe-xd\""
   },
   "devDependencies": {
     "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "token-beam": "*"
   }
 }

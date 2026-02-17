@@ -418,12 +418,8 @@ initSync();</code></pre>
   <script type="module">
     // Simulated Token Beam Client for demo purposes
     // In production, import from 'token-beam' package
-    
-    const pluginLinks = [
-      { id: 'figma', name: 'Figma Plugin', url: 'https://github.com/meodai/token-beam' },
-      { id: 'sketch', name: 'Sketch Plugin', url: 'https://github.com/meodai/token-beam' },
-      { id: 'aseprite', name: 'Aseprite Plugin', url: 'https://github.com/meodai/token-beam' },
-    ];
+
+    import { pluginLinks } from './dist/token-beam.js';
 
     const syncStatus = document.querySelector('[data-dts="widget"]');
     const tokenEl = document.querySelector('[data-dts="token"]');

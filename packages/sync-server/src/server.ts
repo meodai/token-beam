@@ -2,7 +2,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import type { IncomingMessage } from 'http';
 import { createServer, type Server as HTTPServer } from 'http';
 import { randomBytes } from 'crypto';
-import { validateTokenPayload } from 'token-beam';
+import { pluginLinks, validateTokenPayload } from 'token-beam';
 
 /** Icon provided by the source app — either a single unicode character or an SVG string. */
 export type SyncIcon = { type: 'unicode'; value: string } | { type: 'svg'; value: string };
@@ -19,19 +19,23 @@ export interface SyncSession {
 }
 
 export interface SyncMessage {
-  type: 'pair' | 'sync' | 'ping' | 'error';
+  type: 'pair' | 'sync' | 'ping' | 'error' | 'warning' | 'peer-disconnected';
   sessionToken?: string;
   clientType?: string;
   origin?: string;
   icon?: SyncIcon;
   payload?: unknown;
   error?: string;
+  warning?: string;
+  reason?: string;
 }
 
 export class TokenSyncServer {
   private wss: WebSocketServer;
   private httpServer: HTTPServer;
   private sessions: Map<string, SyncSession> = new Map();
+  private tokenToSessionId: Map<string, string> = new Map();
+  private clientToSessionId: Map<WebSocket, string> = new Map();
   private cleanupTimer?: ReturnType<typeof setInterval>;
   private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
   private readonly MAX_PAYLOAD_SIZE = 10 * 1024 * 1024; // 10MB - reasonable for design tokens with embedded assets
@@ -69,40 +73,7 @@ export class TokenSyncServer {
         res.end('Token Beam Sync Server is running');
       } else if (req.method === 'GET' && req.url === '/plugins.json') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(
-          JSON.stringify([
-            {
-              id: 'figma',
-              name: 'Figma',
-              url: 'https://github.com/meodai/token-beam/tree/main/packages/figma-plugin',
-            },
-            {
-              id: 'sketch',
-              name: 'Sketch',
-              url: 'https://github.com/meodai/token-beam/tree/main/packages/sketch-plugin',
-            },
-            {
-              id: 'blender',
-              name: 'Blender',
-              url: 'https://github.com/meodai/token-beam/tree/main/packages/blender-plugin',
-            },
-            {
-              id: 'aseprite',
-              name: 'Aseprite',
-              url: 'https://github.com/meodai/token-beam/tree/main/packages/aseprite-plugin',
-            },
-            {
-              id: 'krita',
-              name: 'Krita',
-              url: 'https://github.com/meodai/token-beam/tree/main/packages/krita-plugin',
-            },
-            {
-              id: 'adobe-xd',
-              name: 'Adobe XD',
-              url: 'https://github.com/meodai/token-beam/tree/main/packages/adobe-xd-plugin',
-            },
-          ]),
-        );
+        res.end(JSON.stringify(pluginLinks));
       } else {
         res.writeHead(404);
         res.end('Not found');
@@ -216,11 +187,10 @@ export class TokenSyncServer {
           console.log(
             `Rejected invalid icon from ${message.origin ?? 'unknown'}: type=${(message.icon as Record<string, unknown>).type}`,
           );
-          this.send(ws, {
-            type: 'error',
-            error:
-              '[warn] Icon rejected: invalid or unsafe content. Unicode icons must be 1–3 visible characters. SVG icons must be under 10KB with no scripts or event handlers.',
-          });
+          this.sendWarning(
+            ws,
+            'Icon rejected: invalid or unsafe content. Unicode icons must be 1–3 visible characters. SVG icons must be under 10KB with no scripts or event handlers.',
+          );
         }
       }
 
@@ -235,6 +205,8 @@ export class TokenSyncServer {
         lastActivity: new Date(),
       };
       this.sessions.set(session.id, session);
+      this.tokenToSessionId.set(session.token, session.id);
+      this.clientToSessionId.set(ws, session.id);
 
       this.send(ws, {
         type: 'pair',
@@ -248,7 +220,7 @@ export class TokenSyncServer {
 
     // Target client (Figma, Aseprite, Sketch, etc.) joins existing session
     if (clientType !== 'web' && sessionToken) {
-      const session = Array.from(this.sessions.values()).find((s) => s.token === sessionToken);
+      const session = this.getSessionByToken(sessionToken);
 
       if (!session) {
         this.sendError(ws, 'Invalid session token');
@@ -261,6 +233,7 @@ export class TokenSyncServer {
         type: clientType,
         origin: message.origin,
       });
+      this.clientToSessionId.set(ws, session.id);
       session.lastActivity = new Date();
 
       // Send web origin + icon to target client so it knows who it's paired with
@@ -291,7 +264,7 @@ export class TokenSyncServer {
   }
 
   private handleSync(ws: WebSocket, message: SyncMessage) {
-    const session = this.findSessionByClient(ws);
+    const session = this.getSessionByClient(ws);
 
     if (!session) {
       this.sendError(ws, 'No active session');
@@ -339,7 +312,7 @@ export class TokenSyncServer {
   }
 
   private handlePing(ws: WebSocket, _message: SyncMessage) {
-    const session = this.findSessionByClient(ws);
+    const session = this.getSessionByClient(ws);
     if (session) {
       session.lastActivity = new Date();
     }
@@ -347,9 +320,11 @@ export class TokenSyncServer {
   }
 
   private handleDisconnect(ws: WebSocket) {
-    const session = this.findSessionByClient(ws);
+    const session = this.getSessionByClient(ws);
 
     if (!session) return;
+
+    this.clientToSessionId.delete(ws);
 
     if (ws === session.webClient) {
       // Web client disconnected - keep session until all targets disconnect
@@ -361,7 +336,7 @@ export class TokenSyncServer {
       }
 
       if (session.targetClients.length === 0) {
-        this.sessions.delete(session.id);
+        this.removeSession(session.id);
         console.log(`Session ${session.token} ended (web disconnect)`);
       } else {
         console.log(`Web client disconnected from session ${session.token}`);
@@ -373,12 +348,13 @@ export class TokenSyncServer {
 
       if (disconnectedTarget && session.webClient?.readyState === WebSocket.OPEN) {
         this.send(session.webClient, {
-          type: 'error',
-          error: `${disconnectedTarget.type} client disconnected`,
+          type: 'peer-disconnected',
+          clientType: disconnectedTarget.type,
+          reason: `${disconnectedTarget.type} client disconnected`,
         });
       }
       if (!session.webClient && session.targetClients.length === 0) {
-        this.sessions.delete(session.id);
+        this.removeSession(session.id);
         console.log(`Session ${session.token} ended (last target disconnect)`);
       } else {
         console.log(
@@ -388,10 +364,33 @@ export class TokenSyncServer {
     }
   }
 
-  private findSessionByClient(ws: WebSocket): SyncSession | undefined {
-    return Array.from(this.sessions.values()).find(
-      (s) => s.webClient === ws || s.targetClients.some((t) => t.ws === ws),
-    );
+  private getSessionByToken(token: string): SyncSession | undefined {
+    const sessionId = this.tokenToSessionId.get(token);
+    if (!sessionId) return undefined;
+    return this.sessions.get(sessionId);
+  }
+
+  private getSessionByClient(ws: WebSocket): SyncSession | undefined {
+    const sessionId = this.clientToSessionId.get(ws);
+    if (!sessionId) return undefined;
+    return this.sessions.get(sessionId);
+  }
+
+  private removeSession(sessionId: string): SyncSession | undefined {
+    const session = this.sessions.get(sessionId);
+    if (!session) return undefined;
+
+    this.sessions.delete(sessionId);
+    this.tokenToSessionId.delete(session.token);
+
+    if (session.webClient) {
+      this.clientToSessionId.delete(session.webClient);
+    }
+    for (const target of session.targetClients) {
+      this.clientToSessionId.delete(target.ws);
+    }
+
+    return session;
   }
 
   private send(ws: WebSocket, message: SyncMessage) {
@@ -402,6 +401,10 @@ export class TokenSyncServer {
 
   private sendError(ws: WebSocket, error: string) {
     this.send(ws, { type: 'error', error });
+  }
+
+  private sendWarning(ws: WebSocket, warning: string) {
+    this.send(ws, { type: 'warning', warning });
   }
 
   /** Sanitize a client-provided icon, returning undefined if invalid. */
@@ -469,29 +472,26 @@ export class TokenSyncServer {
   private startCleanupInterval() {
     this.cleanupTimer = setInterval(() => {
       const now = Date.now();
-      const sessionsToDelete: string[] = [];
+      const expiredSessionIds = Array.from(this.sessions.entries())
+        .filter(([, session]) => now - session.lastActivity.getTime() > this.SESSION_TIMEOUT)
+        .map(([id]) => id);
 
-      for (const [id, session] of this.sessions) {
-        if (now - session.lastActivity.getTime() > this.SESSION_TIMEOUT) {
-          sessionsToDelete.push(id);
-          if (session.webClient?.readyState === WebSocket.OPEN) {
-            this.sendError(session.webClient, 'Session expired');
-            session.webClient.close();
-          }
-          for (const target of session.targetClients) {
-            if (target.ws.readyState === WebSocket.OPEN) {
-              this.sendError(target.ws, 'Session expired');
-              target.ws.close();
-            }
+      for (const sessionId of expiredSessionIds) {
+        const session = this.removeSession(sessionId);
+        if (!session) continue;
+
+        if (session.webClient?.readyState === WebSocket.OPEN) {
+          this.sendError(session.webClient, 'Session expired');
+          session.webClient.close();
+        }
+        for (const target of session.targetClients) {
+          if (target.ws.readyState === WebSocket.OPEN) {
+            this.sendError(target.ws, 'Session expired');
+            target.ws.close();
           }
         }
+        console.log(`Session ${session.token} expired and removed`);
       }
-
-      sessionsToDelete.forEach((id) => {
-        const session = this.sessions.get(id);
-        console.log(`Session ${session?.token} expired and removed`);
-        this.sessions.delete(id);
-      });
     }, 60000); // Check every minute
   }
 
@@ -525,6 +525,8 @@ export class TokenSyncServer {
       }
     }
     this.sessions.clear();
+    this.tokenToSessionId.clear();
+    this.clientToSessionId.clear();
 
     // Terminate any remaining connections not tracked in sessions
     for (const client of this.wss.clients) {

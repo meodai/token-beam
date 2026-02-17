@@ -220,7 +220,9 @@ function initSync() {
   session.on('warning', ({ message }) => {
     if (isWarningError(message)) {
       console.warn('[token-beam]', message.slice(7));
+      return;
     }
+    console.warn('[token-beam]', message);
   });
 
   session.on('peer-disconnected', ({ clientType }) => {

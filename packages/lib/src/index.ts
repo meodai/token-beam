@@ -28,6 +28,7 @@ export {
   extractColorTokens,
 } from './consumer';
 export type { TokenPath, ColorTokenPath } from './consumer';
+export { pluginLinks } from './plugins';
 export type { PluginLink } from './plugins';
 export type {
   TokenType,

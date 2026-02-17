@@ -92,7 +92,8 @@ function connect() {
   });
 
   session.on('warning', ({ message }) => {
-    console.warn('[token-beam]', message.slice(7));
+    const normalized = message.startsWith('[warn]') ? message.slice(7) : message;
+    console.warn('[token-beam]', normalized);
   });
 
   session.on('error', ({ message }) => {
