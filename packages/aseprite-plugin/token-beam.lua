@@ -1,5 +1,5 @@
 -- Token Beam for Aseprite
--- Syncs design tokens (colors) to the active sprite's palette
+-- Syncs design tokens (colors) to/from the active sprite's palette
 
 -- Check Aseprite version and json support
 if not json then
@@ -19,7 +19,11 @@ local connected = false
 local statusText = "Disconnected"
 local syncServerUrl = "ws://tokenbeam.dev:8080"
 local generation = 0
-local initialDialogBounds = Rectangle(120, 120, 420, 180)
+local initialDialogBounds = Rectangle(120, 120, 280, 200)
+local currentMode = "receive"  -- "receive" or "send"
+local sessionToken = nil  -- token received from server in send mode
+local paletteSnapshot = nil  -- last sent palette state for change detection
+local watchedSprite = nil  -- sprite we're listening to for changes
 
 -- Check clipboard for a beam:// token and prefill
 if app.clipboard and app.clipboard.hasText then
@@ -47,6 +51,141 @@ function hexToColor(hex)
   return Color{ r=r, g=g, b=b, a=255 }
 end
 
+-- Convert Aseprite Color to hex string
+function colorToHex(color)
+  return string.format("#%02x%02x%02x", color.red, color.green, color.blue)
+end
+
+-- Snapshot the current palette as a string for comparison
+function snapshotPalette()
+  local spr = app.activeSprite
+  if not spr then return nil end
+  local palette = spr.palettes[1]
+  local parts = {}
+  for i = 0, #palette - 1 do
+    local c = palette:getColor(i)
+    table.insert(parts, colorToHex(c))
+  end
+  return table.concat(parts, ",")
+end
+
+-- Build DTCG payload from current sprite palette + optional active color
+function buildPalettePayload(activeColor)
+  local spr = app.activeSprite
+  if not spr then return nil end
+
+  local palette = spr.palettes[1]
+  local tokens = {}
+
+  -- Start at 1 to skip index 0 (usually transparent)
+  for i = 1, #palette - 1 do
+    local c = palette:getColor(i)
+    table.insert(tokens, {
+      name = "color-" .. i,
+      type = "color",
+      value = colorToHex(c)
+    })
+  end
+
+  -- Add the currently picked color as a separate token
+  if activeColor then
+    table.insert(tokens, 1, {
+      name = "active-color",
+      type = "color",
+      value = colorToHex(activeColor)
+    })
+  end
+
+  return {
+    collections = {
+      {
+        name = "Aseprite Palette",
+        modes = {
+          {
+            name = "Default",
+            tokens = tokens
+          }
+        }
+      }
+    }
+  }
+end
+
+-- Send current palette over WebSocket if it changed
+function sendPalette()
+  if currentMode ~= "send" then return end
+  if not ws or not connected then return end
+
+  local snap = snapshotPalette()
+  if not snap then return end
+
+  -- Skip if palette hasn't changed
+  if snap == paletteSnapshot then return end
+  paletteSnapshot = snap
+
+  local payload = buildPalettePayload()
+  if not payload then return end
+
+  local syncMsg = json.encode({
+    type = "sync",
+    payload = payload
+  })
+  ws:sendText(syncMsg)
+
+  local count = #payload.collections[1].modes[1].tokens
+  statusText = "Sent " .. count .. " colors"
+  dlg:modify{ id="status", text=statusText }
+end
+
+-- Force-send palette (bypass snapshot check, e.g. when a new client connects)
+function forceSendPalette()
+  paletteSnapshot = nil
+  sendPalette()
+end
+
+-- Send palette with the currently picked color
+function sendPaletteWithActiveColor(color)
+  if currentMode ~= "send" then return end
+  if not ws or not connected then return end
+
+  local payload = buildPalettePayload(color)
+  if not payload then return end
+
+  local syncMsg = json.encode({
+    type = "sync",
+    payload = payload
+  })
+  ws:sendText(syncMsg)
+
+  local count = #payload.collections[1].modes[1].tokens
+  statusText = "Sent " .. count .. " colors"
+  dlg:modify{ id="status", text=statusText }
+end
+
+-- Sprite change handler for auto-sending
+function onSpriteChange()
+  sendPalette()
+end
+
+-- Stop watching the current sprite
+function unwatchSprite()
+  if watchedSprite then
+    pcall(function()
+      watchedSprite.events:off(onSpriteChange)
+    end)
+    watchedSprite = nil
+  end
+end
+
+-- Start watching the active sprite for changes
+function watchSprite()
+  unwatchSprite()
+  local spr = app.activeSprite
+  if not spr then return end
+  watchedSprite = spr
+  spr.events:on('change', onSpriteChange)
+end
+
 -- Extract colors from token payload
 function extractColors(payload)
   local colors = {}
@@ -56,14 +195,14 @@ function extractColors(payload)
   end
 
   for _, collection in ipairs(payload.collections) do
-    for _, mode in ipairs(collection.modes) do
-      for _, token in ipairs(mode.tokens) do
+    for _, m in ipairs(collection.modes) do
+      for _, token in ipairs(m.tokens) do
         if token.type == "color" then
           table.insert(colors, {
             name = token.name,
             value = token.value,
             collection = collection.name,
-            mode = mode.name
+            mode = m.name
           })
         end
       end
@@ -111,9 +250,13 @@ end
 function resetUI(status)
   connected = false
   closeWebSocket()
+  unwatchSprite()
+  paletteSnapshot = nil
+  sessionToken = nil
   statusText = status or "Disconnected"
-  dlg:modify{ id="connectBtn", text="Connect" }
   dlg:modify{ id="status", text=statusText }
+  dlg:modify{ id="connectBtn", text="Connect" }
+  dlg:modify{ id="sessionDisplay", text="" }
 end
 
 -- WebSocket message handler
@@ -125,18 +268,32 @@ function createMessageHandler(gen)
 
     if messageType == WebSocketMessageType.OPEN then
       if not ws then return end
+      -- Capture the mode at connection time so late callbacks can't cross modes
+      local connMode = currentMode
       connected = true
       statusText = "Connected - pairing..."
       dlg:modify{ id="status", text=statusText }
-      dlg:modify{ id="connectBtn", text="Disconnect" }
+      if connMode == "receive" then
+        dlg:modify{ id="connectBtn", text="Disconnect" }
+      end
 
-      -- Send pair message with token
-      local pairMsg = json.encode({
-        type = "pair",
-        clientType = "aseprite",
-        sessionToken = tokenValue
-      })
-      ws:sendText(pairMsg)
+      if connMode == "receive" then
+        -- Target client: join existing session
+        local pairMsg = json.encode({
+          type = "pair",
+          clientType = "aseprite",
+          sessionToken = tokenValue
+        })
+        ws:sendText(pairMsg)
+      elseif connMode == "send" then
+        -- Send mode: create a new session as "web" client
+        local pairMsg = json.encode({
+          type = "pair",
+          clientType = "web",
+          origin = "Aseprite"
+        })
+        ws:sendText(pairMsg)
+      end
 
     elseif messageType == WebSocketMessageType.TEXT then
       if not ws then return end
@@ -149,11 +306,30 @@ function createMessageHandler(gen)
       end
 
       if msg.type == "pair" then
-        local origin = msg.origin or "unknown"
-        statusText = "Paired with " .. origin
-        dlg:modify{ id="status", text=statusText }
+        if currentMode == "send" and msg.sessionToken then
+          -- We got our session token from the server
+          sessionToken = msg.sessionToken
+          statusText = "Waiting for client..."
+          dlg:modify{ id="status", text=statusText }
+          dlg:modify{ id="sessionDisplay", text=sessionToken }
+          -- Start watching for palette changes
+          watchSprite()
+        elseif currentMode == "send" and msg.clientType and msg.clientType ~= "web" then
+          -- A target client connected — send palette immediately
+          local origin = msg.origin or msg.clientType
+          statusText = origin .. " connected"
+          dlg:modify{ id="status", text=statusText }
+          forceSendPalette()
+        else
+          local origin = msg.origin or "unknown"
+          statusText = "Paired with " .. origin
+          dlg:modify{ id="status", text=statusText }
+        end
 
       elseif msg.type == "sync" then
+        -- Only apply incoming colors in receive mode; ignore in send mode
+        if currentMode ~= "receive" then return end
+
         statusText = "Receiving colors..."
         dlg:modify{ id="status", text=statusText }
 
@@ -181,6 +357,11 @@ function createMessageHandler(gen)
           statusText = "Error: " .. err
           dlg:modify{ id="status", text=statusText }
         end
+
+      elseif msg.type == "peer-disconnected" then
+        local who = msg.clientType or "Peer"
+        statusText = who .. " disconnected"
+        dlg:modify{ id="status", text=statusText }
       end
 
     elseif messageType == WebSocketMessageType.ERROR then
@@ -205,10 +386,36 @@ function createMessageHandler(gen)
   end
 end
 
--- Connect button handler
+-- Disconnect fully before any new connection or mode switch
+function disconnect()
+  generation = generation + 1
+  connected = false
+  sessionToken = nil
+  paletteSnapshot = nil
+  unwatchSprite()
+  closeWebSocket()
+end
+
+-- Open a new WebSocket connection
+function openConnection()
+  generation = generation + 1
+
+  statusText = "Connecting..."
+  dlg:modify{ id="status", text=statusText }
+
+  ws = WebSocket{
+    url = syncServerUrl,
+    onreceive = createMessageHandler(generation),
+    deflate = false
+  }
+
+  ws:connect()
+end
+
+-- Connect button handler (receive mode only)
 function onConnect()
   if ws then
-    generation = generation + 1
+    disconnect()
     resetUI()
     return
   end
@@ -230,23 +437,38 @@ function onConnect()
     tokenValue = "beam://" .. tokenValue:upper()
   end
 
-  generation = generation + 1
-
-  statusText = "Connecting..."
-  dlg:modify{ id="status", text=statusText }
   dlg:modify{ id="connectBtn", text="Connecting..." }
-
-  ws = WebSocket{
-    url = syncServerUrl,
-    onreceive = createMessageHandler(generation),
-    deflate = false
-  }
-
-  ws:connect()
+  openConnection()
 end
 
+-- Auto-connect for send mode
+function connectSendMode()
+  disconnect()
+  currentMode = "send"
+  dlg:modify{ id="sessionDisplay", text="Connecting..." }
+  dlg:modify{ id="status", text="Connecting..." }
+  openConnection()
+end
+
+-- Also watch for active sprite switching
+app.events:on('sitechange', function()
+  if currentMode == "send" and connected then
+    watchSprite()
+    forceSendPalette()
+  end
+end)
+
+-- Send palette + picked color whenever the user changes fg/bg color
+app.events:on('fgcolorchange', function()
+  sendPaletteWithActiveColor(app.fgColor)
+end)
+
+app.events:on('bgcolorchange', function()
+  sendPaletteWithActiveColor(app.bgColor)
+end)
+
 -- Build dialog
-dlg:separator{ text="Token" }
+dlg:tab{ id="receiveTab", text="Receive" }
 dlg:entry{
   id="token",
   text=tokenValue,
@@ -259,6 +481,43 @@ dlg:button{
   text="Connect",
   onclick=onConnect
 }
+dlg:tab{ id="sendTab", text="Send" }
+dlg:label{
+  id="sessionDisplay",
+  text="",
+  label=""
+}
+dlg:button{
+  id="copyBtn",
+  text="Copy Token",
+  onclick=function()
+    if not sessionToken then return end
+    -- pbcopy (macOS), clip (Windows), xclip/xsel (Linux)
+    local ok = os.execute("printf '%s' '" .. sessionToken .. "' | pbcopy 2>/dev/null")
+    if not ok then
+      ok = os.execute("printf '%s' '" .. sessionToken .. "' | clip 2>/dev/null")
+    end
+    if not ok then
+      os.execute("printf '%s' '" .. sessionToken .. "' | xclip -selection clipboard 2>/dev/null")
+    end
+    dlg:modify{ id="status", text="Token copied!" }
+  end
+}
+dlg:endtabs{
+  id="modeTabs",
+  onchange=function()
+    local sel = dlg.data.modeTabs
+    -- Always close existing connection before switching
+    disconnect()
+    if sel == "receiveTab" then
+      currentMode = "receive"
+      resetUI()
+    else
+      -- Send mode: auto-connect immediately
+      connectSendMode()
+    end
+  end
+}
 dlg:separator{}
 dlg:label{
   id="status",
@@ -267,4 +526,10 @@ dlg:label{
 }
 dlg:button{ text="Close" }
 
-dlg:show{ wait=false, bounds=initialDialogBounds }
+dlg:show{
+  wait=false,
+  bounds=initialDialogBounds,
+  onclose=function()
+    disconnect()
+  end
+}
