@@ -1,3 +1,9 @@
+# [1.12.0](https://github.com/meodai/token-beam/compare/v1.11.0...v1.12.0) (2026-03-09)
+
+### Features
+
+- **asprite:** tokens can now also be sent ([ed79935](https://github.com/meodai/token-beam/commit/ed79935e74b71693b872e4367c34b53020c0f391))
+
 # [1.11.0](https://github.com/meodai/token-beam/compare/v1.10.0...v1.11.0) (2026-02-17)
 
 ### Features
