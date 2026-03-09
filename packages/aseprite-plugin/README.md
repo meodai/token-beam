@@ -1,43 +1,65 @@
 # ⊷ Token Beam - Aseprite Plugin
 
-Sync design tokens (colors) to Aseprite palettes in real-time.
-
-## Features
-
-- 🎨 Syncs color tokens to Aseprite palette
-- 🔄 Real-time updates via WebSocket
-- 🎯 Simple dialog interface in Aseprite
-- 📦 Filters color tokens only
-- ⚡ Automatic palette updates
-- 🚀 Direct WebSocket connection (no bridge needed!)
-
-## Architecture
-
-```
-Aseprite (Lua with native WebSocket)
-    ↓ WebSocket
-Sync Server
-    ↓ WebSocket
-Demo / Other Clients
-```
+Sync design tokens (colors) to and from Aseprite palettes in real-time.
 
 ## Installation
 
-### 2. Install the Aseprite Extension
+Download the latest `token-beam-aseprite.zip` from the [releases page](https://github.com/meodai/token-beam/releases), unzip it, and copy the `token-beam` folder to your Aseprite scripts directory:
 
-**Option A: Quick Install (macOS)**
+- **macOS**: `~/Library/Application Support/Aseprite/scripts/`
+- **Windows**: `%APPDATA%\Aseprite\scripts\`
+- **Linux**: `~/.config/aseprite/scripts/`
 
-Run the install script from the root of the project:
+Restart Aseprite after installation.
+
+## Usage
+
+1. **Open or create a sprite in Aseprite**
+
+2. **Run ⊷ Token Beam:**
+   - Go to **File → Scripts → ⊷ Token Beam**
+
+3. **Receive mode** (default tab):
+   - Paste a session token (e.g., `beam://ABC123`) from another app
+   - Click **Connect**
+   - Colors will automatically update your sprite's palette
+
+4. **Send mode** (second tab):
+   - Switching to the Send tab auto-connects and shows a `beam://` token
+   - Click **Copy Token** and paste it into another tool (Figma, web demo, etc.)
+   - Your palette is sent automatically whenever it changes
+   - Picking a foreground/background color also sends the active color
+
+## Troubleshooting
+
+### "No active sprite" error
+
+Create or open a sprite before running ⊷ Token Beam.
+
+### Connection failed
+
+1. Check that you're connected to the internet
+2. Check Aseprite's console for errors (Help → Developer Console)
+
+### Colors not updating
+
+1. Verify the token is correct
+2. Make sure the source is sending color tokens
+3. Check Aseprite's console for errors (Help → Developer Console)
+
+---
+
+## Development
+
+> The instructions below are for developing the plugin locally, not for installing it.
+
+### Quick Install (macOS)
 
 ```bash
 npm run install:aseprite
 ```
 
-This copies the Lua script to `~/Library/Application Support/Aseprite/scripts/token-beam.lua`.
-
-**Note:** This script is currently macOS-specific. For Windows/Linux, use Option B or C below.
-
-Restart Aseprite after installation.
+Copies `token-beam.lua` to `~/Library/Application Support/Aseprite/scripts/`.
 
 To uninstall:
 
@@ -45,13 +67,7 @@ To uninstall:
 npm run uninstall:aseprite
 ```
 
-**Option B: Manual Symlink (Development)**
-
-Create a symlink to the Lua script in Aseprite's scripts folder:
-
-- **macOS**: `~/Library/Application Support/Aseprite/scripts/`
-- **Windows**: `%APPDATA%\Aseprite\scripts\`
-- **Linux**: `~/.config/aseprite/scripts/`
+### Symlink (live reload)
 
 ```bash
 # macOS/Linux
@@ -61,87 +77,17 @@ ln -s "$(pwd)/token-beam.lua" ~/Library/Application\ Support/Aseprite/scripts/to
 New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Aseprite\scripts\token-beam.lua" -Target "$(pwd)\token-beam.lua"
 ```
 
-**Option C: Manual Copy**
+### Reload after changes
 
-Copy `token-beam.lua` to Aseprite's scripts directory.
+**File → Scripts → Rescan Scripts Folder** or restart Aseprite.
 
-Restart Aseprite after installation.
-
-## Usage
-
-1. **Make sure the sync server is running:**
-   ```bash
-   # From project root
-   npm run start:server
-   ```
-
-2. **Open or create a sprite in Aseprite**
-
-3. **Run ⊷ Token Beam:**
-   - Go to **File → Scripts → ⊷ Token Beam**
-   - Enter your session token (e.g., `beam://ABC123`)
-   - Click **Connect**
-   - Colors will automatically update your sprite's palette!
-
-## How It Works
-
-1. **Aseprite Plugin (Lua)**: 
-   - Creates a dialog for token input
-   - Connects to sync server via native WebSocket API
-   - Applies colors to the active sprite's palette
-
-2. **WebSocket Communication**:
-   - Direct connection to sync server
-   - Receives real-time color updates
-   - No intermediate server needed!
-
-3. **Color Application**:
-   - Only color tokens are synced
-   - Palette is updated with new colors
-   - First color slot is preserved for transparency
-
-## Configuration
-
-### Sync Server URL
-
-Edit `token-beam.lua` and change:
-
-```lua
-local syncServerUrl = "ws://localhost:8080"
-```
-
-Default is `ws://localhost:8080`.
-
-You can also set it during install:
+### Bundle for release
 
 ```bash
-SYNC_SERVER_URL="wss://your-server.example" npm run install:aseprite
+npm run bundle
 ```
 
-## Troubleshooting
-
-### "No active sprite" error
-
-Create or open a sprite before running ⊷ Token Beam.
-
-### "Connection failed" or immediate disconnect
-
-1. Make sure the sync server is running (`npm run start:server`)
-2. Verify the `syncServerUrl` in the Lua script
-3. Check that port 8080 is not blocked by firewall
-
-### Colors not updating
-
-1. Verify the token is correct
-2. Make sure the demo/source is sending color tokens
-3. Check Aseprite's console for errors (Help → Developer Console)
-
-## Development
-
-Edit `token-beam.lua` and reload the script in Aseprite:
-- **File → Scripts → Rescan Scripts Folder**
-
-Or restart Aseprite to reload the script.
+Creates `token-beam-aseprite.zip`.
 
 ## Project Structure
 
@@ -152,9 +98,9 @@ aseprite-plugin/
 └── README.md
 ```
 
-## Aseprite WebSocket API
+## Requirements
 
-This plugin uses Aseprite's native [WebSocket API](https://www.aseprite.org/api/websocket) introduced in recent versions. Make sure you're using Aseprite v1.3+ for WebSocket support.
+Aseprite v1.3+ with [WebSocket API](https://www.aseprite.org/api/websocket) support.
 
 ## License
 
