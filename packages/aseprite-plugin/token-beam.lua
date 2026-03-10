@@ -492,14 +492,7 @@ dlg:button{
   text="Copy Token",
   onclick=function()
     if not sessionToken then return end
-    -- pbcopy (macOS), clip (Windows), xclip/xsel (Linux)
-    local ok = os.execute("printf '%s' '" .. sessionToken .. "' | pbcopy 2>/dev/null")
-    if not ok then
-      ok = os.execute("printf '%s' '" .. sessionToken .. "' | clip 2>/dev/null")
-    end
-    if not ok then
-      os.execute("printf '%s' '" .. sessionToken .. "' | xclip -selection clipboard 2>/dev/null")
-    end
+    app.clipboard.text = sessionToken
     dlg:modify{ id="status", text="Token copied!" }
   end
 }
