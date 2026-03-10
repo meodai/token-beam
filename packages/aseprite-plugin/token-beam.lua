@@ -56,7 +56,12 @@ local function showDialog()
       selected=liveSendPickerColor,
       onclick=function()
         liveSendPickerColor = dlg.data.liveSendPickerColor
-        forceSendPalette()
+        if liveSendPickerColor then
+          paletteSnapshot = nil
+          sendPaletteWithActiveColor(app.fgColor)
+        else
+          forceSendPalette()
+        end
       end
     }
     dlg:button{
