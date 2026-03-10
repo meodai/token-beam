@@ -12,7 +12,7 @@ if not WebSocket then
   return
 end
 
-local dlg = Dialog("Token Beam")
+local dlg = nil
 local tokenValue = ""
 local ws = nil
 local connected = false
@@ -24,6 +24,72 @@ local currentMode = "receive"  -- "receive" or "send"
 local sessionToken = nil  -- token received from server in send mode
 local paletteSnapshot = nil  -- last sent palette state for change detection
 local watchedSprite = nil  -- sprite we're listening to for changes
+local suppressAutoShow = false
+
+local function showDialog()
+  if not dlg then
+    dlg = Dialog("Token Beam")
+
+    dlg:tab{ id="receiveTab", text="Receive" }
+    dlg:entry{
+      id="token",
+      text=tokenValue,
+      onchange=function()
+        tokenValue = dlg.data.token
+      end
+    }
+    dlg:button{
+      id="connectBtn",
+      text="Connect",
+      onclick=onConnect
+    }
+    dlg:tab{ id="sendTab", text="Send" }
+    dlg:label{
+      id="sessionDisplay",
+      text="",
+      label=""
+    }
+    dlg:button{
+      id="copyBtn",
+      text="Copy Token",
+      onclick=function()
+        if not sessionToken then return end
+        app.clipboard.text = sessionToken
+        dlg:modify{ id="status", text="Token copied!" }
+      end
+    }
+    dlg:endtabs{
+      id="modeTabs",
+      onchange=function()
+        local sel = dlg.data.modeTabs
+        -- Always close existing connection before switching
+        disconnect()
+        if sel == "receiveTab" then
+          currentMode = "receive"
+          resetUI()
+        else
+          -- Send mode: auto-connect immediately
+          connectSendMode()
+        end
+      end
+    }
+    dlg:separator{}
+    dlg:label{
+      id="status",
+      text=statusText,
+      label=""
+    }
+    dlg:button{ text="Close" }
+  end
+
+  dlg:show{
+    wait=false,
+    bounds=initialDialogBounds,
+    onclose=function()
+      disconnect()
+    end
+  }
+end
 
 -- Check clipboard for a beam:// token and prefill
 if app.clipboard and app.clipboard.hasText then
@@ -76,23 +142,29 @@ function buildPalettePayload(activeColor)
 
   local palette = spr.palettes[1]
   local tokens = {}
+  local activeColorHex = activeColor and colorToHex(activeColor) or nil
+  local hasActiveColorInPalette = false
 
   -- Start at 1 to skip index 0 (usually transparent)
   for i = 1, #palette - 1 do
     local c = palette:getColor(i)
+    local hex = colorToHex(c)
+    if activeColorHex and hex == activeColorHex then
+      hasActiveColorInPalette = true
+    end
     table.insert(tokens, {
       name = "color-" .. i,
       type = "color",
-      value = colorToHex(c)
+      value = hex
     })
   end
 
-  -- Add the currently picked color as a separate token
-  if activeColor then
-    table.insert(tokens, 1, {
+  -- Only add the picked color separately when it is not already in the palette
+  if activeColorHex and not hasActiveColorInPalette then
+    table.insert(tokens, {
       name = "active-color",
       type = "color",
-      value = colorToHex(activeColor)
+      value = activeColorHex
     })
   end
 
@@ -467,62 +539,30 @@ app.events:on('bgcolorchange', function()
   sendPaletteWithActiveColor(app.bgColor)
 end)
 
--- Build dialog
-dlg:tab{ id="receiveTab", text="Receive" }
-dlg:entry{
-  id="token",
-  text=tokenValue,
-  onchange=function()
-    tokenValue = dlg.data.token
-  end
-}
-dlg:button{
-  id="connectBtn",
-  text="Connect",
-  onclick=onConnect
-}
-dlg:tab{ id="sendTab", text="Send" }
-dlg:label{
-  id="sessionDisplay",
-  text="",
-  label=""
-}
-dlg:button{
-  id="copyBtn",
-  text="Copy Token",
-  onclick=function()
-    if not sessionToken then return end
-    app.clipboard.text = sessionToken
-    dlg:modify{ id="status", text="Token copied!" }
-  end
-}
-dlg:endtabs{
-  id="modeTabs",
-  onchange=function()
-    local sel = dlg.data.modeTabs
-    -- Always close existing connection before switching
-    disconnect()
-    if sel == "receiveTab" then
-      currentMode = "receive"
-      resetUI()
-    else
-      -- Send mode: auto-connect immediately
-      connectSendMode()
+---@diagnostic disable-next-line: lowercase-global
+function init(plugin)
+  suppressAutoShow = true
+  plugin:newMenuSeparator{ group = "palette_generation" }
+  plugin:newCommand{
+    id = "tokenBeamPaletteSync",
+    title = "Sync Palette with Token Beam",
+    group = "palette_generation",
+    onclick = showDialog,
+    onenabled = function()
+      return app.activeSprite ~= nil
+    end
+  }
+end
+
+local autoShowTimer
+autoShowTimer = Timer{
+  interval = 0.01,
+  ontick = function()
+    autoShowTimer:stop()
+    if not suppressAutoShow then
+      showDialog()
     end
   end
 }
-dlg:separator{}
-dlg:label{
-  id="status",
-  text=statusText,
-  label=""
-}
-dlg:button{ text="Close" }
 
-dlg:show{
-  wait=false,
-  bounds=initialDialogBounds,
-  onclose=function()
-    disconnect()
-  end
-}
+autoShowTimer:start()

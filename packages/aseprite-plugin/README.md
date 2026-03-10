@@ -4,11 +4,11 @@ Sync design tokens (colors) to and from Aseprite palettes in real-time.
 
 ## Installation
 
-Download the latest `token-beam-aseprite.zip` from the [releases page](https://github.com/meodai/token-beam/releases), unzip it, and copy the `token-beam` folder to your Aseprite scripts directory:
+Download the latest `token-beam-aseprite.zip` from the [releases page](https://github.com/meodai/token-beam/releases), unzip it, and copy the `token-beam` folder to your Aseprite extensions directory:
 
-- **macOS**: `~/Library/Application Support/Aseprite/scripts/`
-- **Windows**: `%APPDATA%\Aseprite\scripts\`
-- **Linux**: `~/.config/aseprite/scripts/`
+- **macOS**: `~/Library/Application Support/Aseprite/extensions/`
+- **Windows**: `%APPDATA%\Aseprite\extensions\`
+- **Linux**: `~/.config/aseprite/extensions/`
 
 Restart Aseprite after installation.
 
@@ -18,6 +18,7 @@ Restart Aseprite after installation.
 
 2. **Run ⊷ Token Beam:**
    - Go to **File → Scripts → ⊷ Token Beam**
+   - Or open the palette options menu (≡) and choose **Sync Palette with Token Beam**
 
 3. **Receive mode** (default tab):
    - Paste a session token (e.g., `beam://ABC123`) from another app
@@ -59,7 +60,7 @@ Create or open a sprite before running ⊷ Token Beam.
 npm run install:aseprite
 ```
 
-Copies `token-beam.lua` to `~/Library/Application Support/Aseprite/scripts/`.
+Copies the local extension files to `~/Library/Application Support/Aseprite/extensions/token-beam/`.
 
 To uninstall:
 
@@ -71,15 +72,19 @@ npm run uninstall:aseprite
 
 ```bash
 # macOS/Linux
-ln -s "$(pwd)/token-beam.lua" ~/Library/Application\ Support/Aseprite/scripts/token-beam.lua
+mkdir -p ~/Library/Application\ Support/Aseprite/extensions/token-beam
+ln -sf "$(pwd)/token-beam.lua" ~/Library/Application\ Support/Aseprite/extensions/token-beam/token-beam.lua
+ln -sf "$(pwd)/package.json" ~/Library/Application\ Support/Aseprite/extensions/token-beam/package.json
 
 # Windows (PowerShell as Admin)
-New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Aseprite\scripts\token-beam.lua" -Target "$(pwd)\token-beam.lua"
+New-Item -ItemType Directory -Force -Path "$env:APPDATA\Aseprite\extensions\token-beam"
+New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Aseprite\extensions\token-beam\token-beam.lua" -Target "$(pwd)\token-beam.lua"
+New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Aseprite\extensions\token-beam\package.json" -Target "$(pwd)\package.json"
 ```
 
 ### Reload after changes
 
-**File → Scripts → Rescan Scripts Folder** or restart Aseprite.
+Reload extensions or restart Aseprite.
 
 ### Bundle for release
 
