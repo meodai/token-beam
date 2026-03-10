@@ -1,3 +1,9 @@
+# [1.16.0](https://github.com/meodai/token-beam/compare/v1.15.0...v1.16.0) (2026-03-10)
+
+### Features
+
+- **token-beam:** add functionality to restore original palette and improve palette management ([450413d](https://github.com/meodai/token-beam/commit/450413d166e64e6b61c4da543201db213f0b1217))
+
 # [1.15.0](https://github.com/meodai/token-beam/compare/v1.14.0...v1.15.0) (2026-03-10)
 
 ### Bug Fixes
