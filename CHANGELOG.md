@@ -1,3 +1,9 @@
+# [1.14.0](https://github.com/meodai/token-beam/compare/v1.13.0...v1.14.0) (2026-03-10)
+
+### Features
+
+- **token-beam:** enhance dialog functionality and add palette sync command ([bb9e96b](https://github.com/meodai/token-beam/commit/bb9e96be30b03df5249636962a37944748da632c))
+
 # [1.13.0](https://github.com/meodai/token-beam/compare/v1.12.0...v1.13.0) (2026-03-10)
 
 ### Features
