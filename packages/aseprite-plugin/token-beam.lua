@@ -12,6 +12,20 @@ if not WebSocket then
   return
 end
 
+local okColor
+do
+  local source = debug.getinfo(1, "S").source
+  local scriptPath = source and source:sub(1, 1) == "@" and source:sub(2) or nil
+  local scriptDir = scriptPath and scriptPath:match("^(.*[/\\])") or ""
+  local okColorPath = scriptDir .. "ok_color.lua"
+  local ok, module = pcall(dofile, okColorPath)
+  if not ok or type(module) ~= "table" then
+    app.alert("Token Beam failed to load ok_color.lua")
+    return
+  end
+  okColor = module
+end
+
 local dlg = nil
 local tokenValue = ""
 local ws = nil
@@ -25,8 +39,10 @@ local sessionToken = nil  -- token received from server in send mode
 local paletteSnapshot = nil  -- last sent palette state for change detection
 local watchedSprite = nil  -- sprite we're listening to for changes
 local originalPalettesBySprite = {}
+local originalPaletteOklabBySprite = {}
 local suppressAutoShow = false
 local liveSendPickerColor = true
+local receiveApplyMode = "Keep Order"
 
 local function getActiveSprite()
   return app.sprite or app.activeSprite
@@ -53,6 +69,31 @@ local function restorePaletteColors(sprite, colors)
   app.refresh()
 end
 
+local function clonePaletteColors(colors)
+  local copy = {}
+  for index, color in ipairs(colors) do
+    copy[index] = Color{ r=color.red, g=color.green, b=color.blue, a=color.alpha }
+  end
+  return copy
+end
+
+local function colorToOklab(color)
+  local l, a, b = okColor.srgb_to_oklab(
+    color.red / 255,
+    color.green / 255,
+    color.blue / 255
+  )
+  return { l = l, a = a, b = b }
+end
+
+local function capturePaletteOklab(colors)
+  local converted = {}
+  for index, color in ipairs(colors) do
+    converted[index] = colorToOklab(color)
+  end
+  return converted
+end
+
 local function getSpriteStorageKey(sprite)
   if not sprite then return nil end
   return sprite.id
@@ -64,12 +105,81 @@ local function getStoredOriginalPalette(sprite)
   return originalPalettesBySprite[key]
 end
 
+local function getStoredOriginalPaletteOklab(sprite)
+  local key = getSpriteStorageKey(sprite)
+  if not key then return nil end
+  return originalPaletteOklabBySprite[key]
+end
+
 local function storeOriginalPalette(sprite)
   local key = getSpriteStorageKey(sprite)
   if not key then return end
   if originalPalettesBySprite[key] == nil then
-    originalPalettesBySprite[key] = capturePaletteColors(sprite)
+    local captured = capturePaletteColors(sprite)
+    originalPalettesBySprite[key] = captured
+    originalPaletteOklabBySprite[key] = capturePaletteOklab(captured)
   end
+end
+
+local function findClosestUnusedReferenceSlot(target, references, usedSlots)
+  local bestIndex = nil
+  local bestDistance = nil
+
+  for index, reference in ipairs(references) do
+    if not usedSlots[index] then
+      local dl = target.l - reference.l
+      local da = target.a - reference.a
+      local db = target.b - reference.b
+      local distance = dl * dl + da * da + db * db
+      if not bestDistance or distance < bestDistance then
+        bestIndex = index
+        bestDistance = distance
+      end
+    end
+  end
+
+  return bestIndex
+end
+
+local function isMatchableColorToken(name)
+  return name ~= "active-color"
+end
+
+local function filterPaletteSlotColors(colors)
+  local filtered = {}
+  for _, colorData in ipairs(colors) do
+    if isMatchableColorToken(colorData.name) then
+      table.insert(filtered, colorData)
+    end
+  end
+  return filtered
+end
+
+local function buildSortedMatchCandidates(colors, references)
+  local candidates = {}
+
+  for colorIndex, colorData in ipairs(colors) do
+    local incomingColor = hexToColor(colorData.value)
+    local incomingOklab = colorToOklab(incomingColor)
+
+    for referenceIndex, reference in ipairs(references) do
+      local dl = incomingOklab.l - reference.l
+      local da = incomingOklab.a - reference.a
+      local db = incomingOklab.b - reference.b
+      table.insert(candidates, {
+        colorIndex = colorIndex,
+        referenceIndex = referenceIndex,
+        color = incomingColor,
+        distance = dl * dl + da * da + db * db
+      })
+    end
+  end
+
+  table.sort(candidates, function(left, right)
+    return left.distance < right.distance
+  end)
+
+  return candidates
 end
 
 local function showDialog()
@@ -93,6 +203,15 @@ local function showDialog()
       id="receiveHintDetail",
       text="or colors may apply to the wrong palette.",
       label=""
+    }
+    dlg:combobox{
+      id="receiveApplyMode",
+      label="Apply",
+      option=receiveApplyMode,
+      options={ "Keep Order", "Match Palette" },
+      onchange=function()
+        receiveApplyMode = dlg.data.receiveApplyMode
+      end
     }
     dlg:button{
       id="connectBtn",
@@ -396,6 +515,55 @@ function applyColorsToPalette(colors, spr)
   return #colors
 end
 
+local function applyColorsByClosestMatch(colors, spr)
+  spr = spr or getActiveSprite()
+  if not spr then
+    app.alert("No active sprite. Please open or create a sprite first.")
+    return
+  end
+
+  colors = filterPaletteSlotColors(colors)
+  if #colors == 0 then
+    return 0
+  end
+
+  local originalPalette = getStoredOriginalPalette(spr)
+  local originalPaletteOklab = getStoredOriginalPaletteOklab(spr)
+  if not originalPalette or not originalPaletteOklab or #originalPalette == 0 then
+    return applyColorsToPalette(colors, spr)
+  end
+
+  local matchedPalette = clonePaletteColors(originalPalette)
+  local usedSlots = {}
+  local usedColors = {}
+  local appliedCount = 0
+
+  local candidates = buildSortedMatchCandidates(colors, originalPaletteOklab)
+  for _, candidate in ipairs(candidates) do
+    if not usedColors[candidate.colorIndex] and not usedSlots[candidate.referenceIndex] then
+      matchedPalette[candidate.referenceIndex] = candidate.color
+      usedColors[candidate.colorIndex] = true
+      usedSlots[candidate.referenceIndex] = true
+      appliedCount = appliedCount + 1
+
+      if appliedCount >= math.min(#colors, #originalPaletteOklab) then
+        break
+      end
+    end
+  end
+
+  restorePaletteColors(spr, matchedPalette)
+  return appliedCount
+end
+
+local function applyIncomingColors(colors, spr)
+  if receiveApplyMode == "Match Palette" then
+    return applyColorsByClosestMatch(colors, spr)
+  end
+
+  return applyColorsToPalette(colors, spr)
+end
+
 -- Safely close and discard the current WebSocket
 function closeWebSocket()
   if ws then
@@ -505,7 +673,7 @@ function createMessageHandler(gen)
         local colors = extractColors(msg.payload)
 
         if #colors > 0 then
-          local count = applyColorsToPalette(colors, spr)
+          local count = applyIncomingColors(colors, spr)
           statusText = "Applied " .. count .. " colors"
           dlg:modify{ id="status", text=statusText }
         else
@@ -583,7 +751,6 @@ end
 
 -- Connect button handler (receive mode only)
 function onConnect()
-          dlg:modify{ id="restoreOriginalPalette", visible=false }
   if ws then
     disconnect()
     resetUI()

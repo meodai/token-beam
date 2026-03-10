@@ -14,8 +14,8 @@
     ]
   },
   "scripts": {
-    "bundle": "rm -f token-beam-aseprite.zip && mkdir -p bundle/token-beam && cp token-beam.lua package.json bundle/token-beam/ && cd bundle && zip -r ../token-beam-aseprite.zip token-beam/ && cd .. && rm -rf bundle",
-    "install:aseprite": "mkdir -p \"$HOME/Library/Application Support/Aseprite/extensions/token-beam\" && cp token-beam.lua package.json README.md \"$HOME/Library/Application Support/Aseprite/extensions/token-beam/\"",
+    "bundle": "rm -f token-beam-aseprite.zip && mkdir -p bundle/token-beam && cp token-beam.lua ok_color.lua package.json README.md bundle/token-beam/ && cd bundle && zip -r ../token-beam-aseprite.zip token-beam/ && cd .. && rm -rf bundle",
+    "install:aseprite": "mkdir -p \"$HOME/Library/Application Support/Aseprite/extensions/token-beam\" && cp token-beam.lua ok_color.lua package.json README.md \"$HOME/Library/Application Support/Aseprite/extensions/token-beam/\"",
     "uninstall:aseprite": "rm -rf \"$HOME/Library/Application Support/Aseprite/extensions/token-beam\" && rm -f \"$HOME/Library/Application Support/Aseprite/scripts/token-beam.lua\""
   }
 }
