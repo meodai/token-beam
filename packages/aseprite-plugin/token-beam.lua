@@ -145,8 +145,8 @@ function buildPalettePayload(activeColor)
   local activeColorHex = activeColor and colorToHex(activeColor) or nil
   local hasActiveColorInPalette = false
 
-  -- Start at 1 to skip index 0 (usually transparent)
-  for i = 1, #palette - 1 do
+  -- Aseprite palettes are 0-indexed, so include slot 0 in the synced payload
+  for i = 0, #palette - 1 do
     local c = palette:getColor(i)
     local hex = colorToHex(c)
     if activeColorHex and hex == activeColorHex then
@@ -295,13 +295,13 @@ function applyColorsToPalette(colors)
   local palette = spr.palettes[1]
 
   app.transaction(function()
-    -- Resize palette to fit all colors plus one for transparency
-    palette:resize(#colors + 1)
+    -- Resize palette to fit the full synced color set, including slot 0
+    palette:resize(#colors)
 
-    -- Apply colors (index 0 is usually transparent)
-    for i, colorData in ipairs(colors) do
+    -- Apply colors to their 0-indexed palette slots
+    for index, colorData in ipairs(colors) do
       local color = hexToColor(colorData.value)
-      palette:setColor(i, color)
+      palette:setColor(index - 1, color)
     end
   end)
 
