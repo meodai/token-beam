@@ -25,6 +25,7 @@ local sessionToken = nil  -- token received from server in send mode
 local paletteSnapshot = nil  -- last sent palette state for change detection
 local watchedSprite = nil  -- sprite we're listening to for changes
 local suppressAutoShow = false
+local liveSendPickerColor = true
 
 local function showDialog()
   if not dlg then
@@ -48,6 +49,15 @@ local function showDialog()
       id="sessionDisplay",
       text="",
       label=""
+    }
+    dlg:check{
+      id="liveSendPickerColor",
+      text="Live Send Picker Color",
+      selected=liveSendPickerColor,
+      onclick=function()
+        liveSendPickerColor = dlg.data.liveSendPickerColor
+        forceSendPalette()
+      end
     }
     dlg:button{
       id="copyBtn",
@@ -219,6 +229,7 @@ end
 function sendPaletteWithActiveColor(color)
   if currentMode ~= "send" then return end
   if not ws or not connected then return end
+  if not liveSendPickerColor then return end
 
   local payload = buildPalettePayload(color)
   if not payload then return end
