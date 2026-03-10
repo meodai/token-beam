@@ -24,8 +24,53 @@ local currentMode = "receive"  -- "receive" or "send"
 local sessionToken = nil  -- token received from server in send mode
 local paletteSnapshot = nil  -- last sent palette state for change detection
 local watchedSprite = nil  -- sprite we're listening to for changes
+local originalPalettesBySprite = {}
 local suppressAutoShow = false
 local liveSendPickerColor = true
+
+local function getActiveSprite()
+  return app.sprite or app.activeSprite
+end
+
+local function capturePaletteColors(sprite)
+  local palette = sprite.palettes[1]
+  local colors = {}
+  for i = 0, #palette - 1 do
+    table.insert(colors, palette:getColor(i))
+  end
+  return colors
+end
+
+local function restorePaletteColors(sprite, colors)
+  if not sprite or not colors then return end
+  local palette = sprite.palettes[1]
+  app.transaction(function()
+    palette:resize(#colors)
+    for index, color in ipairs(colors) do
+      palette:setColor(index - 1, color)
+    end
+  end)
+  app.refresh()
+end
+
+local function getSpriteStorageKey(sprite)
+  if not sprite then return nil end
+  return sprite.id
+end
+
+local function getStoredOriginalPalette(sprite)
+  local key = getSpriteStorageKey(sprite)
+  if not key then return nil end
+  return originalPalettesBySprite[key]
+end
+
+local function storeOriginalPalette(sprite)
+  local key = getSpriteStorageKey(sprite)
+  if not key then return end
+  if originalPalettesBySprite[key] == nil then
+    originalPalettesBySprite[key] = capturePaletteColors(sprite)
+  end
+end
 
 local function showDialog()
   if not dlg then
@@ -39,10 +84,38 @@ local function showDialog()
         tokenValue = dlg.data.token
       end
     }
+    dlg:label{
+      id="receiveHint",
+      text="Disconnect before switching documents,",
+      label=""
+    }
+    dlg:label{
+      id="receiveHintDetail",
+      text="or colors may apply to the wrong palette.",
+      label=""
+    }
     dlg:button{
       id="connectBtn",
       text="Connect",
       onclick=onConnect
+    }
+    dlg:newrow()
+    dlg:button{
+      id="restoreOriginalPalette",
+      text="Restore Original Palette",
+      visible=false,
+      onclick=function()
+        local spr = getActiveSprite()
+        local originalPalette = getStoredOriginalPalette(spr)
+        if not spr or not originalPalette then
+          app.alert("No stored original palette for the active sprite.")
+          return
+        end
+
+        restorePaletteColors(spr, originalPalette)
+        statusText = "Original palette restored"
+        dlg:modify{ id="status", text=statusText }
+      end
     }
     dlg:tab{ id="sendTab", text="Send" }
     dlg:label{
@@ -88,13 +161,11 @@ local function showDialog()
         end
       end
     }
-    dlg:separator{}
     dlg:label{
       id="status",
       text=statusText,
       label=""
     }
-    dlg:button{ text="Close" }
   end
 
   dlg:show{
@@ -139,7 +210,7 @@ end
 
 -- Snapshot the current palette as a string for comparison
 function snapshotPalette()
-  local spr = app.activeSprite
+  local spr = getActiveSprite()
   if not spr then return nil end
   local palette = spr.palettes[1]
   local parts = {}
@@ -152,7 +223,7 @@ end
 
 -- Build DTCG payload from current sprite palette + optional active color
 function buildPalettePayload(activeColor)
-  local spr = app.activeSprite
+  local spr = getActiveSprite()
   if not spr then return nil end
 
   local palette = spr.palettes[1]
@@ -301,8 +372,8 @@ function extractColors(payload)
 end
 
 -- Apply colors to palette
-function applyColorsToPalette(colors)
-  local spr = app.activeSprite
+function applyColorsToPalette(colors, spr)
+  spr = spr or getActiveSprite()
   if not spr then
     app.alert("No active sprite. Please open or create a sprite first.")
     return
@@ -344,6 +415,7 @@ function resetUI(status)
   statusText = status or "Disconnected"
   dlg:modify{ id="status", text=statusText }
   dlg:modify{ id="connectBtn", text="Connect" }
+  dlg:modify{ id="restoreOriginalPalette", visible=false }
   dlg:modify{ id="sessionDisplay", text="" }
 end
 
@@ -363,6 +435,7 @@ function createMessageHandler(gen)
       dlg:modify{ id="status", text=statusText }
       if connMode == "receive" then
         dlg:modify{ id="connectBtn", text="Disconnect" }
+        dlg:modify{ id="restoreOriginalPalette", visible=true }
       end
 
       if connMode == "receive" then
@@ -421,10 +494,18 @@ function createMessageHandler(gen)
         statusText = "Receiving colors..."
         dlg:modify{ id="status", text=statusText }
 
+        local spr = getActiveSprite()
+        if not spr then
+          resetUI("No active sprite")
+          return
+        end
+
+        storeOriginalPalette(spr)
+
         local colors = extractColors(msg.payload)
 
         if #colors > 0 then
-          local count = applyColorsToPalette(colors)
+          local count = applyColorsToPalette(colors, spr)
           statusText = "Applied " .. count .. " colors"
           dlg:modify{ id="status", text=statusText }
         else
@@ -502,6 +583,7 @@ end
 
 -- Connect button handler (receive mode only)
 function onConnect()
+          dlg:modify{ id="restoreOriginalPalette", visible=false }
   if ws then
     disconnect()
     resetUI()
@@ -523,6 +605,16 @@ function onConnect()
 
   if not tokenValue:match("^beam://") then
     tokenValue = "beam://" .. tokenValue:upper()
+  end
+
+  if currentMode == "receive" then
+    local spr = getActiveSprite()
+    if not spr then
+      app.alert("No active sprite. Please open or create a sprite first.")
+      return
+    end
+
+    storeOriginalPalette(spr)
   end
 
   dlg:modify{ id="connectBtn", text="Connecting..." }
