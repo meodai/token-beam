@@ -1,3 +1,14 @@
+# [1.15.0](https://github.com/meodai/token-beam/compare/v1.14.0...v1.15.0) (2026-03-10)
+
+### Bug Fixes
+
+- **token-beam:** adjust palette indexing to support Aseprite's 0-indexed color slots ([1597ca7](https://github.com/meodai/token-beam/commit/1597ca7af9a534231a4b989375ac38a230e6a0c9))
+
+### Features
+
+- **token-beam:** add live send picker color option to dialog ([e092413](https://github.com/meodai/token-beam/commit/e092413990cebddbdc76dfd410dff58e05659bf4))
+- **token-beam:** enhance live send picker functionality to handle active color selection ([af3b9ea](https://github.com/meodai/token-beam/commit/af3b9eae176fb67d862e1e1437a6fd5ebd6ebba2))
+
 # [1.14.0](https://github.com/meodai/token-beam/compare/v1.13.0...v1.14.0) (2026-03-10)
 
 ### Features
