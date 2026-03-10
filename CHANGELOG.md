@@ -1,3 +1,9 @@
+# [1.13.0](https://github.com/meodai/token-beam/compare/v1.12.0...v1.13.0) (2026-03-10)
+
+### Features
+
+- **token-beam:** simplify token copy functionality using app.clipboard ([284b804](https://github.com/meodai/token-beam/commit/284b804d950fb3f4fa362d28e859ec0a03249ce2))
+
 # [1.12.0](https://github.com/meodai/token-beam/compare/v1.11.0...v1.12.0) (2026-03-09)
 
 ### Features
