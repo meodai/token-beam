@@ -184,7 +184,13 @@ end
 
 local function showDialog()
   if not dlg then
-    dlg = Dialog("Token Beam")
+    dlg = Dialog{
+      title="Token Beam",
+      onclose=function()
+        disconnect()
+        dlg = nil
+      end
+    }
 
     dlg:tab{ id="receiveTab", text="Receive" }
     dlg:entry{
@@ -289,10 +295,7 @@ local function showDialog()
 
   dlg:show{
     wait=false,
-    bounds=initialDialogBounds,
-    onclose=function()
-      disconnect()
-    end
+    bounds=initialDialogBounds
   }
 end
 
@@ -725,12 +728,13 @@ end
 
 -- Disconnect fully before any new connection or mode switch
 function disconnect()
-  generation = generation + 1
   connected = false
   sessionToken = nil
   paletteSnapshot = nil
   unwatchSprite()
   closeWebSocket()
+  -- Bump generation after close so the CLOSE callback can still run
+  generation = generation + 1
 end
 
 -- Open a new WebSocket connection
@@ -827,6 +831,15 @@ function init(plugin)
       return app.activeSprite ~= nil
     end
   }
+end
+
+---@diagnostic disable-next-line: lowercase-global
+function exit(plugin)
+  disconnect()
+  if dlg then
+    dlg:close()
+    dlg = nil
+  end
 end
 
 local autoShowTimer
