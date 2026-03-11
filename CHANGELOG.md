@@ -1,3 +1,9 @@
+# [1.18.0](https://github.com/meodai/token-beam/compare/v1.17.1...v1.18.0) (2026-03-11)
+
+### Features
+
+- **asprite:** detect when palette is not in indexed mode ([b6aa03c](https://github.com/meodai/token-beam/commit/b6aa03c692c215652adf3f2bf8a593bb56f76bec))
+
 ## [1.17.1](https://github.com/meodai/token-beam/compare/v1.17.0...v1.17.1) (2026-03-11)
 
 ### Bug Fixes
