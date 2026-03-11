@@ -1,3 +1,9 @@
+# [1.17.0](https://github.com/meodai/token-beam/compare/v1.16.0...v1.17.0) (2026-03-10)
+
+### Features
+
+- **token-beam:** add ok_color color matching ([e228147](https://github.com/meodai/token-beam/commit/e2281476d8ee1e51a162509c60b221afa0fa6068))
+
 # [1.16.0](https://github.com/meodai/token-beam/compare/v1.15.0...v1.16.0) (2026-03-10)
 
 ### Features
