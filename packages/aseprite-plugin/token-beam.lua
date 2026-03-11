@@ -195,6 +195,7 @@ local function showDialog()
     dlg:tab{ id="receiveTab", text="Receive" }
     dlg:entry{
       id="token",
+      label="Token",
       text=tokenValue,
       onchange=function()
         tokenValue = dlg.data.token
@@ -287,16 +288,41 @@ local function showDialog()
       end
     }
     dlg:label{
+      id="colorModeWarning",
+      text="Sprite is not in Indexed color mode.",
+      visible=false,
+      label=""
+    }
+    dlg:button{
+      id="switchToIndexed",
+      text="Switch to Indexed Color",
+      visible=false,
+      onclick=function()
+        app.command.ChangePixelFormat{ format="indexed" }
+        updateColorModeWarning()
+      end
+    }
+    dlg:label{
       id="status",
       text=statusText,
       label=""
     }
   end
 
+  updateColorModeWarning()
+
   dlg:show{
     wait=false,
     bounds=initialDialogBounds
   }
+end
+
+function updateColorModeWarning()
+  if not dlg then return end
+  local spr = getActiveSprite()
+  local needsWarning = spr and spr.colorMode ~= ColorMode.INDEXED
+  dlg:modify{ id="colorModeWarning", visible=needsWarning }
+  dlg:modify{ id="switchToIndexed", visible=needsWarning }
 end
 
 -- Check clipboard for a beam:// token and prefill
@@ -803,6 +829,7 @@ end
 
 -- Also watch for active sprite switching
 app.events:on('sitechange', function()
+  updateColorModeWarning()
   if currentMode == "send" and connected then
     watchSprite()
     forceSendPalette()
