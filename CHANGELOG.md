@@ -1,3 +1,9 @@
+## [1.17.1](https://github.com/meodai/token-beam/compare/v1.17.0...v1.17.1) (2026-03-11)
+
+### Bug Fixes
+
+- **asprite:** make sure socket connection is closed when closing dialog ([d4cd0f9](https://github.com/meodai/token-beam/commit/d4cd0f94819d77df98caa319e41b8d7f8dc0eb16))
+
 # [1.17.0](https://github.com/meodai/token-beam/compare/v1.16.0...v1.17.0) (2026-03-10)
 
 ### Features
