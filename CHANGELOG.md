@@ -1,3 +1,13 @@
+# [1.19.0](https://github.com/meodai/token-beam/compare/v1.18.0...v1.19.0) (2026-03-11)
+
+### Bug Fixes
+
+- **dialog:** remove unnecessary dialog bounds adjustment in color mode warning ([dfb9411](https://github.com/meodai/token-beam/commit/dfb94116eed123bd7aaeddb8709028c6bccd7456))
+
+### Features
+
+- **asprite:** redraw asprite after resiting the modal ([e59c74b](https://github.com/meodai/token-beam/commit/e59c74b6f733fabd3956e5e83580e697535e1ff2))
+
 # [1.18.0](https://github.com/meodai/token-beam/compare/v1.17.1...v1.18.0) (2026-03-11)
 
 ### Features
