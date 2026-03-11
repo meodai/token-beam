@@ -325,9 +325,6 @@ function updateColorModeWarning()
   local needsWarning = spr and spr.colorMode ~= ColorMode.INDEXED
   dlg:modify{ id="colorModeWarning", visible=needsWarning }
   dlg:modify{ id="switchToIndexed", visible=needsWarning }
-  -- Re-fit dialog bounds to avoid visual traces when content changes size
-  local bounds = dlg.bounds
-  dlg.bounds = bounds
 end
 
 -- Check clipboard for a beam:// token and prefill
