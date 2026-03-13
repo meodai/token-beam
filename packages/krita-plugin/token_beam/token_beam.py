@@ -13,7 +13,7 @@ from PyQt5.QtGui import QFont, QIcon, QColor, QPainter, QCursor
 from PyQt5.QtNetwork import QTcpSocket, QAbstractSocket, QSslSocket
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QScrollArea,
-    QLineEdit, QPushButton, QLabel, QToolTip, QSizePolicy
+    QLineEdit, QPushButton, QLabel, QToolTip, QSizePolicy, QSpinBox
 )
 
 from krita import DockWidget, DockWidgetFactory, DockWidgetFactoryBase, \
@@ -223,8 +223,9 @@ class ColorSwatch(QWidget):
         self._qcolor = QColor(hex_value)
         self.setCursor(QCursor(Qt.PointingHandCursor))
         self.setToolTip("{}\n{}".format(name, hex_value))
-        self.setMinimumSize(16, 16)
+        # Expanding to fill available width, maintain square aspect ratio
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setMinimumSize(20, 20)
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -242,7 +243,8 @@ class ColorSwatch(QWidget):
         try:
             app = Krita.instance()
             view = app.activeWindow().activeView()
-            mc = ManagedColor("RGBA", "U8", "sRGB-elle-V2-srgbtrc.icc")
+            # Use F32 for more accurate color representation
+            mc = ManagedColor("RGBA", "F32", "sRGB-elle-V2-srgbtrc.icc")
             mc.setComponents([
                 self._qcolor.redF(),
                 self._qcolor.greenF(),
@@ -254,7 +256,14 @@ class ColorSwatch(QWidget):
             pass
 
     def sizeHint(self):
-        return QSize(24, 24)
+        return QSize(32, 32)
+    
+    def hasHeightForWidth(self):
+        return True
+    
+    def heightForWidth(self, width):
+        # Keep swatches square
+        return width
 
 
 # ---------------------------------------------------------------------------
@@ -301,6 +310,7 @@ class TokenBeamDocker(DockWidget):
         self._generation = 0
         self._is_paired = False
         self._session_token = None
+        self._columns = 8  # Default column count
 
         # --- UI ---------------------------------------------------------------
         root = QWidget()
@@ -333,6 +343,21 @@ class TokenBeamDocker(DockWidget):
         self._status_label = QLabel("Disconnected")
         self._status_label.setWordWrap(True)
         layout.addWidget(self._status_label)
+
+        # Column count input
+        col_row = QHBoxLayout()
+        col_row.setSpacing(4)
+        col_label = QLabel("Columns:")
+        col_row.addWidget(col_label)
+        self._col_spinbox = QSpinBox()
+        self._col_spinbox.setMinimum(1)
+        self._col_spinbox.setMaximum(32)
+        self._col_spinbox.setValue(8)
+        self._col_spinbox.setFixedWidth(60)
+        self._col_spinbox.valueChanged.connect(self._on_columns_changed)
+        col_row.addWidget(self._col_spinbox)
+        col_row.addStretch(1)
+        layout.addLayout(col_row)
 
         # Color grid (scrollable)
         self._color_grid_widget = QWidget()
@@ -504,6 +529,12 @@ class TokenBeamDocker(DockWidget):
         self._set_status("Saved palette '{}' — restart Krita to see it "
                          "in the Palette docker".format(name))
 
+    def _on_columns_changed(self, value):
+        """Update column count and rebuild grid if colors exist."""
+        self._columns = value
+        if self._last_colors:
+            self._rebuild_color_grid(self._last_colors)
+
     def _rebuild_color_grid(self, colors):
         """Replace the color grid with new swatches."""
         # Clear existing swatches
@@ -512,15 +543,23 @@ class TokenBeamDocker(DockWidget):
             w = item.widget()
             if w:
                 w.deleteLater()
+        
+        # Clear previous column stretches
+        for col in range(32):  # Clear up to max possible columns
+            self._color_grid.setColumnStretch(col, 0)
 
-        # Calculate columns based on docker width
-        cols = max(4, min(len(colors), 8))
+        # Use the user-specified column count
+        cols = self._columns
 
         for i, c_data in enumerate(colors):
             row = i // cols
             col = i % cols
             swatch = ColorSwatch(c_data["value"], c_data["name"], self)
             self._color_grid.addWidget(swatch, row, col)
+        
+        # Set equal column stretches for uniform width distribution
+        for col in range(cols):
+            self._color_grid.setColumnStretch(col, 1)
 
     def _write_gpl_palette(self, colors):
         """Persist colors as a .gpl file for next Krita startup."""
@@ -528,7 +567,7 @@ class TokenBeamDocker(DockWidget):
         if colors and colors[0].get("collection"):
             name = colors[0]["collection"]
 
-        lines = ["GIMP Palette", "Name: {}".format(name), "Columns: 8", "#"]
+        lines = ["GIMP Palette", "Name: {}".format(name), "Columns: {}".format(self._columns), "#"]
         for c_data in colors:
             h = c_data["value"].lstrip("#")
             if len(h) == 3:
