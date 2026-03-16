@@ -25,6 +25,15 @@ export class TokenSyncServer {
   private cleanupTimer?: ReturnType<typeof setInterval>;
   private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
   private readonly MAX_PAYLOAD_SIZE = 10 * 1024 * 1024; // 10MB - reasonable for design tokens with embedded assets
+  private readonly MAX_CONNECTIONS_PER_IP = 20;
+  private readonly MAX_SESSIONS = 1000;
+  private readonly MAX_TARGETS_PER_SESSION = 10;
+  private readonly MAX_SVG_SIZE_BEFORE_SANITIZE = 20 * 1024; // 20KB - reject before running regexes
+  // Rate limiting: relaxed to keep real-time feel
+  private readonly RATE_LIMIT_WINDOW = 1000; // 1 second window
+  private readonly RATE_LIMIT_MAX_MESSAGES = 120; // 120 msgs/sec — generous for real-time
+  private ipConnectionCount: Map<string, number> = new Map();
+  private clientMessageTimestamps: Map<WebSocket, number[]> = new Map();
 
   // Blocked origins - manually curate commercial users
   private readonly BLOCKED_ORIGINS = [
@@ -69,14 +78,25 @@ export class TokenSyncServer {
     this.wss = new WebSocketServer({
       server: this.httpServer,
       maxPayload: this.MAX_PAYLOAD_SIZE,
-      verifyClient: (info: { origin: string; req: IncomingMessage }) => {
+      verifyClient: (info: { origin: string; req: IncomingMessage }, cb) => {
         // Check HTTP Origin header (set by browser, harder to fake)
         const origin = info.origin || info.req.headers.origin;
         if (origin && this.isOriginBlocked(origin)) {
           console.log(`Blocked connection from: ${origin}`);
-          return false;
+          cb(false, 403, 'Forbidden');
+          return;
         }
-        return true;
+
+        // Per-IP connection limit
+        const ip = this.getClientIP(info.req);
+        const count = this.ipConnectionCount.get(ip) ?? 0;
+        if (count >= this.MAX_CONNECTIONS_PER_IP) {
+          console.log(`Connection limit reached for IP: ${ip} (${count})`);
+          cb(false, 429, 'Too many connections');
+          return;
+        }
+
+        cb(true);
       },
     });
     this.setupWebSocket();
@@ -97,12 +117,22 @@ export class TokenSyncServer {
   private setupWebSocket() {
     this.wss.on('connection', (ws: WebSocket, req) => {
       const httpOrigin = req.headers.origin;
-      console.log('New WebSocket connection', { origin: httpOrigin });
+      const ip = this.getClientIP(req);
+      console.log('New WebSocket connection', { origin: httpOrigin, ip });
+
+      // Track IP connection count
+      this.ipConnectionCount.set(ip, (this.ipConnectionCount.get(ip) ?? 0) + 1);
 
       ws.on('message', (data: Buffer) => {
         // Check message size
         if (data.length > this.MAX_PAYLOAD_SIZE) {
           this.sendError(ws, 'Message too large');
+          return;
+        }
+
+        // Rate limiting
+        if (this.isRateLimited(ws)) {
+          this.sendError(ws, 'Rate limit exceeded, slow down');
           return;
         }
 
@@ -116,6 +146,13 @@ export class TokenSyncServer {
 
       ws.on('close', () => {
         this.handleDisconnect(ws);
+        this.clientMessageTimestamps.delete(ws);
+        const currentCount = this.ipConnectionCount.get(ip) ?? 1;
+        if (currentCount <= 1) {
+          this.ipConnectionCount.delete(ip);
+        } else {
+          this.ipConnectionCount.set(ip, currentCount - 1);
+        }
       });
 
       ws.on('error', (error) => {
@@ -203,6 +240,12 @@ export class TokenSyncServer {
         // Token invalid or session already has a web client — fall through to create new
       }
 
+      // Limit total sessions
+      if (this.sessions.size >= this.MAX_SESSIONS) {
+        this.sendError(ws, 'Server is at capacity, try again later');
+        return;
+      }
+
       const token = this.generateToken();
 
       // Sanitize icon — warn client if it was rejected
@@ -250,6 +293,12 @@ export class TokenSyncServer {
 
       if (!session) {
         this.sendError(ws, 'Invalid session token');
+        return;
+      }
+
+      // Limit target clients per session
+      if (session.targetClients.length >= this.MAX_TARGETS_PER_SESSION) {
+        this.sendError(ws, 'Too many target clients for this session');
         return;
       }
 
@@ -465,6 +514,9 @@ export class TokenSyncServer {
     }
 
     if (type === 'svg') {
+      // Reject oversized SVGs before running regex sanitization
+      if (value.length > this.MAX_SVG_SIZE_BEFORE_SANITIZE) return undefined;
+
       // Must look like an SVG element
       if (!value.trim().startsWith('<svg')) return undefined;
 
@@ -507,6 +559,33 @@ export class TokenSyncServer {
     }
 
     return undefined;
+  }
+
+  private getClientIP(req: IncomingMessage): string {
+    const realIp = req.headers['x-real-ip'];
+    if (typeof realIp === 'string') return realIp.trim();
+    const forwarded = req.headers['x-forwarded-for'];
+    if (typeof forwarded === 'string') return forwarded.split(',')[0].trim();
+    return req.socket.remoteAddress ?? 'unknown';
+  }
+
+  private isRateLimited(ws: WebSocket): boolean {
+    const now = Date.now();
+    let timestamps = this.clientMessageTimestamps.get(ws);
+    if (!timestamps) {
+      timestamps = [];
+      this.clientMessageTimestamps.set(ws, timestamps);
+    }
+    // Remove timestamps outside the window
+    const cutoff = now - this.RATE_LIMIT_WINDOW;
+    while (timestamps.length > 0 && timestamps[0] < cutoff) {
+      timestamps.shift();
+    }
+    if (timestamps.length >= this.RATE_LIMIT_MAX_MESSAGES) {
+      return true;
+    }
+    timestamps.push(now);
+    return false;
   }
 
   private generateToken(): string {

@@ -27,7 +27,9 @@
       "Bash(pip3 show:*)",
       "Bash(pip show:*)",
       "WebFetch(domain:docs.blender.org)",
-      "WebFetch(domain:fossies.org)"
+      "WebFetch(domain:fossies.org)",
+      "WebFetch(domain:www.aseprite.org)",
+      "Bash(npm run:*)"
     ]
   }
 }
