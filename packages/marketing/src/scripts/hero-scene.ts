@@ -218,7 +218,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   scene.add(floatingLabel.sprite);
 
   // Token sphere
-  const tokenGeo = new THREE.SphereGeometry(0.12, 16, 16);
+  const tokenGeo = new THREE.SphereGeometry(0.06, 12, 12);
   const tokenMat = new THREE.MeshStandardMaterial({
     color: 0xff6347,
     emissive: 0xff6347,
@@ -340,6 +340,10 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     cameraLookTarget.lerp(token.position, 0.02);
     camera.position.copy(cameraLookTarget).add(cameraOffset);
     camera.lookAt(cameraLookTarget);
+    // Shift the view so the ball appears on the right half
+    camera.left = -frustum * aspect - frustum * 1.2;
+    camera.right = frustum * aspect - frustum * 1.2;
+    camera.updateProjectionMatrix();
 
     // Reveal faces one by one via drawRange — one face every 50ms
     nodes.forEach((n) => {
