@@ -39,6 +39,8 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     alpha: true,
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.NoToneMapping;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
 
@@ -145,20 +147,28 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   // Labels
   function createSpriteLabel(text: string, isDark: boolean): THREE.Sprite {
     const canvas2d = document.createElement('canvas');
-    canvas2d.width = 256;
-    canvas2d.height = 28;
+    canvas2d.width = 512;
+    canvas2d.height = 64;
     const ctx = canvas2d.getContext('2d')!;
-    ctx.font = '13px monospace';
+    ctx.font = '300 18px monospace';
     const metrics = ctx.measureText(text);
-    const pad = 6;
+    const pad = 24;
+    const padV = 18;
     const bgW = metrics.width + pad * 2;
+    const bgH = 18 + padV * 2;
     ctx.fillStyle = isDark ? '#ffffff' : '#292f2f';
-    ctx.fillRect(0, 2, bgW, 22);
+    ctx.fillRect(0, 4, bgW, bgH);
     ctx.fillStyle = isDark ? '#000000' : '#ffffff';
-    ctx.fillText(text, pad, 18);
+    ctx.fillText(text, pad, 4 + padV + 15);
     const tex = new THREE.CanvasTexture(canvas2d);
     tex.minFilter = THREE.LinearFilter;
-    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const mat = new THREE.SpriteMaterial({
+      map: tex,
+      transparent: true,
+      depthTest: false,
+      toneMapped: false,
+    });
     const sprite = new THREE.Sprite(mat);
     sprite.scale.set(0.8, 0.1, 1);
     sprite.renderOrder = 1;
@@ -193,20 +203,21 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
 
   function createTokenLabel(text: string, isDark: boolean) {
     const canvas2d = document.createElement('canvas');
-    canvas2d.width = 256;
-    canvas2d.height = 32;
+    canvas2d.width = 512;
+    canvas2d.height = 64;
     const ctx = canvas2d.getContext('2d')!;
     const tex = new THREE.CanvasTexture(canvas2d);
     tex.minFilter = THREE.LinearFilter;
-    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, toneMapped: false });
     const sprite = new THREE.Sprite(mat);
-    sprite.scale.set(0.8, 0.1, 1);
+    sprite.scale.set(0.5, 0.06, 1);
 
     function update(label: string, dark: boolean) {
-      ctx.clearRect(0, 0, 256, 32);
-      ctx.font = '14px monospace';
+      ctx.clearRect(0, 0, 512, 64);
+      ctx.font = '300 28px monospace';
       ctx.fillStyle = dark ? '#ffffff' : '#292f2f';
-      ctx.fillText(label, 4, 18);
+      ctx.fillText(label, 8, 36);
       tex.needsUpdate = true;
     }
 
