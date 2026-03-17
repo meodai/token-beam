@@ -947,8 +947,13 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     .plugins__icon {
       width: 18px;
       height: 18px;
-      color: var(--text-muted);
       margin-left: auto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .plugins__icon {
+        filter: invert(1);
+      }
     }
 
     .plugins__card p {
@@ -1056,6 +1061,16 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       line-height: 1.7 !important;
       font-family: 'Iosevka Web', 'Iosevka', 'SF Mono', 'Fira Code', monospace !important;
       border-radius: 0 !important;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .developers__example pre {
+        background-color: var(--shiki-dark-bg) !important;
+        color: var(--shiki-dark) !important;
+      }
+      .developers__example pre span {
+        color: var(--shiki-dark) !important;
+      }
     }
 
     .developers__example code {
