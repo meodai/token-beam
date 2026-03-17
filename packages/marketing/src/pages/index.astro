@@ -38,11 +38,11 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
       <section class="hero">
         <canvas id="hero-canvas" class="hero__canvas"></canvas>
         <div class="container">
-          <div class="badge">Built on the W3C Design Tokens Spec</div>
-          <h1>Sync any website<br/>with any design tool</h1>
+          <div class="badge">Free &amp; Open Source</div>
+          <h1>Sync colors live<br/>between any tools</h1>
           <p class="hero-text">
-            Live design token synchronization. Push <strong>colors</strong> and <strong>variables</strong> from any website
-            to <strong>Figma</strong>, <strong>Blender</strong>, <strong>Aseprite</strong> and more &mdash; instantly. One protocol, every tool.
+            Pick <strong>colors</strong> on a website, see them appear in <strong>Figma</strong>, <strong>Blender</strong>,
+            <strong>Aseprite</strong> and more &mdash; instantly. No exports, no copy-pasting. Just connect and create.
           </p>
           <div class="hero-buttons">
             <a href="#plugins" class="btn btn--primary">Get Your Plugin</a>
@@ -217,7 +217,7 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
       <section class="plugins" id="plugins">
         <div class="container">
           <h2>Supported Design Tools</h2>
-          <p class="section-intro">Install the plugin for your tool. Paste the session token. That's it.</p>
+          <p class="section-intro">Grab the free plugin for your favorite tool. One click install, works right away.</p>
           <div class="plugins__grid">
             <a href="https://www.figma.com/community/plugin/888-token-beam" class="plugins__card" target="_blank" rel="noreferrer">
               <h3>Figma <img src="/icons/figma.svg" class="plugins__icon" alt="" /></h3>
@@ -256,7 +256,7 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
       <section class="websites" id="websites">
         <div class="container">
           <h2>Websites Using Token Beam</h2>
-          <p class="section-intro">Web apps can <strong>send</strong> tokens to design tools, <strong>receive</strong> them back, or both &mdash; turning any website into a live bridge between code and design.</p>
+          <p class="section-intro">These apps already support Token Beam. Some <strong>send</strong> palettes to your tools, others <strong>receive</strong> them &mdash; or both. Pick one and start syncing.</p>
           <div class="websites__grid">
             <a href="https://meodai.github.io/poline/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>poline</h3>
@@ -343,18 +343,18 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
             </div>
 
             <div class="features__card">
-              <h3>Open Source &amp; Free</h3>
+              <h3>100% Free</h3>
               <p>
-                All plugins are MIT-licensed and free forever. The server is open source too &mdash;
-                self-host it or use ours.
+                Every plugin is free and always will be. No premium tiers, no feature locks,
+                no subscriptions. Just install and go.
               </p>
             </div>
 
             <div class="features__card">
-              <h3>Built on Open Standards</h3>
+              <h3>Open Source</h3>
               <p>
-                Uses the W3C Design Tokens format under the hood. Your colors travel as a universal format
-                that any tool can understand.
+                Everything is open source. The plugins, the server, the libraries &mdash;
+                built in the open, for the community.
               </p>
             </div>
           </div>
@@ -364,7 +364,7 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
       <section class="developers" id="developers">
         <div class="container">
           <h2>For Developers</h2>
-          <p class="section-intro">Add real-time design token sync to your website or tool in a few lines of code. The <code>token-beam</code> library is MIT-licensed.</p>
+          <p class="section-intro">Add real-time color sync to your website in a few lines of code. Built on the W3C Design Tokens spec. The <code>token-beam</code> library is MIT-licensed.</p>
           <div class="developers__tabs">
             <button class="developers__tab is-active" data-tab="send">Send</button>
             <button class="developers__tab" data-tab="receive">Receive</button>
@@ -416,7 +416,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       <section class="pricing" id="pricing">
         <div class="container">
           <h2>Server Plans</h2>
-          <p class="section-intro">Designers and end users always free. These plans are for developers hosting sync infrastructure.</p>
+          <p class="section-intro">Using Token Beam is always free. These plans are only for companies running their own sync server.</p>
           <div class="pricing__grid">
             <div class="pricing__card">
               <h3>Free</h3>
@@ -492,15 +492,15 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     :root {
       --white: #fff;
-      --black: #292f2f;
+      --black: #1a1f1f;
       --text: light-dark(var(--black), var(--white));
       --bg: light-dark(var(--white), var(--black));
       --line: color-mix(in lab, var(--text) 18%, var(--bg));
       --ease: cubic-bezier(0.3, 0.7, 0, 1);
       --success: #1b8a2d;
       --interactive: tomato;
-      --text-muted: color-mix(in lab, var(--text) 50%, var(--bg));
-      --text-subtle: color-mix(in lab, var(--text) 30%, var(--bg));
+      --text-muted: color-mix(in lab, var(--text) 75%, var(--bg));
+      --text-subtle: color-mix(in lab, var(--text) 50%, var(--bg));
       --dot: color-mix(in lab, var(--text) 40%, var(--bg));
       --dot-r: .5px;
       --dot-space: 5px;
