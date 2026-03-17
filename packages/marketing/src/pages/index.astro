@@ -211,32 +211,32 @@ const description = 'Real-time design token synchronization between web and desi
           <p class="section-intro">Install the plugin for your tool. Paste the session token. That's it.</p>
           <div class="plugins__grid">
             <a href="https://www.figma.com/community/plugin/888-token-beam" class="plugins__card" target="_blank" rel="noreferrer">
-              <h3>Figma</h3>
+              <h3>Figma <img src="/icons/figma.svg" class="plugins__icon" alt="" /></h3>
               <p>Sync colors directly into Figma Variables.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://github.com/nicolecomputer/token-beam-for-sketch" class="plugins__card" target="_blank" rel="noreferrer">
-              <h3>Sketch</h3>
+              <h3>Sketch <img src="/icons/sketch.svg" class="plugins__icon" alt="" /></h3>
               <p>Update your color palettes and document swatches in real time.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://github.com/meodai/token-beam/tree/main/packages/krita-plugin" class="plugins__card" target="_blank" rel="noreferrer">
-              <h3>Krita</h3>
+              <h3>Krita <img src="/icons/krita.svg" class="plugins__icon" alt="" /></h3>
               <p>Receive palettes straight into your painting workspace.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://meodai.itch.io/token-beam" class="plugins__card" target="_blank" rel="noreferrer">
-              <h3>Aseprite</h3>
+              <h3>Aseprite <img src="/icons/aseprite.svg" class="plugins__icon" alt="" /></h3>
               <p>Receive or send palettes. Visualize your color choices in real time while tweaking shaders or generators.</p>
               <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://github.com/meodai/token-beam/tree/main/packages/blender-plugin" class="plugins__card" target="_blank" rel="noreferrer">
-              <h3>Blender</h3>
+              <h3>Blender <img src="/icons/blender.svg" class="plugins__icon" alt="" /></h3>
               <p>Push colors into your 3D materials and scene lighting.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://github.com/nicolecomputer/token-beam-for-xd" class="plugins__card" target="_blank" rel="noreferrer">
-              <h3>Adobe XD</h3>
+              <h3>Adobe XD <img src="/icons/adobexd.svg" class="plugins__icon" alt="" /></h3>
               <p>Sync tokens into your XD design libraries and assets.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
@@ -302,18 +302,10 @@ const description = 'Real-time design token synchronization between web and desi
           <h2>Why ⊷ Token Beam?</h2>
           <div class="features__grid">
             <div class="features__card">
-              <h3>W3C Spec Compliant</h3>
+              <h3>See Changes Instantly</h3>
               <p>
-                Built on the W3C Design Tokens Community Group specification. Generic, tool-agnostic token format
-                that works everywhere.
-              </p>
-            </div>
-
-            <div class="features__card">
-              <h3>Real-Time Sync</h3>
-              <p>
-                WebSocket-based synchronization. Changes on your website appear instantly in Figma.
-                No manual exports, no plugin updates required.
+                Tweak a color on your website and watch it update in Figma, Blender, or Aseprite in real time.
+                No exporting, no copy-pasting hex codes.
               </p>
             </div>
 
@@ -326,26 +318,34 @@ const description = 'Real-time design token synchronization between web and desi
             </div>
 
             <div class="features__card">
-              <h3>Token-Based Pairing</h3>
+              <h3>No Accounts Needed</h3>
               <p>
-                Simple <code>beam://</code> tokens for connecting clients. No accounts, no OAuth, no complexity.
-                Just copy-paste and sync.
+                Simple <code>beam://</code> tokens connect your tools. No sign-up, no login, no third-party services.
+                Just copy-paste and you're syncing.
               </p>
             </div>
 
             <div class="features__card">
-              <h3>Production Ready</h3>
+              <h3>Works Both Ways</h3>
               <p>
-                Session management, auto-cleanup, reconnection with exponential backoff, rate limiting.
-                Built for real workloads.
+                Send colors from a generator to your design tool &mdash; or push a palette from Aseprite
+                back to a web app. The connection goes in both directions.
               </p>
             </div>
 
             <div class="features__card">
-              <h3>Self-Hosted</h3>
+              <h3>Open Source &amp; Free</h3>
               <p>
-                Run your own sync server. Complete control over your infrastructure. AGPL-3.0 for open source,
-                commercial license available.
+                All plugins are MIT-licensed and free forever. The server is open source too &mdash;
+                self-host it or use ours.
+              </p>
+            </div>
+
+            <div class="features__card">
+              <h3>Built on Open Standards</h3>
+              <p>
+                Uses the W3C Design Tokens format under the hood. Your colors travel as a universal format
+                that any tool can understand.
               </p>
             </div>
           </div>
@@ -928,6 +928,19 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .plugins__card::after {
       content: none !important;
+    }
+
+    .plugins__card h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .plugins__icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.5;
+      margin-left: auto;
     }
 
     .plugins__card p {
