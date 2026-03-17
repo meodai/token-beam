@@ -1,3 +1,9 @@
+## [1.20.4](https://github.com/meodai/token-beam/compare/v1.20.3...v1.20.4) (2026-03-17)
+
+### Bug Fixes
+
+- **demo:** output hex colors for plugin compatibility ([7d750ec](https://github.com/meodai/token-beam/commit/7d750ec7e6f9fa0333ab4a830703276196a3cb0d))
+
 ## [1.20.3](https://github.com/meodai/token-beam/compare/v1.20.2...v1.20.3) (2026-03-17)
 
 ### Bug Fixes
