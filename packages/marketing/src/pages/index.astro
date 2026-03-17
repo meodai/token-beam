@@ -21,7 +21,11 @@ const description =
   <body>
     <header>
       <div class="container header-content">
-        <a href="/" class="logo"><span class="logo__icon" aria-hidden="true">⊷</span> Token Beam</a>
+        <a href="/" class="logo"
+          ><span class="logo__part">Token</span>
+          <span class="logo__icon" aria-hidden="true">⊷</span>
+          <span class="logo__part">Beam</span></a
+        >
         <nav>
           <a href="#demo">Demo</a>
           <a href="#plugins">Plugins</a>
@@ -1071,15 +1075,26 @@ session.connect();`}
       text-decoration: none;
       text-transform: uppercase;
       letter-spacing: 0.12em;
+      overflow: hidden;
+
+      &:hover {
+        color: var(--text);
+      }
     }
 
     .logo__icon {
-      font-size: 1.3em;
-      line-height: 1;
+      display: inline-block;
+      font-size: 3em;
+      margin-inline: -0.2em;
+      line-height: 0.5;
+      left: -0.09em;
+      transform: translateY(31%);
+      color: var(--interactive);
+      transition: transform 0.4s var(--ease);
     }
 
-    .logo::after {
-      content: none !important;
+    .logo:hover .logo__icon {
+      transform: translateY(52%) translateX(-5%) rotate(-180deg);
     }
 
     nav {
