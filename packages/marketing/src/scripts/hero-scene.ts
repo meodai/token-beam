@@ -113,12 +113,54 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     return merged;
   }
 
+  // Biconic: two cones tip-to-tip with a gap
+  function makeBiconic(): THREE.BufferGeometry {
+    const gap = 0.06;
+    const geos: THREE.BufferGeometry[] = [];
+    // Top cone pointing down
+    const top = new THREE.ConeGeometry(0.5, 0.5, 8, 3).toNonIndexed();
+    const topPos = top.getAttribute('position');
+    for (let i = 0; i < topPos.count; i++) {
+      topPos.setY(i, topPos.getY(i) + 0.25 + gap / 2);
+    }
+    geos.push(top);
+    // Bottom cone pointing up (flipped)
+    const bot = new THREE.ConeGeometry(0.5, 0.5, 8, 3).toNonIndexed();
+    const botPos = bot.getAttribute('position');
+    const botNorm = bot.getAttribute('normal');
+    for (let i = 0; i < botPos.count; i++) {
+      botPos.setY(i, -botPos.getY(i) - 0.25 - gap / 2);
+      botNorm.setY(i, -botNorm.getY(i));
+    }
+    geos.push(bot);
+    return mergeBufferGeometries(geos);
+  }
+
+  // Double cylinder: two halves with a gap
+  function makeDoubleCylinder(): THREE.BufferGeometry {
+    const gap = 0.06;
+    const geos: THREE.BufferGeometry[] = [];
+    const topCyl = new THREE.CylinderGeometry(0.4, 0.4, 0.4, 12, 3).toNonIndexed();
+    const topPos = topCyl.getAttribute('position');
+    for (let i = 0; i < topPos.count; i++) {
+      topPos.setY(i, topPos.getY(i) + 0.2 + gap / 2);
+    }
+    geos.push(topCyl);
+    const botCyl = new THREE.CylinderGeometry(0.4, 0.4, 0.4, 12, 3).toNonIndexed();
+    const botPos = botCyl.getAttribute('position');
+    for (let i = 0; i < botPos.count; i++) {
+      botPos.setY(i, botPos.getY(i) - 0.2 - gap / 2);
+    }
+    geos.push(botCyl);
+    return mergeBufferGeometries(geos);
+  }
+
   const geometries = [
     () => makeSegmentedBox(),
     () => new THREE.SphereGeometry(0.5, 12, 8),
+    () => makeBiconic(),
+    () => makeDoubleCylinder(),
     () => new THREE.ConeGeometry(0.5, 1, 8, 3), // pyramid
-    () => new THREE.CylinderGeometry(0.4, 0.4, 0.9, 12, 3),
-    () => new THREE.ConeGeometry(0.5, 1, 12, 3), // cone
   ];
 
   const nodes: ShapeNode[] = [];
