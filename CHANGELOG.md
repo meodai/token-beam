@@ -1,3 +1,9 @@
+## [1.20.5](https://github.com/meodai/token-beam/compare/v1.20.4...v1.20.5) (2026-03-17)
+
+### Bug Fixes
+
+- **demo:** update demo instructions for token usage and color regeneration ([176fc41](https://github.com/meodai/token-beam/commit/176fc411fa7cc1328e097c3fe9033baffdf8d144))
+
 ## [1.20.4](https://github.com/meodai/token-beam/compare/v1.20.3...v1.20.4) (2026-03-17)
 
 ### Bug Fixes
