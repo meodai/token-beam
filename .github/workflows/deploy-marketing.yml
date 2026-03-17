@@ -30,20 +30,15 @@ jobs:
       - name: Build marketing site
         run: npm run build:marketing
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HETZNER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.HETZNER_HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploy to Hetzner
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.HETZNER_HOST }}
-          username: root
-          key: ${{ secrets.HETZNER_SSH_KEY }}
-          source: packages/marketing/dist/*
-          target: /opt/token-beam-marketing
-          strip_components: 3
+        run: rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key" packages/marketing/dist/ root@${{ secrets.HETZNER_HOST }}:/opt/token-beam-marketing/
 
       - name: Reload Nginx
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HETZNER_HOST }}
-          username: root
-          key: ${{ secrets.HETZNER_SSH_KEY }}
-          script: nginx -t && systemctl reload nginx
+        run: ssh -i ~/.ssh/deploy_key root@${{ secrets.HETZNER_HOST }} "nginx -t && systemctl reload nginx"
