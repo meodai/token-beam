@@ -4,8 +4,26 @@ const COLORS = ['#ff6347', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'
 const SHAPE_COUNT = 14;
 const TOKEN_SPEED = 0.6;
 
+const BEAM_LABELS = [
+  'beam://F4A1C3',
+  'beam://3B82F6',
+  'beam://10B981',
+  'beam://F59E0B',
+  'beam://8B5CF6',
+  'beam://EC4899',
+  'beam://2DD4BF',
+  'beam://A78BFA',
+  'beam://FB923C',
+  'beam://34D399',
+  'beam://F87171',
+  'beam://60A5FA',
+  'beam://C084FC',
+  'beam://FBBF24',
+];
+
 interface ShapeNode {
   mesh: THREE.Mesh;
+  outline: THREE.Mesh;
   originalColor: THREE.Color;
   lit: boolean;
   litTime: number;
@@ -53,47 +71,140 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   // Create abstract shapes at random positions
   const geometries = [
     () => new THREE.BoxGeometry(0.8, 0.8, 0.8),
-    () => new THREE.ConeGeometry(0.5, 1, 6),
-    () => new THREE.CylinderGeometry(0.4, 0.4, 0.9, 8),
-    () => new THREE.OctahedronGeometry(0.5),
-    () => new THREE.TetrahedronGeometry(0.6),
-    () => new THREE.TorusGeometry(0.4, 0.15, 8, 16),
-    () => new THREE.DodecahedronGeometry(0.45),
+    () => new THREE.SphereGeometry(0.5, 6, 4),
+    () => new THREE.ConeGeometry(0.5, 1, 4), // pyramid
+    () => new THREE.CylinderGeometry(0.4, 0.4, 0.9, 6),
+    () => new THREE.ConeGeometry(0.5, 1, 6), // cone
   ];
 
   const nodes: ShapeNode[] = [];
-  const spread = 6;
+  const MIN_DISTANCE = 3.5;
+
+  function findPosition(existing: THREE.Vector3[]): THREE.Vector3 {
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 3 + Math.random() * 8;
+      const pos = new THREE.Vector3(
+        Math.cos(angle) * radius + (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 1.5,
+        Math.sin(angle) * radius + (Math.random() - 0.5) * 2,
+      );
+      if (existing.every((p) => p.distanceTo(pos) >= MIN_DISTANCE)) return pos;
+    }
+    return new THREE.Vector3(Math.random() * 16 - 8, 0, Math.random() * 16 - 8);
+  }
+
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const placedPositions: THREE.Vector3[] = [];
 
   for (let i = 0; i < SHAPE_COUNT; i++) {
     const geo = geometries[i % geometries.length]();
     const mesh = new THREE.Mesh(geo, wireMat.clone());
 
-    // Spread shapes in a rough grid with jitter
-    const angle = (i / SHAPE_COUNT) * Math.PI * 2;
-    const radius = 1.5 + Math.random() * spread;
-    mesh.position.set(
-      Math.cos(angle) * radius + (Math.random() - 0.5) * 2,
-      (Math.random() - 0.5) * 1.5,
-      Math.sin(angle) * radius + (Math.random() - 0.5) * 2,
-    );
-    mesh.rotation.set(
-      Math.random() * Math.PI,
-      Math.random() * Math.PI,
-      Math.random() * Math.PI,
-    );
+    const pos = findPosition(placedPositions);
+    placedPositions.push(pos);
+    mesh.position.copy(pos);
+    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
     mesh.scale.setScalar(0.8 + Math.random() * 0.8);
+
+    // Cel-shading outline
+    const outlineMat = new THREE.MeshBasicMaterial({
+      color: isDark ? 0xffffff : 0x292f2f,
+      side: THREE.BackSide,
+    });
+    const outline = new THREE.Mesh(geo.clone(), outlineMat);
+    outline.position.copy(mesh.position);
+    outline.rotation.copy(mesh.rotation);
+    outline.scale.copy(mesh.scale).multiplyScalar(1.04);
+    scene.add(outline);
 
     scene.add(mesh);
     nodes.push({
       mesh,
+      outline,
       originalColor: new THREE.Color(0x292f2f),
       lit: false,
       litTime: 0,
     });
   }
 
+  // Labels
+  function createSpriteLabel(text: string, isDark: boolean): THREE.Sprite {
+    const canvas2d = document.createElement('canvas');
+    canvas2d.width = 256;
+    canvas2d.height = 28;
+    const ctx = canvas2d.getContext('2d')!;
+    ctx.font = '13px monospace';
+    const metrics = ctx.measureText(text);
+    const pad = 6;
+    const bgW = metrics.width + pad * 2;
+    ctx.fillStyle = isDark ? '#ffffff' : '#292f2f';
+    ctx.fillRect(0, 2, bgW, 22);
+    ctx.fillStyle = isDark ? '#000000' : '#ffffff';
+    ctx.fillText(text, pad, 18);
+    const tex = new THREE.CanvasTexture(canvas2d);
+    tex.minFilter = THREE.LinearFilter;
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    const sprite = new THREE.Sprite(mat);
+    sprite.scale.set(0.8, 0.1, 1);
+    sprite.renderOrder = 1;
+    return sprite;
+  }
+
+  // Static beam:// labels on shapes
+  nodes.forEach((node, i) => {
+    const label = createSpriteLabel(BEAM_LABELS[i % BEAM_LABELS.length], isDark);
+    label.position.copy(node.mesh.position);
+    label.position.y -= 0.7;
+    scene.add(label);
+  });
+
+  // Floating token label that follows the ball
+  const TOKEN_LABELS = [
+    'color.primary',
+    'color.accent',
+    'color.surface',
+    'spacing.md',
+    'radius.lg',
+    'color.bg',
+    'font.body',
+    'shadow.sm',
+    'color.border',
+    'opacity.muted',
+    'size.icon',
+    'color.success',
+    'weight.bold',
+    'color.warning',
+  ];
+
+  function createTokenLabel(text: string, isDark: boolean) {
+    const canvas2d = document.createElement('canvas');
+    canvas2d.width = 256;
+    canvas2d.height = 32;
+    const ctx = canvas2d.getContext('2d')!;
+    const tex = new THREE.CanvasTexture(canvas2d);
+    tex.minFilter = THREE.LinearFilter;
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+    const sprite = new THREE.Sprite(mat);
+    sprite.scale.set(0.8, 0.1, 1);
+
+    function update(label: string, dark: boolean) {
+      ctx.clearRect(0, 0, 256, 32);
+      ctx.font = '14px monospace';
+      ctx.fillStyle = dark ? '#ffffff' : '#292f2f';
+      ctx.fillText(label, 4, 18);
+      tex.needsUpdate = true;
+    }
+
+    update(text, isDark);
+    return { sprite, update };
+  }
+
+  const floatingLabel = createTokenLabel(TOKEN_LABELS[0], isDark);
+  scene.add(floatingLabel.sprite);
+
   // Token sphere
-  const tokenGeo = new THREE.SphereGeometry(0.2, 16, 16);
+  const tokenGeo = new THREE.SphereGeometry(0.12, 16, 16);
   const tokenMat = new THREE.MeshStandardMaterial({
     color: 0xff6347,
     emissive: 0xff6347,
@@ -109,7 +220,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   const pathMat = new THREE.LineBasicMaterial({
     color: 0xff6347,
     transparent: true,
-    opacity: 0.15,
+    opacity: 0.6,
   });
   const pathLine = new THREE.Line(pathGeo, pathMat);
   scene.add(pathLine);
@@ -164,7 +275,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     // Move token along path
     const from = nodes[currentTarget].mesh.position;
     const to = nodes[nextTarget].mesh.position;
-    progress += TOKEN_SPEED * 0.016 / from.distanceTo(to);
+    progress += (TOKEN_SPEED * 0.016) / from.distanceTo(to);
 
     if (progress >= 1) {
       // Arrived — light up the shape
@@ -179,9 +290,10 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
       node.lit = true;
       node.litTime = time;
 
-      // Update token color
+      // Update token color and floating label
       colorIndex++;
       const nextColor = new THREE.Color(COLORS[colorIndex % COLORS.length]);
+      floatingLabel.update(TOKEN_LABELS[colorIndex % TOKEN_LABELS.length], darkQuery.matches);
       tokenMat.color.copy(nextColor);
       tokenMat.emissive.copy(nextColor);
       pathMat.color.copy(nextColor);
@@ -193,10 +305,13 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     }
 
     // Interpolate token position with ease-in-out
-    const eased = progress < 0.5
-      ? 4 * progress * progress * progress
-      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+    const eased =
+      progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
     token.position.lerpVectors(from, to, eased);
+
+    // Label follows the ball
+    floatingLabel.sprite.position.copy(token.position);
+    floatingLabel.sprite.position.y -= 0.25;
 
     // Draw path line from source to target, fade out as token approaches
     pathPositions[0] = from.x;
@@ -208,10 +323,11 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     pathGeo.attributes.position.needsUpdate = true;
     pathMat.opacity = 0.6 * (1 - eased);
 
-    // Gentle shape rotation
+    // Gentle shape rotation — keep outline in sync
     nodes.forEach((n) => {
       n.mesh.rotation.y += 0.003;
       n.mesh.rotation.x += 0.001;
+      n.outline.rotation.copy(n.mesh.rotation);
     });
 
     // Camera smoothly follows token

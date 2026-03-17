@@ -647,7 +647,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     header {
       padding: 1.5rem 0;
       border-bottom: 1px solid var(--line);
-      background: var(--dot-pattern), var(--bg);
+      background: var(--bg);
     }
 
     .header-content {
@@ -700,7 +700,17 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       text-align: left;
       position: relative;
       overflow: hidden;
+      background: var(--dot-pattern), var(--bg);
     }
+
+    /* .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(to right, var(--bg) 20%, transparent 70%);
+    } */
 
     .hero__canvas {
       position: absolute;
@@ -732,7 +742,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .hero .container {
       max-width: 100%;
-      padding: 0 1.5rem;
+      padding: 0 6rem;
     }
 
     .hero h1,
@@ -753,6 +763,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       margin-bottom: 2rem;
       color: currentColor;
       opacity: 0.7;
+      background: var(--bg);
     }
 
     .hero-text {
