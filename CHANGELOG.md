@@ -1,3 +1,9 @@
+# [1.28.0](https://github.com/meodai/token-beam/compare/v1.27.0...v1.28.0) (2026-03-17)
+
+### Features
+
+- add browser extension for Token Beam ([4b250b6](https://github.com/meodai/token-beam/commit/4b250b6fba844f89ab6cf54362a81fb494ca3757))
+
 # [1.27.0](https://github.com/meodai/token-beam/compare/v1.26.0...v1.27.0) (2026-03-17)
 
 ### Features
