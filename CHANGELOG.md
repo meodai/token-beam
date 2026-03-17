@@ -1,3 +1,9 @@
+## [1.20.1](https://github.com/meodai/token-beam/compare/v1.20.0...v1.20.1) (2026-03-17)
+
+### Bug Fixes
+
+- **ci:** use rsync instead of scp-action for marketing deploy ([09f1e32](https://github.com/meodai/token-beam/commit/09f1e3204dba2151a5277a5950e7bdcbad72f24b))
+
 # [1.20.0](https://github.com/meodai/token-beam/compare/v1.19.0...v1.20.0) (2026-03-17)
 
 ### Features
