@@ -495,17 +495,19 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       --black: #292f2f;
       --text: light-dark(var(--black), var(--white));
       --bg: light-dark(var(--white), var(--black));
-      --line: color-mix(in lab, currentColor 18%, var(--bg));
+      --line: color-mix(in lab, var(--text) 18%, var(--bg));
       --ease: cubic-bezier(0.3, 0.7, 0, 1);
       --success: #1b8a2d;
       --interactive: tomato;
-      --dot: var(--text);
+      --text-muted: color-mix(in lab, var(--text) 50%, var(--bg));
+      --text-subtle: color-mix(in lab, var(--text) 30%, var(--bg));
+      --dot: color-mix(in lab, var(--text) 40%, var(--bg));
       --dot-r: .5px;
       --dot-space: 5px;
       --dot-pattern:
-        radial-gradient(circle, var(--dot) var(--dot-r), transparent var(--dot-r))
+        radial-gradient(circle, var(--dot) var(--dot-r), var(--bg) var(--dot-r))
           0 0 / var(--dot-space) var(--dot-space),
-        radial-gradient(circle, var(--dot) var(--dot-r), transparent var(--dot-r))
+        radial-gradient(circle, var(--dot) var(--dot-r), var(--bg) var(--dot-r))
           calc(var(--dot-space) / 2) calc(var(--dot-space) / 2) / var(--dot-space) var(--dot-space);
     }
 
@@ -583,7 +585,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       display: inline-block;
       margin-left: 0.15em;
       font-size: 0.85em;
-      opacity: 0.5;
+      color: var(--text-muted);
     }
 
     code {
@@ -597,7 +599,6 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     strong {
       font-weight: 600;
-      opacity: 1;
       color: var(--text);
     }
 
@@ -627,7 +628,6 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     .btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 2px 0 0 currentColor;
-      opacity: 1;
     }
 
     .btn:active {
@@ -681,7 +681,6 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     }
 
     .logo:hover {
-      opacity: 1;
     }
 
     .logo::after {
@@ -739,7 +738,6 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
       .hero__canvas {
         width: 100%;
-        opacity: 0.3;
       }
     }
 
@@ -772,15 +770,14 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       text-transform: uppercase;
       letter-spacing: 0.06em;
       margin-bottom: 2rem;
-      color: currentColor;
-      opacity: 0.7;
+      color: var(--text-muted);
       background: var(--bg);
     }
 
     .hero-text {
       font-size: 1.1rem;
       font-weight: 300;
-      opacity: 0.7;
+      color: var(--text-muted);
       margin: 0 0 2.5rem;
       text-align: left;
     }
@@ -827,7 +824,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     .section-intro {
       text-align: center;
       font-size: 0.95rem;
-      opacity: 0.7;
+      color: var(--text-muted);
       margin-bottom: 2.5rem;
     }
 
@@ -852,12 +849,12 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       font-size: 1.5rem;
       line-height: 1;
       flex-shrink: 0;
-      opacity: 0.3;
+      color: var(--text-subtle);
     }
 
     .demo__step-text {
       font-size: 0.95rem;
-      opacity: 0.7;
+      color: var(--text-muted);
       margin: 0;
     }
 
@@ -896,7 +893,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       font-size: 0.65rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      opacity: 0.5;
+      color: var(--text-muted);
     }
 
     .demo__widget-wrap {
@@ -934,7 +931,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .plugins__card:hover {
       background: var(--line);
-      opacity: 1;
+
     }
 
     .plugins__card::after {
@@ -950,13 +947,13 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     .plugins__icon {
       width: 18px;
       height: 18px;
-      opacity: 0.5;
+      color: var(--text-muted);
       margin-left: auto;
     }
 
     .plugins__card p {
       font-size: 0.8rem;
-      opacity: 0.6;
+      color: var(--text-muted);
       margin: 0;
     }
 
@@ -986,7 +983,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .websites__card:hover {
       background: var(--line);
-      opacity: 1;
+
     }
 
     .websites__card::after {
@@ -995,7 +992,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .websites__card p {
       font-size: 0.8rem;
-      opacity: 0.6;
+      color: var(--text-muted);
       margin: 0;
     }
 
@@ -1036,7 +1033,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .websites__card--cta {
       border-left: 2px solid currentColor;
-      opacity: 0.6;
+      color: var(--text-muted);
     }
 
     /* --- Developers Section --- */
@@ -1091,7 +1088,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       letter-spacing: 0.08em;
       cursor: pointer;
       color: var(--text);
-      opacity: 0.5;
+      color: var(--text-muted);
       transition: opacity 0.2s var(--ease);
     }
 
@@ -1101,11 +1098,11 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .developers__tab.is-active {
       background: var(--bg);
-      opacity: 1;
+
     }
 
     .developers__tab:hover {
-      opacity: 0.8;
+
     }
 
     .developers__links {
@@ -1135,7 +1132,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .features__card p {
       font-size: 0.85rem;
-      opacity: 0.7;
+      color: var(--text-muted);
       line-height: 1.6;
     }
 
@@ -1188,7 +1185,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .pricing__detail {
       font-size: 0.75rem;
-      opacity: 0.5;
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.06em;
       margin-bottom: 1.5rem;
@@ -1208,14 +1205,14 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       padding-left: 1.2rem;
       position: relative;
       font-size: 0.85rem;
-      opacity: 0.8;
+
     }
 
     .pricing__card li::before {
       content: '+';
       position: absolute;
       left: 0;
-      opacity: 0.4;
+      color: var(--text-subtle);
       font-weight: 400;
     }
 
@@ -1223,7 +1220,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       text-align: center;
       margin-top: 2.5rem;
       font-size: 0.85rem;
-      opacity: 0.6;
+      color: var(--text-muted);
     }
 
     .pricing__note p + p {
@@ -1241,7 +1238,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       border-top: 1px solid var(--line);
       text-align: center;
       font-size: 0.8rem;
-      opacity: 0.5;
+      color: var(--text-muted);
     }
 
     footer a {
