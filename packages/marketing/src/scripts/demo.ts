@@ -16,6 +16,18 @@ const SYNC_SERVER_HTTP = 'https://tokenbeam.dev';
 
 // --- Color generation with rampensau ---
 
+function hslToHex(h: number, s: number, l: number): string {
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * Math.max(0, Math.min(1, color)))
+      .toString(16)
+      .padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
 function generateRamp(): { name: string; colors: Record<string, string> } {
   const hStart = Math.random() * 360;
   const hCycles = (Math.random() - 0.5) * 1.5;
@@ -31,7 +43,7 @@ function generateRamp(): { name: string; colors: Record<string, string> } {
   });
 
   ramp.forEach((color, i) => {
-    colors[String(steps[i])] = colorUtils.colorToCSS(color, 'oklch');
+    colors[String(steps[i])] = hslToHex(color[0], color[1], color[2]);
   });
 
   return { name: 'token-beam-demo', colors };
