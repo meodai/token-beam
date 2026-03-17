@@ -26,7 +26,7 @@ const description = 'Real-time design token synchronization between web and desi
           <a href="#demo">Demo</a>
           <a href="#plugins">Plugins</a>
           <a href="#developers">Developers</a>
-          <a href="#pricing">Pricing</a>
+          <a href="#pricing">Server Plans</a>
           <a href="https://github.com/meodai/token-beam">GitHub</a>
         </nav>
       </div>
@@ -42,7 +42,7 @@ const description = 'Real-time design token synchronization between web and desi
             to Figma, Sketch, Aseprite &mdash; instantly. One protocol, every tool.
           </p>
           <div class="hero-buttons">
-            <a href="#pricing" class="btn btn--primary">Get Started</a>
+            <a href="#demo" class="btn btn--primary">Try the Demo</a>
             <a href="https://github.com/meodai/token-beam" class="btn">View Docs</a>
           </div>
         </div>
@@ -194,22 +194,42 @@ const description = 'Real-time design token synchronization between web and desi
         <div class="container">
           <h2>Websites Using Token Beam</h2>
           <div class="websites__grid">
+            <a href="https://meodai.github.io/poline/" class="websites__card" target="_blank" rel="noreferrer">
+              <h3>poline</h3>
+              <p>Esoteric color palette generator using polar coordinates.</p>
+            </a>
             <a href="https://farbvelo.elastiq.ch" class="websites__card" target="_blank" rel="noreferrer">
               <h3>farbvelo</h3>
               <p>Generative color palette tool. Sync palettes to any design app.</p>
-            </a>
-            <a href="https://okpalette.app" class="websites__card" target="_blank" rel="noreferrer">
-              <h3>OKPalette</h3>
-              <p>Perceptually uniform color palette generator.</p>
             </a>
             <a href="https://meodai.github.io/rampensau/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>rampensau</h3>
               <p>Color ramp generator. Explore and sync parametric color ramps.</p>
             </a>
-            <div class="websites__card websites__card--cta">
+            <a href="https://artbuddy.urlich.ch/rampgrid/" class="websites__card" target="_blank" rel="noreferrer">
+              <h3>rampgrid</h3>
+              <p>Grid-based color ramp explorer by artbuddy.</p>
+            </a>
+            <a href="https://meodai.github.io/color-palette-shader/" class="websites__card" target="_blank" rel="noreferrer">
+              <h3>color-palette-shader</h3>
+              <p>Shader-driven color palette generation and exploration.</p>
+            </a>
+            <a href="https://okpalette.color.pizza/" class="websites__card" target="_blank" rel="noreferrer">
+              <h3>OKPalette</h3>
+              <p>Perceptually uniform color palette generator in OKLab.</p>
+            </a>
+            <a href="https://artbuddy.urlich.ch/artpalette/" class="websites__card" target="_blank" rel="noreferrer">
+              <h3>artpalette</h3>
+              <p>Extract and sync palettes from artwork.</p>
+            </a>
+            <a href="https://artbuddy.urlich.ch/colorgrid/" class="websites__card" target="_blank" rel="noreferrer">
+              <h3>colorgrid</h3>
+              <p>Interactive color grid explorer and palette tool.</p>
+            </a>
+            <a href="https://github.com/meodai/token-beam/issues/new" class="websites__card websites__card--cta" target="_blank" rel="noreferrer">
               <h3>+ Your Website</h3>
-              <p>Add Token Beam to your project in minutes. See the developer section below.</p>
-            </div>
+              <p>Add Token Beam to your project in minutes. Let us know and we'll list you here.</p>
+            </a>
           </div>
         </div>
       </section>
@@ -297,7 +317,7 @@ client.on('paired', () =&gt; client.push(payload));</code></pre>
 
       <section class="pricing" id="pricing">
         <div class="container">
-          <h2>Commercial Infrastructure Pricing</h2>
+          <h2>Server Plans</h2>
           <p class="section-intro">End users never pay. These plans are for website owners who want hosted sync infrastructure.</p>
           <div class="pricing__grid">
             <div class="pricing__card">
@@ -384,6 +404,7 @@ client.on('paired', () =&gt; client.push(payload));</code></pre>
 
     html {
       color-scheme: light dark;
+      scroll-behavior: smooth;
     }
 
     body {
@@ -822,6 +843,8 @@ client.on('paired', () =&gt; client.push(payload));</code></pre>
       padding: 2rem 1.5rem;
       border: 2px solid var(--line);
       margin-left: -2px;
+      display: flex;
+      flex-direction: column;
     }
 
     .pricing__card:first-child {
@@ -853,6 +876,10 @@ client.on('paired', () =&gt; client.push(payload));</code></pre>
       text-transform: uppercase;
       letter-spacing: 0.06em;
       margin-bottom: 1.5rem;
+    }
+
+    .pricing__card .btn {
+      margin-top: auto;
     }
 
     .pricing__card ul {
