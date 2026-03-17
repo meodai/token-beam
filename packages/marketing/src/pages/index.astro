@@ -2,7 +2,7 @@
 import { Code } from 'astro:components';
 import '../styles/widget.css';
 const title = '⊷ Token Beam - W3C Design Token Synchronization';
-const description = 'Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant. MIT-licensed plugins, enterprise sync server.';
+const description = 'Sync colors from any website to Figma, Blender, Aseprite and more — in real time. Free plugins for designers and artists. No accounts, just paste a token and go.';
 ---
 
 <!doctype html>
@@ -643,6 +643,8 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .btn--primary:hover {
       box-shadow: 0 2px 0 0 var(--interactive);
+      background: transparent;
+      color: var(--interactive);
     }
 
     .btn--block {
@@ -705,7 +707,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     /* --- Hero --- */
 
     .hero {
-      padding: 6rem 0 5rem;
+      padding: 12rem 0 10rem;
       text-align: left;
       position: relative;
       overflow: hidden;
