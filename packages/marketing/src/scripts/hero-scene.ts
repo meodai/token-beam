@@ -30,6 +30,8 @@ interface ShapeNode {
   fillColor: THREE.Color | null;
   filledFaces: number;
   totalFaces: number;
+  unfilling: boolean;
+  unfillTime: number;
 }
 
 export function initHeroScene(canvas: HTMLCanvasElement) {
@@ -46,7 +48,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
 
   // Isometric-style camera
   const frustum = 1;
-  const aspect = canvas.clientWidth / canvas.clientHeight;
+  let aspect = canvas.clientWidth / canvas.clientHeight;
   const camera = new THREE.OrthographicCamera(
     -frustum * aspect,
     frustum * aspect,
@@ -70,9 +72,49 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     return new THREE.MeshStandardMaterial({ color });
   }
 
-  // Create abstract shapes at random positions
+  // Segmented cube: 4 smaller cubes in a 2x2 grid with gaps
+  function makeSegmentedBox(): THREE.BufferGeometry {
+    const size = 0.35;
+    const gap = 0.08;
+    const offset = (size + gap) / 2;
+    const geos: THREE.BufferGeometry[] = [];
+
+    for (const x of [-offset, offset]) {
+      for (const y of [-offset, offset]) {
+        for (const z of [-offset, offset]) {
+          const box = new THREE.BoxGeometry(size, size, size, 2, 2, 2).toNonIndexed();
+          const pos = box.getAttribute('position');
+          for (let i = 0; i < pos.count; i++) {
+            pos.setXYZ(i, pos.getX(i) + x, pos.getY(i) + y, pos.getZ(i) + z);
+          }
+          geos.push(box);
+        }
+      }
+    }
+
+    return mergeBufferGeometries(geos);
+  }
+
+  function mergeBufferGeometries(geos: THREE.BufferGeometry[]): THREE.BufferGeometry {
+    const positions: number[] = [];
+    const normals: number[] = [];
+    for (const geo of geos) {
+      const pos = geo.getAttribute('position');
+      const norm = geo.getAttribute('normal');
+      for (let i = 0; i < pos.count; i++) {
+        positions.push(pos.getX(i), pos.getY(i), pos.getZ(i));
+        normals.push(norm.getX(i), norm.getY(i), norm.getZ(i));
+      }
+      geo.dispose();
+    }
+    const merged = new THREE.BufferGeometry();
+    merged.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    merged.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    return merged;
+  }
+
   const geometries = [
-    () => new THREE.BoxGeometry(0.8, 0.8, 0.8, 3, 3, 3),
+    () => makeSegmentedBox(),
     () => new THREE.SphereGeometry(0.5, 12, 8),
     () => new THREE.ConeGeometry(0.5, 1, 8, 3), // pyramid
     () => new THREE.CylinderGeometry(0.4, 0.4, 0.9, 12, 3),
@@ -141,6 +183,8 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
       fillColor: null,
       filledFaces: 0,
       totalFaces,
+      unfilling: false,
+      unfillTime: 0,
     });
   }
 
@@ -256,14 +300,15 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
 
   // Camera offset from token
   const cameraOffset = new THREE.Vector3(12, 10, 12);
-  const cameraLookTarget = new THREE.Vector3();
+  const cameraLookTarget = nodes[0].mesh.position.clone();
 
   function resize() {
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
     const a = w / h;
-    camera.left = -frustum * a;
-    camera.right = frustum * a;
+    aspect = a;
+    camera.left = -frustum * a - frustum * 1.2;
+    camera.right = frustum * a - frustum * 1.2;
     camera.top = frustum;
     camera.bottom = -frustum;
     camera.updateProjectionMatrix();
@@ -293,20 +338,29 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     time += 0.016;
 
     // Move token along path
-    const from = nodes[currentTarget].mesh.position;
-    const to = nodes[nextTarget].mesh.position;
+    let from = nodes[currentTarget].mesh.position;
+    let to = nodes[nextTarget].mesh.position;
     progress += (TOKEN_SPEED * 0.016) / from.distanceTo(to);
 
-    if (progress >= 1) {
-      // Arrived — start filling faces one by one
-      const node = nodes[nextTarget];
-      const color = new THREE.Color(COLORS[colorIndex % COLORS.length]);
-      (node.mesh.material as THREE.MeshStandardMaterial).color.copy(color);
-      node.fillColor = color;
-      node.filledFaces = 0;
-      node.lit = true;
-      node.litTime = time;
+    // Start unfilling the shape we just left
+    const leavingNode = nodes[currentTarget];
+    if (progress > 0.2 && leavingNode.lit && !leavingNode.unfilling) {
+      leavingNode.unfilling = true;
+      leavingNode.unfillTime = time;
+    }
 
+    // Start filling the target shape when ball is close
+    const targetNode = nodes[nextTarget];
+    const currentColor = new THREE.Color(COLORS[colorIndex % COLORS.length]);
+    if (progress > 0.9 && !targetNode.fillColor) {
+      (targetNode.mesh.material as THREE.MeshStandardMaterial).color.copy(currentColor);
+      targetNode.fillColor = currentColor;
+      targetNode.filledFaces = 0;
+      targetNode.litTime = time;
+      targetNode.lit = true;
+    }
+
+    if (progress >= 1) {
       // Update token color and floating label
       colorIndex++;
       const nextColor = new THREE.Color(COLORS[colorIndex % COLORS.length]);
@@ -319,6 +373,10 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
       currentTarget = nextTarget;
       nextTarget = (nextTarget + 1) % nodes.length;
       progress = 0;
+
+      // Re-capture from/to so token doesn't snap back
+      from = nodes[currentTarget].mesh.position;
+      to = nodes[nextTarget].mesh.position;
     }
 
     // Interpolate token position with ease-in-out
@@ -338,7 +396,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     pathPositions[4] = to.y;
     pathPositions[5] = to.z;
     pathGeo.attributes.position.needsUpdate = true;
-    pathLine.visible = progress < 1;
+    pathLine.visible = progress > 0.05 && progress < 1;
 
     // Gentle shape rotation — keep outline in sync
     nodes.forEach((n) => {
@@ -348,22 +406,34 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     });
 
     // Camera smoothly follows token
-    cameraLookTarget.lerp(token.position, 0.02);
+    cameraLookTarget.lerp(token.position, 0.005);
     camera.position.copy(cameraLookTarget).add(cameraOffset);
     camera.lookAt(cameraLookTarget);
-    // Shift the view so the ball appears on the right half
-    camera.left = -frustum * aspect - frustum * 1.2;
-    camera.right = frustum * aspect - frustum * 1.2;
-    camera.updateProjectionMatrix();
 
-    // Reveal faces one by one via drawRange — one face every 50ms
+    // Fill and unfill faces one by one
     nodes.forEach((n) => {
-      if (n.fillColor && n.filledFaces < n.totalFaces) {
+      // Filling in
+      if (n.fillColor && !n.unfilling && n.filledFaces < n.totalFaces) {
         const elapsed = (time - n.litTime) * 1000;
         const expectedFaces = Math.min(Math.floor(elapsed / 5), n.totalFaces);
         if (expectedFaces > n.filledFaces) {
           n.filledFaces = expectedFaces;
           n.mesh.geometry.setDrawRange(0, n.filledFaces * 3);
+        }
+      }
+      // Unfilling after ball leaves
+      if (n.unfilling && n.filledFaces > 0) {
+        const elapsed = (time - n.unfillTime) * 1000;
+        const removedFaces = Math.floor(elapsed / 5);
+        const remaining = Math.max(0, n.totalFaces - removedFaces);
+        if (remaining !== n.filledFaces) {
+          n.filledFaces = remaining;
+          n.mesh.geometry.setDrawRange(0, n.filledFaces * 3);
+        }
+        if (remaining === 0) {
+          n.unfilling = false;
+          n.fillColor = null;
+          n.lit = false;
         }
       }
     });
