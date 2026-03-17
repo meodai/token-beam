@@ -35,6 +35,20 @@
   margin-bottom: 0;
 }
 
+.plugin__hint {
+  margin-top: 4px;
+  font-size: 0.55rem;
+  line-height: 1.4;
+  color: var(--figma-color-text-secondary, #717979);
+  letter-spacing: 0.02em;
+}
+
+.plugin__hint a {
+  color: var(--figma-color-text, #292f2f);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .plugin__connect-wrap {
   margin-top: 0;
 }

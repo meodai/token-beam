@@ -1,14 +1,14 @@
 {
   "name": "token-beam",
-  "id": "figma-sync-dev",
+  "id": "1608421210035923714",
+  "networkAccess": {
+    "allowedDomains": ["wss://tokenbeam.dev"],
+    "reasoning": "sync design tokens in real-time from any web app to variables",
+    "devAllowedDomains": ["*"]
+  },
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "dist/index.html",
   "documentAccess": "dynamic-page",
-  "editorType": ["figma"],
-  "networkAccess": {
-    "allowedDomains": ["none"],
-    "reasoning": "Fetches variable data from user-provided URLs",
-    "devAllowedDomains": ["*"]
-  }
+  "editorType": ["figma"]
 }

@@ -51,7 +51,7 @@ function validatePayload(payload: unknown): payload is FigmaCollectionPayload {
   return true;
 }
 
-figma.showUI(__html__, { width: 320, height: 200, themeColors: true });
+figma.showUI(__html__, { width: 320, height: 220, themeColors: true });
 
 figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === 'sync') {
