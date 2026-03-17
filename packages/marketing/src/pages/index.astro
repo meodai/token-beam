@@ -2,7 +2,8 @@
 import { Code } from 'astro:components';
 import '../styles/widget.css';
 const title = '⊷ Token Beam - Live Color Sync for Figma, Blender, Aseprite & More';
-const description = 'Sync colors from any website to Figma, Blender, Aseprite and more — in real time. Free plugins for designers and artists. No accounts, just paste a token and go.';
+const description =
+  'Sync colors from any website to Figma, Blender, Aseprite and more — in real time. Free plugins for designers and artists. No accounts, just paste a token and go.';
 ---
 
 <!doctype html>
@@ -14,10 +15,7 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
     <meta name="color-scheme" content="light dark" />
     <title>{title}</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/iosevka.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/iosevka.min.css" />
     <link rel="stylesheet" href="/fonts/font-faces.css" />
   </head>
   <body>
@@ -39,10 +37,13 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
         <canvas id="hero-canvas" class="hero__canvas"></canvas>
         <div class="container">
           <div class="badge">Free &amp; Open Source</div>
-          <h1>Sync colors live<br/>between any tools</h1>
+          <h1>Sync colors live<br />between any tools</h1>
           <p class="hero-text">
-            Pick <strong>colors</strong> on a website, see them appear in <strong>Figma</strong>, <strong>Blender</strong>,
-            <strong>Aseprite</strong> and more &mdash; instantly. No exports, no copy-pasting. Just connect and create.
+            Pick <strong>colors</strong> on a website, see them appear in <strong>Figma</strong>, <strong
+              >Blender</strong
+            >,
+            <strong>Aseprite</strong> and more &mdash; instantly. No exports, no copy-pasting. Just connect
+            and create.
           </p>
           <div class="hero-buttons">
             <a href="#plugins" class="btn btn--primary">Get Your Plugin</a>
@@ -53,78 +54,331 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
 
       <section class="diagram">
         <div class="container">
-          <svg class="diagram__svg" viewBox="0 0 800 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Token Beam architecture diagram: any website connects via the beam:// protocol through a sync server to multiple design tools">
+          <svg
+            class="diagram__svg"
+            viewBox="0 0 800 320"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Token Beam architecture diagram: any website connects via the beam:// protocol through a sync server to multiple design tools"
+          >
             <!-- Left: Sources -->
-            <rect x="0" y="20" width="180" height="280" stroke="currentColor" stroke-width="2" fill="none" opacity="0.15"/>
-            <text x="90" y="12" text-anchor="middle" fill="currentColor" font-size="11" font-weight="600" letter-spacing="0.08em" opacity="0.5">ANY SOURCE</text>
+            <rect
+              x="0"
+              y="20"
+              width="180"
+              height="280"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              opacity="0.15"></rect>
+            <text
+              x="90"
+              y="12"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="11"
+              font-weight="600"
+              letter-spacing="0.08em"
+              opacity="0.5">ANY SOURCE</text
+            >
 
-            <rect x="16" y="44" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <text x="90" y="67" text-anchor="middle" fill="currentColor" font-size="12" font-weight="300">Your Website</text>
+            <rect
+              x="16"
+              y="44"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <text
+              x="90"
+              y="67"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Your Website</text
+            >
 
-            <rect x="16" y="96" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <text x="90" y="119" text-anchor="middle" fill="currentColor" font-size="12" font-weight="300">React App</text>
+            <rect
+              x="16"
+              y="96"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <text
+              x="90"
+              y="119"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">React App</text
+            >
 
-            <rect x="16" y="148" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <text x="90" y="171" text-anchor="middle" fill="currentColor" font-size="12" font-weight="300">Design System</text>
+            <rect
+              x="16"
+              y="148"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <text
+              x="90"
+              y="171"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Design System</text
+            >
 
-            <rect x="16" y="200" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <text x="90" y="223" text-anchor="middle" fill="currentColor" font-size="12" font-weight="300">Node.js Script</text>
+            <rect
+              x="16"
+              y="200"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <text
+              x="90"
+              y="223"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Node.js Script</text
+            >
 
-            <rect x="16" y="252" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <text x="90" y="275" text-anchor="middle" fill="currentColor" font-size="12" font-weight="300">Any App</text>
+            <rect
+              x="16"
+              y="252"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <text
+              x="90"
+              y="275"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Any App</text
+            >
 
             <!-- Arrow left to center -->
-            <line x1="196" y1="160" x2="278" y2="160" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-            <polygon points="278,155 288,160 278,165" fill="currentColor" opacity="0.3"/>
+            <line
+              x1="196"
+              y1="160"
+              x2="278"
+              y2="160"
+              stroke="currentColor"
+              stroke-width="1.5"
+              opacity="0.3"></line>
+            <polygon points="278,155 288,160 278,165" fill="currentColor" opacity="0.3"></polygon>
 
             <!-- Center: Protocol + Server -->
-            <rect x="296" y="100" width="208" height="120" stroke="currentColor" stroke-width="2" fill="none"/>
+            <rect
+              x="296"
+              y="100"
+              width="208"
+              height="120"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"></rect>
 
-            <text x="400" y="92" text-anchor="middle" fill="currentColor" font-size="11" font-weight="600" letter-spacing="0.08em" opacity="0.5">⊷ TOKEN BEAM</text>
+            <text
+              x="400"
+              y="92"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="11"
+              font-weight="600"
+              letter-spacing="0.08em"
+              opacity="0.5">⊷ TOKEN BEAM</text
+            >
 
             <!-- beam:// protocol badge -->
-            <rect x="320" y="118" width="160" height="30" fill="currentColor" opacity="1"/>
-            <text x="400" y="138" text-anchor="middle" font-size="14" font-weight="400" letter-spacing="0.06em">
+            <rect x="320" y="118" width="160" height="30" fill="currentColor" opacity="1"></rect>
+            <text
+              x="400"
+              y="138"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="400"
+              letter-spacing="0.06em"
+            >
               <tspan fill="currentColor" class="diagram__proto-text">beam://</tspan>
             </text>
 
             <!-- Server label -->
-            <text x="400" y="174" text-anchor="middle" fill="currentColor" font-size="11" font-weight="300" opacity="0.6">WebSocket Relay Server</text>
+            <text
+              x="400"
+              y="174"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="11"
+              font-weight="300"
+              opacity="0.6">WebSocket Relay Server</text
+            >
 
             <!-- W3C badge -->
-            <text x="400" y="200" text-anchor="middle" fill="currentColor" font-size="10" font-weight="300" opacity="0.4">W3C DTCG Spec</text>
+            <text
+              x="400"
+              y="200"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="10"
+              font-weight="300"
+              opacity="0.4">W3C DTCG Spec</text
+            >
 
             <!-- Arrow center to right -->
-            <line x1="512" y1="160" x2="602" y2="160" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-            <polygon points="602,155 612,160 602,165" fill="currentColor" opacity="0.3"/>
+            <line
+              x1="512"
+              y1="160"
+              x2="602"
+              y2="160"
+              stroke="currentColor"
+              stroke-width="1.5"
+              opacity="0.3"></line>
+            <polygon points="602,155 612,160 602,165" fill="currentColor" opacity="0.3"></polygon>
 
             <!-- Right: Targets -->
-            <rect x="620" y="20" width="180" height="280" stroke="currentColor" stroke-width="2" fill="none" opacity="0.15"/>
-            <text x="710" y="12" text-anchor="middle" fill="currentColor" font-size="11" font-weight="600" letter-spacing="0.08em" opacity="0.5">ANY TARGET</text>
+            <rect
+              x="620"
+              y="20"
+              width="180"
+              height="280"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              opacity="0.15"></rect>
+            <text
+              x="710"
+              y="12"
+              text-anchor="middle"
+              fill="currentColor"
+              font-size="11"
+              font-weight="600"
+              letter-spacing="0.08em"
+              opacity="0.5">ANY TARGET</text
+            >
 
             <!-- Figma -->
-            <rect x="636" y="44" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <g transform="translate(644,52) scale(0.83)"><path fill="currentColor" d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"/></g>
-            <text x="776" y="67" text-anchor="end" fill="currentColor" font-size="12" font-weight="300">Figma</text>
+            <rect
+              x="636"
+              y="44"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <g transform="translate(644,52) scale(0.83)"
+              ><path
+                fill="currentColor"
+                d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"
+              ></path></g
+            >
+            <text
+              x="776"
+              y="67"
+              text-anchor="end"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Figma</text
+            >
 
             <!-- Krita -->
-            <rect x="636" y="96" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <g transform="translate(644,104) scale(0.83)"><path fill="currentColor" d="M.652.76a.625.625 0 00-.5.246c-.352.448-.035.898.362 1.262.206.189 1.77 1.794 3.428 3.527a11.054 11.054 0 011.815-1.983C3.667 2.515 1.694 1.266 1.461 1.1 1.201.914.917.762.652.76zm5.105 3.052c1.848 1.148 3.786 2.332 4.693 2.84 1.469.821 3.758 2.684 4.092 4.434.535.466 2.182 1.916 2.596 2.413.698-.211 1.518.133 2.06 1.12.866 1.583.227 3.747-1.968 4.988a5.42 5.42 0 01-.296.267l.296-.267c1.14-1.468-.714-2.44-1.175-3.864a2.06 2.06 0 01-.11-.78c-.533-.282-2.11-1.452-2.795-1.965-1.801.16-4.207-1.773-5.35-3.08-.7-.802-2.32-2.517-3.858-4.123a11.052 11.052 0 00-2.046 6.393A11.052 11.052 0 1012.948 1.136c-2.64.004-5.19.954-7.19 2.676zm8.71 7.552c-.515.126-.968.831-1.118 1.306-.038.115-.04.303.066.342.802.592 1.556 1.168 2.4 1.7.162-.393.746-.963 1.096-1.2zm-11.53 1.639c.812 1.898 5.798 7.17 12.06 2.695a2.07 2.07 0 00.114.715c.46 1.42 2.36 2.427 1.238 3.89-2.135 1.364-5 1.201-6.989.528-3.558-1.204-5.914-4.332-6.424-7.828zm13.782.7a.771.771 0 00-.065.049c-.004.003-.008.008-.011.008.003-.003.007-.008.01-.008.024-.015.044-.034.066-.048z"/></g>
-            <text x="776" y="119" text-anchor="end" fill="currentColor" font-size="12" font-weight="300">Krita</text>
+            <rect
+              x="636"
+              y="96"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <g transform="translate(644,104) scale(0.83)"
+              ><path
+                fill="currentColor"
+                d="M.652.76a.625.625 0 00-.5.246c-.352.448-.035.898.362 1.262.206.189 1.77 1.794 3.428 3.527a11.054 11.054 0 011.815-1.983C3.667 2.515 1.694 1.266 1.461 1.1 1.201.914.917.762.652.76zm5.105 3.052c1.848 1.148 3.786 2.332 4.693 2.84 1.469.821 3.758 2.684 4.092 4.434.535.466 2.182 1.916 2.596 2.413.698-.211 1.518.133 2.06 1.12.866 1.583.227 3.747-1.968 4.988a5.42 5.42 0 01-.296.267l.296-.267c1.14-1.468-.714-2.44-1.175-3.864a2.06 2.06 0 01-.11-.78c-.533-.282-2.11-1.452-2.795-1.965-1.801.16-4.207-1.773-5.35-3.08-.7-.802-2.32-2.517-3.858-4.123a11.052 11.052 0 00-2.046 6.393A11.052 11.052 0 1012.948 1.136c-2.64.004-5.19.954-7.19 2.676zm8.71 7.552c-.515.126-.968.831-1.118 1.306-.038.115-.04.303.066.342.802.592 1.556 1.168 2.4 1.7.162-.393.746-.963 1.096-1.2zm-11.53 1.639c.812 1.898 5.798 7.17 12.06 2.695a2.07 2.07 0 00.114.715c.46 1.42 2.36 2.427 1.238 3.89-2.135 1.364-5 1.201-6.989.528-3.558-1.204-5.914-4.332-6.424-7.828zm13.782.7a.771.771 0 00-.065.049c-.004.003-.008.008-.011.008.003-.003.007-.008.01-.008.024-.015.044-.034.066-.048z"
+              ></path></g
+            >
+            <text
+              x="776"
+              y="119"
+              text-anchor="end"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Krita</text
+            >
 
             <!-- Aseprite -->
-            <rect x="636" y="148" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <g transform="translate(644,156) scale(0.83)"><path fill="currentColor" d="M4.006 0v1.6h15.988V0zm15.988 1.6v1.6h1.6V1.6zm1.6 1.6v14.4h-1.6v1.6H4.006v-1.6h-1.6V3.2H.809v17.6h1.599v1.6h1.599V24h15.988v-1.6h1.6v-1.6h1.598V3.2zm-19.187 0h1.599V1.6h-1.6zm4.796 3.2v6.4h1.6V6.4zm7.995 0v6.4h1.599V6.4z"/></g>
-            <text x="776" y="171" text-anchor="end" fill="currentColor" font-size="12" font-weight="300">Aseprite</text>
+            <rect
+              x="636"
+              y="148"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <g transform="translate(644,156) scale(0.83)"
+              ><path
+                fill="currentColor"
+                d="M4.006 0v1.6h15.988V0zm15.988 1.6v1.6h1.6V1.6zm1.6 1.6v14.4h-1.6v1.6H4.006v-1.6h-1.6V3.2H.809v17.6h1.599v1.6h1.599V24h15.988v-1.6h1.6v-1.6h1.598V3.2zm-19.187 0h1.599V1.6h-1.6zm4.796 3.2v6.4h1.6V6.4zm7.995 0v6.4h1.599V6.4z"
+              ></path></g
+            >
+            <text
+              x="776"
+              y="171"
+              text-anchor="end"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Aseprite</text
+            >
 
             <!-- Blender -->
-            <rect x="636" y="200" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <g transform="translate(644,208) scale(0.83)"><path fill="currentColor" d="M12.51 13.214c.046-.8.438-1.506 1.03-2.006a3.424 3.424 0 0 1 2.212-.79c.85 0 1.631.3 2.211.79.592.5.983 1.206 1.028 2.005.045.823-.285 1.586-.865 2.153a3.389 3.389 0 0 1-2.374.938 3.393 3.393 0 0 1-2.376-.938c-.58-.567-.91-1.33-.865-2.152M7.35 14.831c.006.314.106.922.256 1.398a7.372 7.372 0 0 0 1.593 2.757 8.227 8.227 0 0 0 2.787 2.001 8.947 8.947 0 0 0 3.66.76 8.964 8.964 0 0 0 3.657-.772 8.285 8.285 0 0 0 2.785-2.01 7.428 7.428 0 0 0 1.592-2.762 6.964 6.964 0 0 0 .25-3.074 7.123 7.123 0 0 0-1.016-2.779 7.764 7.764 0 0 0-1.852-2.043h.002L13.566 2.55l-.02-.015c-.492-.378-1.319-.376-1.86.002-.547.382-.609 1.015-.123 1.415l-.001.001 3.126 2.543-9.53.01h-.013c-.788.001-1.545.518-1.695 1.172-.154.665.38 1.217 1.2 1.22V8.9l4.83-.01-8.62 6.617-.034.025c-.813.622-1.075 1.658-.563 2.313.52.667 1.625.668 2.447.004L7.414 14s-.069.52-.063.831zm12.09 1.741c-.97.988-2.326 1.548-3.795 1.55-1.47.004-2.827-.552-3.797-1.538a4.51 4.51 0 0 1-1.036-1.622 4.282 4.282 0 0 1 .282-3.519 4.702 4.702 0 0 1 1.153-1.371c.942-.768 2.141-1.183 3.396-1.185 1.256-.002 2.455.41 3.398 1.175.48.391.87.854 1.152 1.367a4.28 4.28 0 0 1 .522 1.706 4.236 4.236 0 0 1-.239 1.811 4.54 4.54 0 0 1-1.035 1.626"/></g>
-            <text x="776" y="223" text-anchor="end" fill="currentColor" font-size="12" font-weight="300">Blender</text>
+            <rect
+              x="636"
+              y="200"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <g transform="translate(644,208) scale(0.83)"
+              ><path
+                fill="currentColor"
+                d="M12.51 13.214c.046-.8.438-1.506 1.03-2.006a3.424 3.424 0 0 1 2.212-.79c.85 0 1.631.3 2.211.79.592.5.983 1.206 1.028 2.005.045.823-.285 1.586-.865 2.153a3.389 3.389 0 0 1-2.374.938 3.393 3.393 0 0 1-2.376-.938c-.58-.567-.91-1.33-.865-2.152M7.35 14.831c.006.314.106.922.256 1.398a7.372 7.372 0 0 0 1.593 2.757 8.227 8.227 0 0 0 2.787 2.001 8.947 8.947 0 0 0 3.66.76 8.964 8.964 0 0 0 3.657-.772 8.285 8.285 0 0 0 2.785-2.01 7.428 7.428 0 0 0 1.592-2.762 6.964 6.964 0 0 0 .25-3.074 7.123 7.123 0 0 0-1.016-2.779 7.764 7.764 0 0 0-1.852-2.043h.002L13.566 2.55l-.02-.015c-.492-.378-1.319-.376-1.86.002-.547.382-.609 1.015-.123 1.415l-.001.001 3.126 2.543-9.53.01h-.013c-.788.001-1.545.518-1.695 1.172-.154.665.38 1.217 1.2 1.22V8.9l4.83-.01-8.62 6.617-.034.025c-.813.622-1.075 1.658-.563 2.313.52.667 1.625.668 2.447.004L7.414 14s-.069.52-.063.831zm12.09 1.741c-.97.988-2.326 1.548-3.795 1.55-1.47.004-2.827-.552-3.797-1.538a4.51 4.51 0 0 1-1.036-1.622 4.282 4.282 0 0 1 .282-3.519 4.702 4.702 0 0 1 1.153-1.371c.942-.768 2.141-1.183 3.396-1.185 1.256-.002 2.455.41 3.398 1.175.48.391.87.854 1.152 1.367a4.28 4.28 0 0 1 .522 1.706 4.236 4.236 0 0 1-.239 1.811 4.54 4.54 0 0 1-1.035 1.626"
+              ></path></g
+            >
+            <text
+              x="776"
+              y="223"
+              text-anchor="end"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Blender</text
+            >
 
             <!-- Any Tool -->
-            <rect x="636" y="252" width="148" height="36" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <text x="776" y="275" text-anchor="end" fill="currentColor" font-size="12" font-weight="300">Any Tool</text>
+            <rect
+              x="636"
+              y="252"
+              width="148"
+              height="36"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"></rect>
+            <text
+              x="776"
+              y="275"
+              text-anchor="end"
+              fill="currentColor"
+              font-size="12"
+              font-weight="300">Any Tool</text
+            >
           </svg>
         </div>
       </section>
@@ -134,7 +388,9 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
           <h2>Try It Now</h2>
           <div class="demo__step-row">
             <span class="demo__step-number">1</span>
-            <p class="demo__step-text"><a href="#plugins">Install the plugin</a> for your design tool</p>
+            <p class="demo__step-text">
+              <a href="#plugins">Install the plugin</a> for your design tool
+            </p>
           </div>
 
           <div class="demo__step-row">
@@ -155,9 +411,14 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
                   <span class="dts-widget__unlink-label">Unlink</span>
                 </button>
                 <div class="dts-widget__help" data-dts="help-wrap">
-                  <button class="dts-widget__help-btn" data-dts="help-btn" aria-expanded="false">?</button>
+                  <button class="dts-widget__help-btn" data-dts="help-btn" aria-expanded="false"
+                    >?</button
+                  >
                   <div class="dts-widget__tooltip">
-                    <p>Copy the session token and paste it into your design tool's Token Beam plugin to start syncing.</p>
+                    <p>
+                      Copy the session token and paste it into your design tool's Token Beam plugin
+                      to start syncing.
+                    </p>
                     <p>Available plugins:</p>
                     <ul class="dts-widget__plugins" data-dts="plugin-list">
                       <li>Loading&hellip;</li>
@@ -177,7 +438,9 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
 
           <div class="demo__step-row">
             <span class="demo__step-number">4</span>
-            <p class="demo__step-text">Generate colors and watch them sync to your design tool in real time</p>
+            <p class="demo__step-text">
+              Generate colors and watch them sync to your design tool in real time
+            </p>
           </div>
 
           <div class="demo__widget-wrap">
@@ -217,34 +480,72 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
       <section class="plugins" id="plugins">
         <div class="container">
           <h2>Supported Design Tools</h2>
-          <p class="section-intro">Grab the free plugin for your favorite tool. One click install, works right away.</p>
+          <p class="section-intro">
+            Grab the free plugin for your favorite tool. One click install, works right away.
+          </p>
           <div class="plugins__grid">
-            <a href="https://www.figma.com/community/plugin/888-token-beam" class="plugins__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://www.figma.com/community/plugin/888-token-beam"
+              class="plugins__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>Figma <img src="/icons/figma.svg" class="plugins__icon" alt="" /></h3>
               <p>Sync colors directly into Figma Variables.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
-            <a href="https://github.com/nicolecomputer/token-beam-for-sketch" class="plugins__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://github.com/nicolecomputer/token-beam-for-sketch"
+              class="plugins__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>Sketch <img src="/icons/sketch.svg" class="plugins__icon" alt="" /></h3>
               <p>Update your color palettes and document swatches in real time.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
-            <a href="https://github.com/meodai/token-beam/tree/main/packages/krita-plugin" class="plugins__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://github.com/meodai/token-beam/tree/main/packages/krita-plugin"
+              class="plugins__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>Krita <img src="/icons/krita.svg" class="plugins__icon" alt="" /></h3>
               <p>Receive palettes straight into your painting workspace.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
-            <a href="https://meodai.itch.io/token-beam" class="plugins__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://meodai.itch.io/token-beam"
+              class="plugins__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>Aseprite <img src="/icons/aseprite.svg" class="plugins__icon" alt="" /></h3>
-              <p>Receive or send palettes. Visualize your color choices in real time while tweaking shaders or generators.</p>
-              <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
+              <p>
+                Receive or send palettes. Visualize your color choices in real time while tweaking
+                shaders or generators.
+              </p>
+              <div class="pills">
+                <span class="pill pill--send">&#x2191; send</span>
+                <span class="pill pill--receive">&#x2193; receive</span>
+              </div>
             </a>
-            <a href="https://github.com/meodai/token-beam/tree/main/packages/blender-plugin" class="plugins__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://github.com/meodai/token-beam/tree/main/packages/blender-plugin"
+              class="plugins__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>Blender <img src="/icons/blender.svg" class="plugins__icon" alt="" /></h3>
               <p>Push colors into your 3D materials and scene lighting.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
-            <a href="https://github.com/nicolecomputer/token-beam-for-xd" class="plugins__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://github.com/nicolecomputer/token-beam-for-xd"
+              class="plugins__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>Adobe XD <img src="/icons/adobexd.svg" class="plugins__icon" alt="" /></h3>
               <p>Sync tokens into your XD design libraries and assets.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
@@ -256,49 +557,106 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
       <section class="websites" id="websites">
         <div class="container">
           <h2>Websites Using Token Beam</h2>
-          <p class="section-intro">These apps already support Token Beam. Some <strong>send</strong> palettes to your tools, others <strong>receive</strong> them &mdash; or both. Pick one and start syncing.</p>
+          <p class="section-intro">
+            These apps already support Token Beam. Some <strong>send</strong> palettes to your tools,
+            others <strong>receive</strong> them &mdash; or both. Pick one and start syncing.
+          </p>
           <div class="websites__grid">
-            <a href="https://meodai.github.io/poline/" class="websites__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://meodai.github.io/poline/"
+              class="websites__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>poline</h3>
               <p>Esoteric color palette generator using polar coordinates.</p>
               <div class="pills"><span class="pill pill--send">&#x2191; send</span></div>
             </a>
-            <a href="https://farbvelo.elastiq.ch" class="websites__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://farbvelo.elastiq.ch"
+              class="websites__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>farbvelo</h3>
               <p>Generative color palette tool. Sync palettes to any design app.</p>
               <div class="pills"><span class="pill pill--send">&#x2191; send</span></div>
             </a>
-            <a href="https://meodai.github.io/rampensau/" class="websites__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://meodai.github.io/rampensau/"
+              class="websites__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>rampensau</h3>
               <p>Color ramp generator. Explore and sync parametric color ramps.</p>
               <div class="pills"><span class="pill pill--send">&#x2191; send</span></div>
             </a>
-            <a href="https://artbuddy.urlich.ch/rampgrid/" class="websites__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://artbuddy.urlich.ch/rampgrid/"
+              class="websites__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>rampgrid</h3>
               <p>Grid-based color ramp explorer by artbuddy.</p>
-              <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
+              <div class="pills">
+                <span class="pill pill--send">&#x2191; send</span>
+                <span class="pill pill--receive">&#x2193; receive</span>
+              </div>
             </a>
-            <a href="https://meodai.github.io/color-palette-shader/" class="websites__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://meodai.github.io/color-palette-shader/"
+              class="websites__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>color-palette-shader</h3>
               <p>Shader-driven color palette generation and exploration.</p>
               <div class="pills"><span class="pill pill--send">&#x2191; send</span></div>
             </a>
-            <a href="https://okpalette.color.pizza/" class="websites__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://okpalette.color.pizza/"
+              class="websites__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>OKPalette</h3>
               <p>Perceptually uniform color palette generator in OKLab.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
-            <a href="https://artbuddy.urlich.ch/artpalette/" class="websites__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://artbuddy.urlich.ch/artpalette/"
+              class="websites__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>artpalette</h3>
               <p>Extract and sync palettes from artwork.</p>
-              <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
+              <div class="pills">
+                <span class="pill pill--send">&#x2191; send</span>
+                <span class="pill pill--receive">&#x2193; receive</span>
+              </div>
             </a>
-            <a href="https://artbuddy.urlich.ch/colorgrid/" class="websites__card" target="_blank" rel="noreferrer">
+            <a
+              href="https://artbuddy.urlich.ch/colorgrid/"
+              class="websites__card"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>colorgrid</h3>
               <p>Interactive color grid explorer and palette tool.</p>
-              <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
+              <div class="pills">
+                <span class="pill pill--send">&#x2191; send</span>
+                <span class="pill pill--receive">&#x2193; receive</span>
+              </div>
             </a>
-            <a href="https://github.com/meodai/token-beam/issues/new" class="websites__card websites__card--cta" target="_blank" rel="noreferrer">
+            <a
+              href="https://github.com/meodai/token-beam/issues/new"
+              class="websites__card websites__card--cta"
+              target="_blank"
+              rel="noreferrer"
+            >
               <h3>+ Your Website</h3>
               <p>Add Token Beam to your project in minutes. Let us know and we'll list you here.</p>
             </a>
@@ -313,48 +671,48 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
             <div class="features__card">
               <h3>See Changes Instantly</h3>
               <p>
-                Tweak a color on your website and watch it update in Figma, Blender, or Aseprite in real time.
-                No exporting, no copy-pasting hex codes.
+                Tweak a color on your website and watch it update in Figma, Blender, or Aseprite in
+                real time. No exporting, no copy-pasting hex codes.
               </p>
             </div>
 
             <div class="features__card">
               <h3>Any Tool, One Format</h3>
               <p>
-                Each design tool gets a native plugin. You just paste a token &mdash; the plugin handles the rest.
-                No configuration, no setup.
+                Each design tool gets a native plugin. You just paste a token &mdash; the plugin
+                handles the rest. No configuration, no setup.
               </p>
             </div>
 
             <div class="features__card">
               <h3>No Accounts Needed</h3>
               <p>
-                Simple <code>beam://</code> tokens connect your tools. No sign-up, no login, no third-party services.
-                Just copy-paste and you're syncing.
+                Simple <code>beam://</code> tokens connect your tools. No sign-up, no login, no third-party
+                services. Just copy-paste and you're syncing.
               </p>
             </div>
 
             <div class="features__card">
               <h3>Works Both Ways</h3>
               <p>
-                Send colors from a generator to your design tool &mdash; or push a palette from Aseprite
-                back to a web app. The connection goes in both directions.
+                Send colors from a generator to your design tool &mdash; or push a palette from
+                Aseprite back to a web app. The connection goes in both directions.
               </p>
             </div>
 
             <div class="features__card">
               <h3>100% Free</h3>
               <p>
-                Every plugin is free and always will be. No premium tiers, no feature locks,
-                no subscriptions. Just install and go.
+                Every plugin is free and always will be. No premium tiers, no feature locks, no
+                subscriptions. Just install and go.
               </p>
             </div>
 
             <div class="features__card">
               <h3>Open Source</h3>
               <p>
-                Everything is open source. The plugins, the server, the libraries &mdash;
-                built in the open, for the community.
+                Everything is open source. The plugins, the server, the libraries &mdash; built in
+                the open, for the community.
               </p>
             </div>
           </div>
@@ -364,13 +722,17 @@ const description = 'Sync colors from any website to Figma, Blender, Aseprite an
       <section class="developers" id="developers">
         <div class="container">
           <h2>For Developers</h2>
-          <p class="section-intro">Add real-time color sync to your website in a few lines of code. Built on the W3C Design Tokens spec. The <code>token-beam</code> library is MIT-licensed.</p>
+          <p class="section-intro">
+            Add real-time color sync to your website in a few lines of code. Built on the W3C Design
+            Tokens spec. The <code>token-beam</code> library is MIT-licensed.
+          </p>
           <div class="developers__tabs">
             <button class="developers__tab is-active" data-tab="send">Send</button>
             <button class="developers__tab" data-tab="receive">Receive</button>
           </div>
           <div class="developers__example" data-panel="send">
-            <Code code={`import { SourceSession, createCollection } from 'token-beam';
+            <Code
+              code={`import { SourceSession, createCollection } from 'token-beam';
 
 const session = new SourceSession({
   serverUrl: 'wss://tokenbeam.dev',
@@ -385,10 +747,14 @@ const payload = createCollection('brand', {
 });
 
 session.on('peer-connected', () => session.sync(payload));
-session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-dark' }} />
+session.connect();`}
+              lang="ts"
+              themes={{ light: 'github-light', dark: 'github-dark' }}
+            />
           </div>
           <div class="developers__example" data-panel="receive" style="display:none">
-            <Code code={`import { TargetSession, extractColorTokens } from 'token-beam';
+            <Code
+              code={`import { TargetSession, extractColorTokens } from 'token-beam';
 
 const session = new TargetSession({
   serverUrl: 'wss://tokenbeam.dev',
@@ -404,11 +770,15 @@ session.on('sync', ({ payload }) => {
   });
 });
 
-session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-dark' }} />
+session.connect();`}
+              lang="ts"
+              themes={{ light: 'github-light', dark: 'github-dark' }}
+            />
           </div>
           <div class="developers__links">
             <a href="https://github.com/meodai/token-beam" class="btn">Read the Docs</a>
-            <a href="https://www.npmjs.com/package/token-beam" class="btn">npm install token-beam</a>
+            <a href="https://www.npmjs.com/package/token-beam" class="btn">npm install token-beam</a
+            >
           </div>
         </div>
       </section>
@@ -416,7 +786,10 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       <section class="pricing" id="pricing">
         <div class="container">
           <h2>Server Plans</h2>
-          <p class="section-intro">Using Token Beam is always free. These plans are only for companies running their own sync server.</p>
+          <p class="section-intro">
+            Using Token Beam is always free. These plans are only for companies running their own
+            sync server.
+          </p>
           <div class="pricing__grid">
             <div class="pricing__card">
               <h3>Free</h3>
@@ -441,7 +814,9 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
                 <li>99.9% uptime SLA</li>
                 <li>Email support</li>
               </ul>
-              <a href="mailto:token-beam@elastiq.ch" class="btn btn--primary btn--block">Get Started</a>
+              <a href="mailto:token-beam@elastiq.ch" class="btn btn--primary btn--block"
+                >Get Started</a
+              >
             </div>
 
             <div class="pricing__card">
@@ -455,13 +830,22 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
                 <li>Priority support (24h SLA)</li>
                 <li>Custom integrations</li>
               </ul>
-              <a href="mailto:token-beam@elastiq.ch" class="btn btn--primary btn--block">Contact Sales</a>
+              <a href="mailto:token-beam@elastiq.ch" class="btn btn--primary btn--block"
+                >Contact Sales</a
+              >
             </div>
           </div>
 
           <div class="pricing__note">
-            <p><strong>100% Open Source.</strong> The server (AGPL-3.0), library and all plugins (MIT) are fully open source.</p>
-            <p><strong>OSS Exception:</strong> Open source projects get Pro hosting free. <a href="mailto:token-beam@elastiq.ch">Apply here</a>.</p>
+            <p>
+              <strong>100% Open Source.</strong> The server (AGPL-3.0), library and all plugins (MIT)
+              are fully open source.
+            </p>
+            <p>
+              <strong>OSS Exception:</strong> Open source projects get Pro hosting free. <a
+                href="mailto:token-beam@elastiq.ch">Apply here</a
+              >.
+            </p>
           </div>
         </div>
       </section>
@@ -469,11 +853,13 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     <footer>
       <div class="container">
-        <p>&copy; 2026 ⊷ Token Beam by <a href="https://github.com/meodai">David Aerne (meodai)</a></p>
+        <p>
+          &copy; 2026 ⊷ Token Beam by <a href="https://github.com/meodai">David Aerne (meodai)</a>
+        </p>
         <p class="footer__links">
           <a href="mailto:token-beam@elastiq.ch">token-beam@elastiq.ch</a> &middot;
-          <a href="https://github.com/meodai/token-beam">GitHub</a> &middot;
-          Server, library & plugins are open source
+          <a href="https://github.com/meodai/token-beam">GitHub</a> &middot; Server, library & plugins
+          are open source
         </p>
       </div>
     </footer>
@@ -491,22 +877,24 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     }
 
     :root {
-      --white: #fff;
-      --black: #1a1f1f;
+      --white: #e0dcda;
+      --black: #322f2d;
       --text: light-dark(var(--black), var(--white));
       --bg: light-dark(var(--white), var(--black));
-      --line: color-mix(in lab, var(--text) 18%, var(--bg));
+      --interactive: tomato;
+      --interactive-weak: color-mix(in lab, var(--interactive) 60%, var(--bg));
+
+      --line: var(--text);
       --ease: cubic-bezier(0.3, 0.7, 0, 1);
       --success: #1b8a2d;
-      --interactive: tomato;
       --text-muted: color-mix(in lab, var(--text) 75%, var(--bg));
       --text-subtle: color-mix(in lab, var(--text) 50%, var(--bg));
       --dot: color-mix(in lab, var(--text) 40%, var(--bg));
-      --dot-r: .5px;
+      --dot-r: 0.5px;
       --dot-space: 5px;
       --dot-pattern:
-        radial-gradient(circle, var(--dot) var(--dot-r), var(--bg) var(--dot-r))
-          0 0 / var(--dot-space) var(--dot-space),
+        radial-gradient(circle, var(--dot) var(--dot-r), var(--bg) var(--dot-r)) 0 0 /
+          var(--dot-space) var(--dot-space),
         radial-gradient(circle, var(--dot) var(--dot-r), var(--bg) var(--dot-r))
           calc(var(--dot-space) / 2) calc(var(--dot-space) / 2) / var(--dot-space) var(--dot-space);
     }
@@ -524,7 +912,8 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     }
 
     body {
-      font-family: 'Iosevka Web', 'Iosevka', 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+      font-family:
+        'Iosevka Web', 'Iosevka', 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
       font-weight: 300;
       font-size: 1rem;
       line-height: 1.6;
@@ -542,7 +931,9 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     /* --- Typography --- */
 
-    h1, h2, h3 {
+    h1,
+    h2,
+    h3 {
       font-family: 'But Head', 'Iosevka Web', monospace;
       font-weight: 400;
       letter-spacing: -0.03em;
@@ -586,8 +977,8 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     }
 
     /* External links get arrow */
-    a[href^="http"]::after,
-    a[href^="mailto"]::after {
+    a[href^='http']::after,
+    a[href^='mailto']::after {
       content: '\2197';
       display: inline-block;
       margin-left: 0.15em;
@@ -615,7 +1006,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       display: inline-block;
       padding: 0.55rem 0.9rem 0.35rem;
       border: 2px solid currentColor;
-      background: transparent;
+      background: var(--bg);
       color: currentColor;
       font-family: inherit;
       font-weight: 400;
@@ -650,8 +1041,8 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .btn--primary:hover {
       box-shadow: 0 2px 0 0 var(--interactive);
-      background: transparent;
-      color: var(--interactive);
+      background: var(--interactive-weak);
+      color: var(--text);
     }
 
     .btn--block {
@@ -685,9 +1076,6 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     .logo__icon {
       font-size: 1.3em;
       line-height: 1;
-    }
-
-    .logo:hover {
     }
 
     .logo::after {
@@ -770,7 +1158,7 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .badge {
       display: inline-block;
-      padding: 0.4rem 0.8rem 0.2rem;
+      padding: 0.4rem 0.8rem 0.3rem;
       border: 1px solid var(--line);
       font-size: 0.7rem;
       font-weight: 400;
@@ -938,7 +1326,15 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .plugins__card:hover {
       background: var(--line);
+      color: var(--interactive);
 
+      p {
+        color: var(--bg);
+      }
+
+      .plugins__icon {
+        filter: invert(1);
+      }
     }
 
     .plugins__card::after {
@@ -995,7 +1391,15 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .websites__card:hover {
       background: var(--line);
+      color: var(--interactive);
 
+      p {
+        color: var(--bg);
+      }
+
+      .plugins__icon {
+        filter: invert(1);
+      }
     }
 
     .websites__card::after {
@@ -1120,11 +1524,6 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
 
     .developers__tab.is-active {
       background: var(--bg);
-
-    }
-
-    .developers__tab:hover {
-
     }
 
     .developers__links {
@@ -1227,7 +1626,6 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
       padding-left: 1.2rem;
       position: relative;
       font-size: 0.85rem;
-
     }
 
     .pricing__card li::before {
@@ -1330,10 +1728,13 @@ session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-da
     document.querySelectorAll('.developers__tab').forEach((tab) => {
       tab.addEventListener('click', () => {
         const target = (tab as HTMLElement).dataset.tab;
-        document.querySelectorAll('.developers__tab').forEach((t) => t.classList.remove('is-active'));
+        document
+          .querySelectorAll('.developers__tab')
+          .forEach((t) => t.classList.remove('is-active'));
         tab.classList.add('is-active');
         document.querySelectorAll('.developers__example[data-panel]').forEach((panel) => {
-          (panel as HTMLElement).style.display = (panel as HTMLElement).dataset.panel === target ? '' : 'none';
+          (panel as HTMLElement).style.display =
+            (panel as HTMLElement).dataset.panel === target ? '' : 'none';
         });
       });
     });
