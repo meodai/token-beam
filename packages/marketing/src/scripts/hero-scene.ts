@@ -357,8 +357,10 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     const h = canvas.clientHeight;
     const a = w / h;
     aspect = a;
-    camera.left = -frustum * a - frustum * 1.2;
-    camera.right = frustum * a - frustum * 1.2;
+    const isMobile = canvas.clientWidth < 768;
+    const shift = isMobile ? 0 : frustum * 1.2;
+    camera.left = -frustum * a - shift;
+    camera.right = frustum * a - shift;
     camera.top = frustum;
     camera.bottom = -frustum;
     camera.updateProjectionMatrix();
