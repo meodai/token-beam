@@ -1,3 +1,9 @@
+# [1.25.0](https://github.com/meodai/token-beam/compare/v1.24.0...v1.25.0) (2026-03-17)
+
+### Features
+
+- **pricing:** adjust styles for featured card and pricing details ([2e58d06](https://github.com/meodai/token-beam/commit/2e58d06e5801d59caf9b78f8102d7e6ee6b93241))
+
 # [1.24.0](https://github.com/meodai/token-beam/compare/v1.23.0...v1.24.0) (2026-03-17)
 
 ### Features
