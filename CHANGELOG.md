@@ -1,3 +1,9 @@
+# [1.27.0](https://github.com/meodai/token-beam/compare/v1.26.0...v1.27.0) (2026-03-17)
+
+### Features
+
+- **marketing:** redesign landing page with 3D hero, videos, icons, and updated copy ([54e434a](https://github.com/meodai/token-beam/commit/54e434ac77c094e8af4e5b3f31e1e5a7637e94f8))
+
 # [1.26.0](https://github.com/meodai/token-beam/compare/v1.25.0...v1.26.0) (2026-03-17)
 
 ### Bug Fixes
