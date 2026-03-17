@@ -334,6 +334,14 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   const pathLine = new THREE.Line(pathGeo, pathMat);
   scene.add(pathLine);
 
+  // Endpoint dots for the path line
+  const dotGeo = new THREE.SphereGeometry(0.02, 8, 8);
+  const dotMat = new THREE.MeshBasicMaterial({ color: 0xff6347 });
+  const dotStart = new THREE.Mesh(dotGeo, dotMat);
+  const dotEnd = new THREE.Mesh(dotGeo, dotMat.clone());
+  scene.add(dotStart);
+  scene.add(dotEnd);
+
   // Path: token visits shapes in sequence
   let currentTarget = 0;
   let nextTarget = 1;
@@ -438,7 +446,12 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     pathPositions[4] = to.y;
     pathPositions[5] = to.z;
     pathGeo.attributes.position.needsUpdate = true;
-    pathLine.visible = progress > 0.05 && progress < 1;
+    const pathVisible = progress > 0.05 && progress < 1;
+    pathLine.visible = pathVisible;
+    dotStart.visible = pathVisible;
+    dotEnd.visible = pathVisible;
+    dotStart.position.set(from.x, from.y, from.z);
+    dotEnd.position.set(to.x, to.y, to.z);
 
     // Gentle shape rotation — keep outline in sync
     nodes.forEach((n) => {
