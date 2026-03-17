@@ -1,0 +1,19 @@
+{
+  "name": "token-beam-chrome",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch && npm run copy-static",
+    "build": "vite build && npm run copy-static",
+    "copy-static": "cp src/ui/popup.html manifest.json static/* dist/"
+  },
+  "dependencies": {
+    "token-beam": "*"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "typescript": "^5.5.0",
+    "vite": "^6.0.0"
+  }
+}

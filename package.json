@@ -18,7 +18,8 @@
     "packages/adobe-xd-plugin",
     "packages/sync-server",
     "packages/marketing",
-    "packages/mcp-server"
+    "packages/mcp-server",
+    "packages/chrome-plugin"
   ],
   "scripts": {
     "build": "npm run build:lib && npm run build:figma && npm run build:server",

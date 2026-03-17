@@ -29,7 +29,9 @@
       "WebFetch(domain:docs.blender.org)",
       "WebFetch(domain:fossies.org)",
       "WebFetch(domain:www.aseprite.org)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(cd:*)",
+      "WebFetch(domain:colorhunt.co)"
     ]
   }
 }

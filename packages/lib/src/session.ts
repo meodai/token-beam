@@ -225,6 +225,19 @@ class SessionBase<TPayload = unknown> {
           origin,
           icon,
         });
+        // Announce to browser extension or other tooling via DOM
+        if (typeof document !== 'undefined') {
+          document.documentElement.setAttribute('data-token-beam', this.sessionToken);
+          document.documentElement.setAttribute(
+            'data-token-beam-origin',
+            this.options.origin ?? '',
+          );
+          window.dispatchEvent(
+            new CustomEvent('token-beam:paired', {
+              detail: { sessionToken: this.sessionToken, origin: this.options.origin },
+            }),
+          );
+        }
       },
       onTargetConnected: (clientType, origin) => {
         const peer: SessionPeer = { clientType, origin };

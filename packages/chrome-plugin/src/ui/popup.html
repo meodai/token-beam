@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/iosevka.min.css" />
+  <style>
+    :root {
+      --bg: #fff;
+      --text: #322f2d;
+      --interactive: tomato;
+      --line: #322f2d;
+      --text-muted: color-mix(in lab, var(--text) 75%, var(--bg));
+      --success: #1b8a2d;
+      --dot: color-mix(in lab, var(--text) 40%, var(--bg));
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000;
+        --text: #fff;
+      }
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 280px;
+      font-family: 'Iosevka Web', 'Iosevka', 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--text);
+      background:
+        radial-gradient(circle, var(--dot) 0.5px, var(--bg) 0.5px) 0 0 / 5px 5px,
+        radial-gradient(circle, var(--dot) 0.5px, var(--bg) 0.5px) 2.5px 2.5px / 5px 5px;
+      padding: 10px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .header__logo {
+      font-size: 10px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .header__provider {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .header__arrows {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .token-row {
+      padding: 6px 8px;
+      border: 1px solid var(--interactive);
+      margin-bottom: 8px;
+      background: var(--bg);
+      cursor: pointer;
+    }
+
+    .token {
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      user-select: all;
+      color: var(--interactive);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 7px 6px 5px;
+      border: 2px solid var(--interactive);
+      background: var(--interactive);
+      color: var(--bg);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.15s cubic-bezier(0.3, 0.7, 0, 1);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 0 0 var(--interactive);
+    }
+
+    .btn--stop {
+      background: var(--bg);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .btn--stop:hover {
+      box-shadow: 0 2px 0 0 var(--line);
+    }
+
+    .unsupported {
+      color: var(--text-muted);
+      text-align: center;
+      padding: 12px 0;
+      font-size: 10px;
+    }
+
+    .unsupported a {
+      color: var(--interactive);
+    }
+
+    ::selection {
+      background: var(--interactive);
+      color: var(--bg);
+    }
+  </style>
+</head>
+<body>
+  <div id="content"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
