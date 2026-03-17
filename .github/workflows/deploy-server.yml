@@ -1,0 +1,39 @@
+name: Deploy Sync Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build lib
+        run: npm run build:lib
+
+      - name: Prepare server deploy
+        run: npm run predeploy -w packages/sync-server
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.HETZNER_SSH_KEY }}
+
+      - name: Add host key
+        run: ssh-keyscan -H ${{ secrets.HETZNER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy and restart
+        run: |
+          tar czf /tmp/tb-deploy.tar.gz -C packages/sync-server package.json tsconfig.docker.json src/ lib-dist/
+          scp /tmp/tb-deploy.tar.gz root@${{ secrets.HETZNER_HOST }}:/tmp/
+          ssh root@${{ secrets.HETZNER_HOST }} 'cd /opt/token-beam && rm -rf src lib-dist && tar xzf /tmp/tb-deploy.tar.gz && sed -i "s|\"token-beam\": \"\\*\"|\"token-beam\": \"file:./lib-dist\"|" package.json && npm install --silent && npm run build && systemctl restart token-beam && sleep 1 && curl -sf http://localhost:8080/health'
