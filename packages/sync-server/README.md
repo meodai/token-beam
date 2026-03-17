@@ -295,6 +295,14 @@ certbot --nginx -d tokenbeam.dev --non-interactive --agree-tos --email <EMAIL>
 
 ### Redeployment
 
+**Via GitHub Actions (recommended):**
+
+Go to [Actions → Deploy Sync Server](https://github.com/meodai/token-beam/actions/workflows/deploy-server.yml) and click "Run workflow". This builds, uploads, and restarts the server with a health check.
+
+Requires repository secrets: `HETZNER_HOST` and `HETZNER_SSH_KEY` (RSA PEM format).
+
+**Manual:**
+
 ```bash
 # On your local machine — build and upload:
 cd packages/sync-server

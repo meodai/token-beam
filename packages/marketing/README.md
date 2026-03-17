@@ -42,6 +42,16 @@ Current usage in `src/scripts/demo.ts`:
 
 This keeps web-demo behavior consistent with other JS/TS consumers such as the Figma and Sketch plugin UIs.
 
+## Deployment
+
+The marketing site is deployed to Hetzner as static files served by Nginx on `tokenbeam.dev`.
+
+**Automatic:** Any push to `main` that touches `packages/marketing/` or `packages/lib/` triggers a [GitHub Actions workflow](https://github.com/meodai/token-beam/actions/workflows/deploy-marketing.yml) that builds and deploys via rsync.
+
+**Manual:** The workflow can also be triggered manually via "Run workflow" in GitHub Actions.
+
+Requires repository secrets: `HETZNER_HOST` and `HETZNER_SSH_KEY` (RSA PEM format).
+
 ## License
 
 AGPL-3.0 OR Commercial. See [LICENSE](../../LICENSE) for details.
