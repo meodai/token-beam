@@ -107,21 +107,10 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
     mesh.scale.setScalar(0.8 + Math.random() * 0.8);
 
-    // Cel-shading outline
-    const outlineMat = new THREE.MeshBasicMaterial({
-      color: isDark ? 0xffffff : 0x292f2f,
-      side: THREE.BackSide,
-    });
-    const outline = new THREE.Mesh(geo.clone(), outlineMat);
-    outline.position.copy(mesh.position);
-    outline.rotation.copy(mesh.rotation);
-    outline.scale.copy(mesh.scale).multiplyScalar(1.04);
-    scene.add(outline);
-
     scene.add(mesh);
     nodes.push({
       mesh,
-      outline,
+      outline: mesh,
       originalColor: new THREE.Color(0x292f2f),
       lit: false,
       litTime: 0,
@@ -327,7 +316,6 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     nodes.forEach((n) => {
       n.mesh.rotation.y += 0.003;
       n.mesh.rotation.x += 0.001;
-      n.outline.rotation.copy(n.mesh.rotation);
     });
 
     // Camera smoothly follows token
