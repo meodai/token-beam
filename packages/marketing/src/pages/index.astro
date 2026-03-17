@@ -40,12 +40,12 @@ const description = 'Real-time design token synchronization between web and desi
           <div class="badge">Built on the W3C Design Tokens Spec</div>
           <h1>Sync any website<br/>with any design tool</h1>
           <p class="hero-text">
-            Live design token synchronization. Push colors and variables from any website
-            to Figma, Sketch, Aseprite &mdash; instantly. One protocol, every tool.
+            Live design token synchronization. Push <strong>colors</strong> and <strong>variables</strong> from any website
+            to <strong>Figma</strong>, <strong>Blender</strong>, <strong>Aseprite</strong> and more &mdash; instantly. One protocol, every tool.
           </p>
           <div class="hero-buttons">
-            <a href="#demo" class="btn btn--primary">Try the Demo</a>
-            <a href="https://github.com/meodai/token-beam" class="btn">View Docs</a>
+            <a href="#plugins" class="btn btn--primary">Get Your Plugin</a>
+            <a href="#demo" class="btn">Try the Demo</a>
           </div>
         </div>
       </section>
@@ -122,7 +122,15 @@ const description = 'Real-time design token synchronization between web and desi
       <section class="demo" id="demo">
         <div class="container">
           <h2>Try It Now</h2>
-          <p class="section-intro">This is a live demo. Install a plugin below, paste the token, and watch your design tool update in real-time.</p>
+          <div class="demo__step-row">
+            <span class="demo__step-number">1</span>
+            <p class="demo__step-text"><a href="#plugins">Install the plugin</a> for your design tool</p>
+          </div>
+
+          <div class="demo__step-row">
+            <span class="demo__step-number">2</span>
+            <p class="demo__step-text">Grab a token from the demo below or any <a href="#websites">supported app</a></p>
+          </div>
 
           <div class="demo__widget-wrap">
             <div id="swatches" class="demo__swatches"></div>
@@ -156,6 +164,17 @@ const description = 'Real-time design token synchronization between web and desi
               <div class="dts-widget__offline">Offline &mdash; click to reconnect</div>
             </div>
           </div>
+
+          <div class="demo__step-row">
+            <span class="demo__step-number">3</span>
+            <p class="demo__step-text">Paste the token into your plugin and watch it sync live</p>
+          </div>
+
+          <div class="demo__video-wrap">
+            <video class="demo__video" autoplay loop muted playsinline>
+              <source src="/video/demo.mp4" type="video/mp4" />
+            </video>
+          </div>
         </div>
       </section>
 
@@ -166,27 +185,33 @@ const description = 'Real-time design token synchronization between web and desi
           <div class="plugins__grid">
             <a href="https://www.figma.com/community/plugin/888-token-beam" class="plugins__card" target="_blank" rel="noreferrer">
               <h3>Figma</h3>
-              <p>Community plugin. Works with Figma and FigJam.</p>
+              <p>Sync colors directly into Figma Variables.</p>
+              <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://github.com/nicolecomputer/token-beam-for-sketch" class="plugins__card" target="_blank" rel="noreferrer">
               <h3>Sketch</h3>
-              <p>Native macOS plugin with toolbar integration.</p>
+              <p>Update your color palettes and document swatches in real time.</p>
+              <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
-            <a href="https://github.com/meodai/token-beam/tree/main/packages/krita" class="plugins__card" target="_blank" rel="noreferrer">
+            <a href="https://github.com/meodai/token-beam/tree/main/packages/krita-plugin" class="plugins__card" target="_blank" rel="noreferrer">
               <h3>Krita</h3>
-              <p>Python plugin for color palette sync.</p>
+              <p>Receive palettes straight into your painting workspace.</p>
+              <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
-            <a href="https://github.com/meodai/token-beam/tree/main/packages/aseprite" class="plugins__card" target="_blank" rel="noreferrer">
+            <a href="https://meodai.itch.io/token-beam" class="plugins__card" target="_blank" rel="noreferrer">
               <h3>Aseprite</h3>
-              <p>Lua extension for pixel art workflows.</p>
+              <p>Receive or send palettes. Visualize your color choices in real time while tweaking shaders or generators.</p>
+              <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
-            <a href="https://github.com/meodai/token-beam/tree/main/packages/blender" class="plugins__card" target="_blank" rel="noreferrer">
+            <a href="https://github.com/meodai/token-beam/tree/main/packages/blender-plugin" class="plugins__card" target="_blank" rel="noreferrer">
               <h3>Blender</h3>
-              <p>Python add-on for 3D material colors.</p>
+              <p>Push colors into your 3D materials and scene lighting.</p>
+              <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://github.com/nicolecomputer/token-beam-for-xd" class="plugins__card" target="_blank" rel="noreferrer">
               <h3>Adobe XD</h3>
-              <p>UXP-based plugin for Adobe XD.</p>
+              <p>Sync tokens into your XD design libraries and assets.</p>
+              <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
           </div>
         </div>
@@ -195,38 +220,47 @@ const description = 'Real-time design token synchronization between web and desi
       <section class="websites" id="websites">
         <div class="container">
           <h2>Websites Using Token Beam</h2>
+          <p class="section-intro">Web apps can <strong>send</strong> tokens to design tools, <strong>receive</strong> them back, or both &mdash; turning any website into a live bridge between code and design.</p>
           <div class="websites__grid">
             <a href="https://meodai.github.io/poline/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>poline</h3>
               <p>Esoteric color palette generator using polar coordinates.</p>
+              <div class="pills"><span class="pill pill--send">&#x2191; send</span></div>
             </a>
             <a href="https://farbvelo.elastiq.ch" class="websites__card" target="_blank" rel="noreferrer">
               <h3>farbvelo</h3>
               <p>Generative color palette tool. Sync palettes to any design app.</p>
+              <div class="pills"><span class="pill pill--send">&#x2191; send</span></div>
             </a>
             <a href="https://meodai.github.io/rampensau/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>rampensau</h3>
               <p>Color ramp generator. Explore and sync parametric color ramps.</p>
+              <div class="pills"><span class="pill pill--send">&#x2191; send</span></div>
             </a>
             <a href="https://artbuddy.urlich.ch/rampgrid/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>rampgrid</h3>
               <p>Grid-based color ramp explorer by artbuddy.</p>
+              <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://meodai.github.io/color-palette-shader/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>color-palette-shader</h3>
               <p>Shader-driven color palette generation and exploration.</p>
+              <div class="pills"><span class="pill pill--send">&#x2191; send</span></div>
             </a>
             <a href="https://okpalette.color.pizza/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>OKPalette</h3>
               <p>Perceptually uniform color palette generator in OKLab.</p>
+              <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://artbuddy.urlich.ch/artpalette/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>artpalette</h3>
               <p>Extract and sync palettes from artwork.</p>
+              <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://artbuddy.urlich.ch/colorgrid/" class="websites__card" target="_blank" rel="noreferrer">
               <h3>colorgrid</h3>
               <p>Interactive color grid explorer and palette tool.</p>
+              <div class="pills"><span class="pill pill--send">&#x2191; send</span> <span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a href="https://github.com/meodai/token-beam/issues/new" class="websites__card websites__card--cta" target="_blank" rel="noreferrer">
               <h3>+ Your Website</h3>
@@ -441,6 +475,7 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       font-weight: 400;
       letter-spacing: -0.03em;
       line-height: 1.05;
+      text-wrap: balance;
     }
 
     h1 {
@@ -463,7 +498,7 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
     p {
       max-width: 40rem;
       margin-inline: auto;
-      text-wrap: pretty;
+      text-wrap: balance;
     }
 
     a {
@@ -498,6 +533,8 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
 
     strong {
       font-weight: 600;
+      opacity: 1;
+      color: var(--text);
     }
 
     /* --- Buttons --- */
@@ -555,6 +592,7 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
     header {
       padding: 1.5rem 0;
       border-bottom: 1px solid var(--line);
+      background: var(--dot-pattern), var(--bg);
     }
 
     .header-content {
@@ -688,6 +726,44 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       border-bottom: 1px solid var(--line);
     }
 
+    .demo__step-row {
+      max-width: 36rem;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .demo__step-number {
+      font-family: 'But Head', 'Iosevka Web', monospace;
+      font-size: 1.5rem;
+      line-height: 1;
+      flex-shrink: 0;
+      opacity: 0.3;
+    }
+
+    .demo__step-text {
+      font-size: 0.95rem;
+      opacity: 0.7;
+      margin: 0;
+    }
+
+    .demo__step-text a {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .demo__video-wrap {
+      max-width: 36rem;
+      margin: 0 auto;
+    }
+
+    .demo__video {
+      width: 100%;
+      border: 2px solid var(--line);
+      display: block;
+    }
+
     .demo__widget-wrap {
       max-width: 36rem;
       margin: 0 auto 1.5rem;
@@ -717,6 +793,8 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       background: var(--bg);
       text-decoration: none;
       transition: background 0.2s var(--ease);
+      display: flex;
+      flex-direction: column;
     }
 
     .plugins__card:hover {
@@ -754,6 +832,8 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       background: var(--bg);
       text-decoration: none;
       transition: background 0.2s var(--ease);
+      display: flex;
+      flex-direction: column;
     }
 
     .websites__card:hover {
@@ -769,6 +849,40 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       font-size: 0.8rem;
       opacity: 0.6;
       margin: 0;
+    }
+
+    .pills {
+      margin-top: auto;
+      padding-top: 0.75rem;
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.55rem;
+      font-family: 'Iosevka Web', monospace;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.15em 0.45em;
+      border: 1px solid;
+      line-height: 1;
+    }
+
+    .pill--send {
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    .pill--receive {
+      color: #6366f1;
+      border-color: #6366f1;
+    }
+
+    .pill--both {
+      color: #b07d16;
+      border-color: #b07d16;
     }
 
     .websites__card--cta {
