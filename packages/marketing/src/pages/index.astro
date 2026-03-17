@@ -402,6 +402,14 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       --line: color-mix(in lab, currentColor 18%, var(--bg));
       --ease: cubic-bezier(0.3, 0.7, 0, 1);
       --success: #1b8a2d;
+      --dot: var(--text);
+      --dot-r: 1px;
+      --dot-space: 5px;
+      --dot-pattern:
+        radial-gradient(circle, var(--dot) var(--dot-r), transparent var(--dot-r))
+          0 0 / var(--dot-space) var(--dot-space),
+        radial-gradient(circle, var(--dot) var(--dot-r), transparent var(--dot-r))
+          calc(var(--dot-space) / 2) calc(var(--dot-space) / 2) / var(--dot-space) var(--dot-space);
     }
 
     html {
@@ -701,7 +709,7 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1px;
       border: 2px solid var(--line);
-      background: var(--line);
+      background: var(--dot-pattern), var(--bg);
     }
 
     .plugins__card {
@@ -738,7 +746,7 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1px;
       border: 2px solid var(--line);
-      background: var(--line);
+      background: var(--dot-pattern), var(--bg);
     }
 
     .websites__card {
@@ -816,7 +824,7 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1px;
       border: 2px solid var(--line);
-      background: var(--line);
+      background: var(--dot-pattern), var(--bg);
     }
 
     .features__card {
