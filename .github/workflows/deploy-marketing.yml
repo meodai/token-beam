@@ -1,0 +1,49 @@
+name: Deploy Marketing Site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/marketing/**'
+      - 'packages/lib/**'
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build lib
+        run: npm run build:lib
+
+      - name: Build marketing site
+        run: npm run build:marketing
+
+      - name: Deploy to Hetzner
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: root
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          source: packages/marketing/dist/*
+          target: /opt/token-beam-marketing
+          strip_components: 3
+
+      - name: Reload Nginx
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: root
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script: nginx -t && systemctl reload nginx
