@@ -175,10 +175,31 @@ const description = 'Real-time design token synchronization between web and desi
             <button class="btn btn--primary btn--block" id="regen-btn">Regenerate Colors</button>
           </div>
 
-          <div class="demo__video-wrap">
-            <video class="demo__video" autoplay loop muted playsinline>
-              <source src="/video/demo.mp4" type="video/mp4" />
-            </video>
+          <div class="demo__videos">
+            <div class="demo__video-wrap">
+              <video class="demo__video" autoplay loop muted playsinline>
+                <source src="/video/poline-to-figma.mp4" type="video/mp4" />
+              </video>
+              <span class="demo__video-label">poline → Figma</span>
+            </div>
+            <div class="demo__video-wrap">
+              <video class="demo__video" autoplay loop muted playsinline>
+                <source src="/video/poline-to-blender.mp4" type="video/mp4" />
+              </video>
+              <span class="demo__video-label">poline → Blender</span>
+            </div>
+            <div class="demo__video-wrap">
+              <video class="demo__video" autoplay loop muted playsinline>
+                <source src="/video/poline-to-palette-shader.mp4" type="video/mp4" />
+              </video>
+              <span class="demo__video-label">poline → palette-shader</span>
+            </div>
+            <div class="demo__video-wrap">
+              <video class="demo__video" autoplay loop muted playsinline>
+                <source src="/video/asprite-to-palette-shader.mp4" type="video/mp4" />
+              </video>
+              <span class="demo__video-label">Aseprite → palette-shader</span>
+            </div>
           </div>
         </div>
       </section>
@@ -334,20 +355,46 @@ const description = 'Real-time design token synchronization between web and desi
         <div class="container">
           <h2>For Developers</h2>
           <p class="section-intro">Add real-time design token sync to your website or tool in a few lines of code. The <code>token-beam</code> library is MIT-licensed.</p>
-          <div class="developers__example">
-            <Code code={`import { SyncClient, createCollection } from 'token-beam';
+          <div class="developers__tabs">
+            <button class="developers__tab is-active" data-tab="send">Send</button>
+            <button class="developers__tab" data-tab="receive">Receive</button>
+          </div>
+          <div class="developers__example" data-panel="send">
+            <Code code={`import { SourceSession, createCollection } from 'token-beam';
 
-const client = new SyncClient('wss://tokenbeam.dev');
+const session = new SourceSession({
+  serverUrl: 'wss://tokenbeam.dev',
+  clientType: 'web',
+  origin: 'My App',
+});
 
-// Create a W3C DTCG collection from your design tokens
 const payload = createCollection('brand', {
   'primary':   '#0066cc',
   'secondary': '#cc6600',
   'surface':   '#f5f5f5',
 });
 
-// Push to all connected design tools
-client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'github-light', dark: 'github-dark' }} />
+session.on('peer-connected', () => session.sync(payload));
+session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-dark' }} />
+          </div>
+          <div class="developers__example" data-panel="receive" style="display:none">
+            <Code code={`import { TargetSession, extractColorTokens } from 'token-beam';
+
+const session = new TargetSession({
+  serverUrl: 'wss://tokenbeam.dev',
+  clientType: 'my-app',
+  // token pasted or entered by the user
+  sessionToken: 'beam://A1B2C3D4E5F6',
+});
+
+session.on('sync', ({ payload }) => {
+  const colors = extractColorTokens(payload);
+  colors.forEach(({ name, hex }) => {
+    console.log(name, hex); // "primary" "#0066cc"
+  });
+});
+
+session.connect();`} lang="ts" themes={{ light: 'github-light', dark: 'github-dark' }} />
           </div>
           <div class="developers__links">
             <a href="https://github.com/meodai/token-beam" class="btn">Read the Docs</a>
@@ -441,6 +488,7 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       --line: color-mix(in lab, currentColor 18%, var(--bg));
       --ease: cubic-bezier(0.3, 0.7, 0, 1);
       --success: #1b8a2d;
+      --interactive: tomato;
       --dot: var(--text);
       --dot-r: .5px;
       --dot-space: 5px;
@@ -510,11 +558,12 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       color: currentColor;
       text-decoration-thickness: 1px;
       text-underline-offset: 3px;
-      transition: opacity 0.2s var(--ease);
+      text-decoration-color: var(--interactive);
+      transition: color 0.2s var(--ease);
     }
 
     a:hover {
-      opacity: 0.7;
+      color: var(--interactive);
     }
 
     /* External links get arrow */
@@ -577,13 +626,13 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
     }
 
     .btn--primary {
-      background: var(--text);
+      background: var(--interactive);
       color: var(--bg);
-      border-color: var(--text);
+      border-color: var(--interactive);
     }
 
     .btn--primary:hover {
-      box-shadow: 0 2px 0 0 var(--text);
+      box-shadow: 0 2px 0 0 var(--interactive);
     }
 
     .btn--block {
@@ -758,15 +807,37 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       font-weight: 600;
     }
 
+    .demo__videos {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      max-width: 48rem;
+      margin: 1.5rem auto 0;
+    }
+
+    @media (max-width: 768px) {
+      .demo__videos {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .demo__video-wrap {
-      max-width: 36rem;
-      margin: 0 auto;
+      position: relative;
     }
 
     .demo__video {
       width: 100%;
       border: 2px solid var(--line);
       display: block;
+    }
+
+    .demo__video-label {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.5;
     }
 
     .demo__widget-wrap {
@@ -924,6 +995,44 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
       font-size: inherit !important;
       color: inherit !important;
       font-family: inherit !important;
+    }
+
+    .developers__tabs {
+      display: flex;
+      max-width: 40rem;
+      margin: 0 auto;
+      border: 2px solid var(--line);
+      border-bottom: none;
+    }
+
+    .developers__tab {
+      flex: 1;
+      padding: 0.5rem 1rem;
+      background: var(--dot-pattern), var(--bg);
+      border: none;
+      border-right: 2px solid var(--line);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      color: var(--text);
+      opacity: 0.5;
+      transition: opacity 0.2s var(--ease);
+    }
+
+    .developers__tab:last-child {
+      border-right: none;
+    }
+
+    .developers__tab.is-active {
+      background: var(--bg);
+      opacity: 1;
+    }
+
+    .developers__tab:hover {
+      opacity: 0.8;
     }
 
     .developers__links {
@@ -1120,5 +1229,16 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
 
   <script>
     import '../scripts/demo';
+
+    document.querySelectorAll('.developers__tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = (tab as HTMLElement).dataset.tab;
+        document.querySelectorAll('.developers__tab').forEach((t) => t.classList.remove('is-active'));
+        tab.classList.add('is-active');
+        document.querySelectorAll('.developers__example[data-panel]').forEach((panel) => {
+          (panel as HTMLElement).style.display = (panel as HTMLElement).dataset.panel === target ? '' : 'none';
+        });
+      });
+    });
   </script>
 </html>
