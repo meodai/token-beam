@@ -1,3 +1,9 @@
+# [1.23.0](https://github.com/meodai/token-beam/compare/v1.22.0...v1.23.0) (2026-03-17)
+
+### Features
+
+- **marketing:** add SVG icons for design tools and update index page with icons ([e44153c](https://github.com/meodai/token-beam/commit/e44153cf43952a41229a9f97ce38a05bf3cbf5d2))
+
 # [1.22.0](https://github.com/meodai/token-beam/compare/v1.21.0...v1.22.0) (2026-03-17)
 
 ### Features
