@@ -1,4 +1,5 @@
 ---
+import { Code } from 'astro:components';
 import '../styles/widget.css';
 const title = '⊷ Token Beam - W3C Design Token Synchronization';
 const description = 'Real-time design token synchronization between web and design tools. W3C DTCG spec-compliant. MIT-licensed plugins, enterprise sync server.';
@@ -35,10 +36,10 @@ const description = 'Real-time design token synchronization between web and desi
     <main>
       <section class="hero">
         <div class="container">
-          <div class="badge">W3C Design Tokens Community Group Specification</div>
+          <div class="badge">Built on the W3C Design Tokens Spec</div>
           <h1>Sync any website<br/>with any design tool</h1>
           <p class="hero-text">
-            Live design token synchronization. Your website pushes colors, spacing, typography
+            Live design token synchronization. Push colors and variables from any website
             to Figma, Sketch, Aseprite &mdash; instantly. One protocol, every tool.
           </p>
           <div class="hero-buttons">
@@ -255,10 +256,10 @@ const description = 'Real-time design token synchronization between web and desi
             </div>
 
             <div class="features__card">
-              <h3>Plugin Architecture</h3>
+              <h3>Any Tool, One Format</h3>
               <p>
-                Clean adapter pattern. Each tool (Figma, Sketch, Aseprite) owns its transformation logic.
-                Fully type-safe end-to-end.
+                Each design tool gets a native plugin. You just paste a token &mdash; the plugin handles the rest.
+                No configuration, no setup.
               </p>
             </div>
 
@@ -271,10 +272,10 @@ const description = 'Real-time design token synchronization between web and desi
             </div>
 
             <div class="features__card">
-              <h3>Enterprise Ready</h3>
+              <h3>Production Ready</h3>
               <p>
-                Session management, auto-cleanup, reconnection with exponential backoff, 10MB payload limits.
-                Built for production.
+                Session management, auto-cleanup, reconnection with exponential backoff, rate limiting.
+                Built for real workloads.
               </p>
             </div>
 
@@ -294,19 +295,19 @@ const description = 'Real-time design token synchronization between web and desi
           <h2>For Developers</h2>
           <p class="section-intro">Add real-time design token sync to your website or tool in a few lines of code. The <code>token-beam</code> library is MIT-licensed.</p>
           <div class="developers__example">
-            <pre><code>import &lbrace; SyncClient, createCollection &rbrace; from 'token-beam';
+            <Code code={`import { SyncClient, createCollection } from 'token-beam';
 
 const client = new SyncClient('wss://tokenbeam.dev');
 
 // Create a W3C DTCG collection from your design tokens
-const payload = createCollection('brand', &lbrace;
+const payload = createCollection('brand', {
   'primary':   '#0066cc',
   'secondary': '#cc6600',
   'surface':   '#f5f5f5',
-&rbrace;);
+});
 
 // Push to all connected design tools
-client.on('paired', () =&gt; client.push(payload));</code></pre>
+client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'github-light', dark: 'github-dark' }} />
           </div>
           <div class="developers__links">
             <a href="https://github.com/meodai/token-beam" class="btn">Read the Docs</a>
@@ -318,7 +319,7 @@ client.on('paired', () =&gt; client.push(payload));</code></pre>
       <section class="pricing" id="pricing">
         <div class="container">
           <h2>Server Plans</h2>
-          <p class="section-intro">End users never pay. These plans are for website owners who want hosted sync infrastructure.</p>
+          <p class="section-intro">Designers and end users always free. These plans are for developers hosting sync infrastructure.</p>
           <div class="pricing__grid">
             <div class="pricing__card">
               <h3>Free</h3>
@@ -778,19 +779,22 @@ client.on('paired', () =&gt; client.push(payload));</code></pre>
     }
 
     .developers__example pre {
-      border: 2px solid var(--line);
-      padding: 1.5rem;
+      border: 2px solid var(--line) !important;
+      padding: 1.5rem !important;
       overflow-x: auto;
-      font-size: 0.8rem;
-      line-height: 1.7;
+      font-size: 0.8rem !important;
+      line-height: 1.7 !important;
+      font-family: 'Iosevka Web', 'Iosevka', 'SF Mono', 'Fira Code', monospace !important;
+      border-radius: 0 !important;
     }
 
     .developers__example code {
-      background: none;
-      border: none;
-      padding: 0;
-      font-size: inherit;
-      color: inherit;
+      background: none !important;
+      border: none !important;
+      padding: 0 !important;
+      font-size: inherit !important;
+      color: inherit !important;
+      font-family: inherit !important;
     }
 
     .developers__links {
