@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/meodai/token-beam/compare/v1.21.0...v1.22.0) (2026-03-17)
+
+### Features
+
+- **hero-scene:** enhance visual elements and add dynamic labels for tokens ([4d5e41f](https://github.com/meodai/token-beam/commit/4d5e41fd57f2f7b13fa57f01480a1759fb7f00a2))
+- **marketing:** add hero animation scene with Three.js and update dependencies ([fe35eac](https://github.com/meodai/token-beam/commit/fe35eac408edbc2b86c59adc4f399e32eabded73))
+
 # [1.21.0](https://github.com/meodai/token-beam/compare/v1.20.5...v1.21.0) (2026-03-17)
 
 ### Features
