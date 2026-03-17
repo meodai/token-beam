@@ -1,3 +1,9 @@
+## [1.20.3](https://github.com/meodai/token-beam/compare/v1.20.2...v1.20.3) (2026-03-17)
+
+### Bug Fixes
+
+- **ci:** use ssh-agent for deploy key handling ([5e9680a](https://github.com/meodai/token-beam/commit/5e9680a769473a5af07c98c52f4bffc51270ec1e))
+
 ## [1.20.2](https://github.com/meodai/token-beam/compare/v1.20.1...v1.20.2) (2026-03-17)
 
 ### Bug Fixes
