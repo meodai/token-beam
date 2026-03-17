@@ -1,3 +1,16 @@
+# [1.20.0](https://github.com/meodai/token-beam/compare/v1.19.0...v1.20.0) (2026-03-17)
+
+### Features
+
+- add image assets and enhance plugin manifest for improved functionality and clarity ([31f921e](https://github.com/meodai/token-beam/commit/31f921e0cd5ef1d4ab6f014c4cf13a9002ddb62c))
+- **fonts:** add But Head font files and integrate into styles ([789635d](https://github.com/meodai/token-beam/commit/789635d13abfa5e1d73325e31fb13a10d1f9dcd3))
+- **index:** update content and styling for improved clarity and presentation ([36d5dab](https://github.com/meodai/token-beam/commit/36d5dab3699077ba03d5f3de3eec36104f7b5d3b))
+- **index:** update demo instructions and enhance plugin descriptions for clarity ([635ee5b](https://github.com/meodai/token-beam/commit/635ee5b5ebd6660548b9f2d3464b960197be9190))
+- **index:** update navigation and demo buttons, enhance website showcase ([f2aa77b](https://github.com/meodai/token-beam/commit/f2aa77bed26f7faeee221a01e36fa4de18ec865f))
+- **styles:** adjust dot radius for improved background pattern clarity ([687ba33](https://github.com/meodai/token-beam/commit/687ba334697adfa35882554c14817b5c0a0a3963))
+- **styles:** enhance background styling with dot pattern for improved visual appeal ([a8dd4cc](https://github.com/meodai/token-beam/commit/a8dd4cccd09bdbf1c8511b0468aeadd6729e69b0))
+- **sync-server:** enhance WebSocket connection handling with rate limiting and session management ([a21ef6b](https://github.com/meodai/token-beam/commit/a21ef6bd3c22eb32abfe5c922cfc7a75af086c5d))
+
 # [1.19.0](https://github.com/meodai/token-beam/compare/v1.18.0...v1.19.0) (2026-03-11)
 
 ### Bug Fixes
