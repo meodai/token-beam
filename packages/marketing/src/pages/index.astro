@@ -18,6 +18,7 @@ const description = 'Real-time design token synchronization between web and desi
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/iosevka.min.css"
     />
+    <link rel="stylesheet" href="/fonts/font-faces.css" />
   </head>
   <body>
     <header>
@@ -428,25 +429,26 @@ client.on('paired', () => client.push(payload));`} lang="ts" themes={{ light: 'g
     /* --- Typography --- */
 
     h1, h2, h3 {
-      font-weight: 200;
+      font-family: 'But Head', 'Iosevka Web', monospace;
+      font-weight: 400;
       letter-spacing: -0.03em;
-      line-height: 1.2;
+      line-height: 1.05;
     }
 
     h1 {
-      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-size: clamp(3rem, 8vw, 5rem);
       margin-bottom: 1.5rem;
     }
 
     h2 {
-      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
       text-align: center;
       margin-bottom: 3rem;
     }
 
     h3 {
-      font-size: 1.2rem;
-      font-weight: 300;
+      font-size: 1.5rem;
+      font-weight: 400;
       margin-bottom: 0.75rem;
     }
 

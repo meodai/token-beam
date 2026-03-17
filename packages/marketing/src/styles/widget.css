@@ -2,12 +2,18 @@
 
 .demo__swatches {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(9, 1fr);
   gap: 4px;
   margin-bottom: 1.5rem;
   max-width: 36rem;
   margin-left: auto;
   margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .demo__swatches {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  }
 }
 
 .demo__swatch {
