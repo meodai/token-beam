@@ -1,3 +1,14 @@
+# [1.26.0](https://github.com/meodai/token-beam/compare/v1.25.0...v1.26.0) (2026-03-17)
+
+### Bug Fixes
+
+- **styles:** adjust max-width of demo step row for better layout ([9301c7b](https://github.com/meodai/token-beam/commit/9301c7b656bc56dda9558a47171294e9c3a5cff5))
+
+### Features
+
+- **marketing:** update page description and adjust button styles for improved visibility ([b603562](https://github.com/meodai/token-beam/commit/b603562ebbd11a56cb070317052808be4d40025e))
+- **styles:** update color variables for improved accessibility and consistency ([6785112](https://github.com/meodai/token-beam/commit/6785112c4563b8139ef5ceb64bbfab4748e8d8ca))
+
 # [1.25.0](https://github.com/meodai/token-beam/compare/v1.24.0...v1.25.0) (2026-03-17)
 
 ### Features
