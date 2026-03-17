@@ -1,3 +1,9 @@
+# [1.29.0](https://github.com/meodai/token-beam/compare/v1.28.0...v1.29.0) (2026-03-17)
+
+### Features
+
+- enhance mobile responsiveness in index.astro and hero-scene.ts ([e4a568f](https://github.com/meodai/token-beam/commit/e4a568fa2534af42263ea90e2548307042a951fa))
+
 # [1.28.0](https://github.com/meodai/token-beam/compare/v1.27.0...v1.28.0) (2026-03-17)
 
 ### Features
