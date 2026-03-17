@@ -23,10 +23,13 @@ const BEAM_LABELS = [
 
 interface ShapeNode {
   mesh: THREE.Mesh;
-  outline: THREE.Mesh;
+  outline: THREE.LineSegments;
   originalColor: THREE.Color;
   lit: boolean;
   litTime: number;
+  fillColor: THREE.Color | null;
+  filledFaces: number;
+  totalFaces: number;
 }
 
 export function initHeroScene(canvas: HTMLCanvasElement) {
@@ -60,21 +63,18 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   dirLight.position.set(5, 10, 7);
   scene.add(dirLight);
 
-  // Wireframe material for unlit shapes
-  const wireMat = new THREE.MeshStandardMaterial({
-    color: 0x292f2f,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.3,
-  });
+  // Solid fill material — used for the colored version, revealed via drawRange
+  function createFillMaterial(color: THREE.Color): THREE.MeshStandardMaterial {
+    return new THREE.MeshStandardMaterial({ color });
+  }
 
   // Create abstract shapes at random positions
   const geometries = [
-    () => new THREE.BoxGeometry(0.8, 0.8, 0.8),
-    () => new THREE.SphereGeometry(0.5, 6, 4),
-    () => new THREE.ConeGeometry(0.5, 1, 4), // pyramid
-    () => new THREE.CylinderGeometry(0.4, 0.4, 0.9, 6),
-    () => new THREE.ConeGeometry(0.5, 1, 6), // cone
+    () => new THREE.BoxGeometry(0.8, 0.8, 0.8, 3, 3, 3),
+    () => new THREE.SphereGeometry(0.5, 12, 8),
+    () => new THREE.ConeGeometry(0.5, 1, 8, 3), // pyramid
+    () => new THREE.CylinderGeometry(0.4, 0.4, 0.9, 12, 3),
+    () => new THREE.ConeGeometry(0.5, 1, 12, 3), // cone
   ];
 
   const nodes: ShapeNode[] = [];
@@ -99,21 +99,46 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
 
   for (let i = 0; i < SHAPE_COUNT; i++) {
     const geo = geometries[i % geometries.length]();
-    const mesh = new THREE.Mesh(geo, wireMat.clone());
-
     const pos = findPosition(placedPositions);
     placedPositions.push(pos);
-    mesh.position.copy(pos);
-    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-    mesh.scale.setScalar(0.8 + Math.random() * 0.8);
+    const rot = new THREE.Euler(
+      Math.random() * Math.PI,
+      Math.random() * Math.PI,
+      Math.random() * Math.PI,
+    );
+    const scl = 0.8 + Math.random() * 0.8;
 
+    // Fill mesh — starts with 0 faces drawn, revealed one by one
+    const fillGeo = geo.clone().toNonIndexed(); // ensure each triangle has its own vertices
+    const fillMat = createFillMaterial(new THREE.Color(0x292f2f));
+    const mesh = new THREE.Mesh(fillGeo, fillMat);
+    mesh.position.copy(pos);
+    mesh.rotation.copy(rot);
+    mesh.scale.setScalar(scl);
+    fillGeo.setDrawRange(0, 0); // hidden initially
     scene.add(mesh);
+
+    // Edge outline — just contour lines
+    const edges = new THREE.EdgesGeometry(geo, 15);
+    const edgeMat = new THREE.LineBasicMaterial({
+      color: isDark ? 0xffffff : 0x292f2f,
+    });
+    const outline = new THREE.LineSegments(edges, edgeMat);
+    outline.position.copy(pos);
+    outline.rotation.copy(rot);
+    outline.scale.setScalar(scl);
+    scene.add(outline);
+
+    const totalFaces = Math.floor(fillGeo.getAttribute('position').count / 3);
     nodes.push({
       mesh,
-      outline: mesh,
+      outline,
       originalColor: new THREE.Color(0x292f2f),
       lit: false,
       litTime: 0,
+      fillColor: null,
+      filledFaces: 0,
+      totalFaces,
     });
   }
 
@@ -208,8 +233,6 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   pathGeo.setAttribute('position', new THREE.BufferAttribute(pathPositions, 3));
   const pathMat = new THREE.LineBasicMaterial({
     color: 0xff6347,
-    transparent: true,
-    opacity: 0.6,
   });
   const pathLine = new THREE.Line(pathGeo, pathMat);
   scene.add(pathLine);
@@ -243,13 +266,10 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
   function updateTheme() {
     const isDark = darkQuery.matches;
-    const baseColor = isDark ? 0xffffff : 0x292f2f;
-    wireMat.color.set(baseColor);
+    const edgeColor = isDark ? 0xffffff : 0x292f2f;
     nodes.forEach((n) => {
-      if (!n.lit) {
-        (n.mesh.material as THREE.MeshStandardMaterial).color.set(baseColor);
-      }
-      n.originalColor.set(baseColor);
+      (n.outline.material as THREE.LineBasicMaterial).color.set(edgeColor);
+      n.originalColor.set(edgeColor);
     });
   }
   updateTheme();
@@ -267,15 +287,12 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     progress += (TOKEN_SPEED * 0.016) / from.distanceTo(to);
 
     if (progress >= 1) {
-      // Arrived — light up the shape
+      // Arrived — start filling faces one by one
       const node = nodes[nextTarget];
       const color = new THREE.Color(COLORS[colorIndex % COLORS.length]);
-      const mat = node.mesh.material as THREE.MeshStandardMaterial;
-      mat.color.copy(color);
-      mat.wireframe = false;
-      mat.opacity = 1;
-      mat.emissive.copy(color);
-      mat.emissiveIntensity = 0.2;
+      (node.mesh.material as THREE.MeshStandardMaterial).color.copy(color);
+      node.fillColor = color;
+      node.filledFaces = 0;
       node.lit = true;
       node.litTime = time;
 
@@ -302,7 +319,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     floatingLabel.sprite.position.copy(token.position);
     floatingLabel.sprite.position.y -= 0.25;
 
-    // Draw path line from source to target, fade out as token approaches
+    // Draw path line from source to target, visible until ball arrives
     pathPositions[0] = from.x;
     pathPositions[1] = from.y;
     pathPositions[2] = from.z;
@@ -310,18 +327,31 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     pathPositions[4] = to.y;
     pathPositions[5] = to.z;
     pathGeo.attributes.position.needsUpdate = true;
-    pathMat.opacity = 0.6 * (1 - eased);
+    pathLine.visible = progress < 1;
 
     // Gentle shape rotation — keep outline in sync
     nodes.forEach((n) => {
       n.mesh.rotation.y += 0.003;
       n.mesh.rotation.x += 0.001;
+      n.outline.rotation.copy(n.mesh.rotation);
     });
 
     // Camera smoothly follows token
     cameraLookTarget.lerp(token.position, 0.02);
     camera.position.copy(cameraLookTarget).add(cameraOffset);
     camera.lookAt(cameraLookTarget);
+
+    // Reveal faces one by one via drawRange — one face every 50ms
+    nodes.forEach((n) => {
+      if (n.fillColor && n.filledFaces < n.totalFaces) {
+        const elapsed = (time - n.litTime) * 1000;
+        const expectedFaces = Math.min(Math.floor(elapsed / 5), n.totalFaces);
+        if (expectedFaces > n.filledFaces) {
+          n.filledFaces = expectedFaces;
+          n.mesh.geometry.setDrawRange(0, n.filledFaces * 3);
+        }
+      }
+    });
 
     renderer.render(scene, camera);
   }
