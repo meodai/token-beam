@@ -1,3 +1,9 @@
+# [1.21.0](https://github.com/meodai/token-beam/compare/v1.20.5...v1.21.0) (2026-03-17)
+
+### Features
+
+- **demo:** add new demo videos for various export formats and enhance layout ([e76257c](https://github.com/meodai/token-beam/commit/e76257c24d1afc138e9a7e57cfbda5f6a9837abf))
+
 ## [1.20.5](https://github.com/meodai/token-beam/compare/v1.20.4...v1.20.5) (2026-03-17)
 
 ### Bug Fixes
