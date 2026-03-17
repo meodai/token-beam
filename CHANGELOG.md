@@ -1,3 +1,9 @@
+# [1.24.0](https://github.com/meodai/token-beam/compare/v1.23.0...v1.24.0) (2026-03-17)
+
+### Features
+
+- **marketing:** update SVG icons for design tools and adjust button/pill styles ([0a45397](https://github.com/meodai/token-beam/commit/0a453970096603aab14edc7320fac7517ea510ba))
+
 # [1.23.0](https://github.com/meodai/token-beam/compare/v1.22.0...v1.23.0) (2026-03-17)
 
 ### Features
