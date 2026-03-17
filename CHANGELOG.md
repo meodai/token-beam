@@ -1,3 +1,9 @@
+## [1.20.2](https://github.com/meodai/token-beam/compare/v1.20.1...v1.20.2) (2026-03-17)
+
+### Bug Fixes
+
+- **ci:** use printf for SSH key to preserve formatting ([6316aec](https://github.com/meodai/token-beam/commit/6316aecadf79121c79eb2c8c8f6b1b269b55d113))
+
 ## [1.20.1](https://github.com/meodai/token-beam/compare/v1.20.0...v1.20.1) (2026-03-17)
 
 ### Bug Fixes
