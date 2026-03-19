@@ -1,3 +1,9 @@
+# [1.30.0](https://github.com/meodai/token-beam/compare/v1.29.0...v1.30.0) (2026-03-19)
+
+### Features
+
+- increase WebSocket rate limit from 120 to 500 msgs/sec ([f8b43e0](https://github.com/meodai/token-beam/commit/f8b43e01c8f5c7138b70428db713733c75e48096))
+
 # [1.29.0](https://github.com/meodai/token-beam/compare/v1.28.0...v1.29.0) (2026-03-17)
 
 ### Features
