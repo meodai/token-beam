@@ -1,3 +1,9 @@
+# [1.31.0](https://github.com/meodai/token-beam/compare/v1.30.0...v1.31.0) (2026-03-19)
+
+### Features
+
+- simplify clientType routing with sender/receiver roles ([97e26c3](https://github.com/meodai/token-beam/commit/97e26c3dc2a5fe10c7a7ed756c3091daa346c79c))
+
 # [1.30.0](https://github.com/meodai/token-beam/compare/v1.29.0...v1.30.0) (2026-03-19)
 
 ### Features
