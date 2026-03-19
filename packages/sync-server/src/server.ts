@@ -31,7 +31,7 @@ export class TokenSyncServer {
   private readonly MAX_SVG_SIZE_BEFORE_SANITIZE = 20 * 1024; // 20KB - reject before running regexes
   // Rate limiting: relaxed to keep real-time feel
   private readonly RATE_LIMIT_WINDOW = 1000; // 1 second window
-  private readonly RATE_LIMIT_MAX_MESSAGES = 120; // 120 msgs/sec — generous for real-time
+  private readonly RATE_LIMIT_MAX_MESSAGES = 500; // 500 msgs/sec — generous for real-time
   private ipConnectionCount: Map<string, number> = new Map();
   private clientMessageTimestamps: Map<WebSocket, number[]> = new Map();
 
