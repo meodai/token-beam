@@ -22,8 +22,8 @@ As an integration author, you are responsible for:
 
 There are two client roles:
 
-- Web client: creates a session and receives a session token.
-- Target client: joins an existing session using the token.
+- **Receiver** (source): creates a session and receives a session token. Typically the web app that receives design tokens.
+- **Sender** (target): joins an existing session using the token. Typically a design tool plugin that sends tokens.
 
 All clients connect to the sync server via WebSocket.
 
@@ -40,7 +40,7 @@ All messages are JSON objects.
 {
   "type": "pair" | "sync" | "ping" | "error",
   "sessionToken": "beam://ABC123...",
-  "clientType": "web" | "figma" | "sketch" | "aseprite" | "custom",
+  "clientType": "receiver" | "sender" | "figma" | "sketch" | "aseprite" | "custom",
   "origin": "Your App Name",
   "icon": { "type": "unicode", "value": "*" } | { "type": "svg", "value": "<svg...>" },
   "payload": { "collections": [ ... ] },
@@ -52,7 +52,7 @@ All messages are JSON objects.
 
 - type: required. One of pair, sync, ping, error.
 - sessionToken: required for target clients when pairing.
-- clientType: required. Use a short, stable identifier.
+- clientType: required. Identifies your app to paired clients. Canonical values are `"receiver"` (creates session, receives tokens) and `"sender"` (joins session, sends tokens). You can use any string up to 32 characters (letters, numbers, spaces, hyphens, underscores). Legacy values (`"web"`, `"figma"`, `"sketch"`, etc.) continue to work.
 - origin: optional display name shown to other clients.
 - icon: optional. Unicode or SVG (server sanitizes SVG).
 - payload: used by sync messages only.
@@ -60,7 +60,7 @@ All messages are JSON objects.
 
 ## Pairing Flow
 
-### Web Client
+### Receiver (Source)
 
 1. Connect to server.
 2. Send pair message without a sessionToken.
@@ -68,28 +68,39 @@ All messages are JSON objects.
 
 Request:
 ```json
-{ "type": "pair", "clientType": "web", "origin": "My App" }
+{ "type": "pair", "clientType": "receiver", "origin": "My App" }
 ```
 
 Response:
 ```json
-{ "type": "pair", "sessionToken": "beam://ABC123" }
+{ "type": "pair", "sessionToken": "beam://ABC123", "clientType": "receiver" }
 ```
 
-### Target Client
+You can use a custom name instead of `"receiver"`:
+```json
+{ "type": "pair", "clientType": "My Dashboard", "origin": "My App" }
+```
+Note: only `"receiver"` and `"web"` (legacy) are recognized as source clients. Any other value will be treated as a target/sender.
+
+### Sender (Target)
 
 1. Connect to server.
 2. Send pair message with sessionToken.
-3. Receive pair response with origin and icon (if provided by web client).
+3. Receive pair response with origin and icon (if provided by source client).
 
 Request:
 ```json
-{ "type": "pair", "clientType": "custom", "sessionToken": "beam://ABC123" }
+{ "type": "pair", "clientType": "sender", "sessionToken": "beam://ABC123" }
 ```
 
 Response:
 ```json
-{ "type": "pair", "clientType": "custom", "sessionToken": "beam://ABC123", "origin": "My App", "icon": { "type": "unicode", "value": "*" } }
+{ "type": "pair", "clientType": "sender", "sessionToken": "beam://ABC123", "origin": "My App", "icon": { "type": "unicode", "value": "*" } }
+```
+
+You can use a custom name to identify your app:
+```json
+{ "type": "pair", "clientType": "My Figma Plugin", "sessionToken": "beam://ABC123", "origin": "My App" }
 ```
 
 ## Sync Flow
@@ -207,7 +218,7 @@ const ws = new WebSocket(SYNC_SERVER_URL);
 ws.onopen = () => {
   ws.send(JSON.stringify({
     type: 'pair',
-    clientType: 'custom',
+    clientType: 'sender',
     sessionToken: token,
     origin: 'My Plugin'
   }));
@@ -225,9 +236,25 @@ ws.onmessage = (event) => {
 
 - Confirm sync server is reachable.
 - Verify session token format: beam://<HEX>.
-- Ensure your clientType is stable and lowercase.
+- Ensure your clientType is 1-32 characters (letters, numbers, spaces, hyphens, underscores).
 - Log error messages; treat [warn] as non-fatal.
 
 ## Contact
 
 If you are building an integration and need help, open an issue in the main repository with your clientType, environment, and sample payloads.
+
+## Legacy clientType Values
+
+The following values are still supported for backward compatibility:
+
+| Legacy value | Mapped role | Notes |
+|---|---|---|
+| `web` | source (receiver) | Original value for web clients |
+| `figma` | target (sender) | Figma plugin |
+| `sketch` | target (sender) | Sketch plugin |
+| `aseprite` | target (sender) | Aseprite plugin |
+| `blender` | target (sender) | Blender plugin |
+| `krita` | target (sender) | Krita plugin |
+| `adobe-xd` | target (sender) | Adobe XD plugin |
+
+New integrations should use `"sender"` or `"receiver"`, or a custom name for their app.

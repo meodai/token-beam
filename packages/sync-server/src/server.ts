@@ -8,10 +8,11 @@ import type { SyncMessage, SyncIcon } from 'token-beam';
 export interface SyncSession {
   id: string;
   token: string;
-  webClient?: WebSocket;
+  sourceClient?: WebSocket;
+  sourceClientType?: string;
   targetClients: Array<{ ws: WebSocket; type: string; origin?: string }>;
-  webOrigin?: string;
-  webIcon?: SyncIcon;
+  sourceOrigin?: string;
+  sourceIcon?: SyncIcon;
   createdAt: Date;
   lastActivity: Date;
 }
@@ -178,10 +179,17 @@ export class TokenSyncServer {
   }
 
   private handlePair(ws: WebSocket, message: SyncMessage) {
-    const { sessionToken, clientType } = message;
+    const { sessionToken } = message;
+    const clientType = message.clientType?.trim();
 
     if (!clientType) {
       this.sendError(ws, 'clientType is required');
+      return;
+    }
+
+    const clientTypeError = this.validateClientType(clientType);
+    if (clientTypeError) {
+      this.sendError(ws, `Invalid clientType: ${clientTypeError}`);
       return;
     }
 
@@ -198,46 +206,49 @@ export class TokenSyncServer {
       console.log(`Session paired with origin: ${message.origin}`);
     }
 
-    // Web client — rejoin existing session or create new one
-    if (clientType === 'web') {
-      // If the web client provides a session token, try to rejoin
+    const role = this.resolveRole(clientType);
+
+    // Source client — rejoin existing session or create new one
+    if (role === 'source') {
+      // If the source client provides a session token, try to rejoin
       if (sessionToken) {
         const existing = this.getSessionByToken(sessionToken);
-        if (existing && !existing.webClient) {
-          // Rejoin: restore the web client on the existing session
-          existing.webClient = ws;
+        if (existing && !existing.sourceClient) {
+          // Rejoin: restore the source client on the existing session
+          existing.sourceClient = ws;
+          existing.sourceClientType = clientType;
           existing.lastActivity = new Date();
           this.clientToSessionId.set(ws, existing.id);
 
           // Update origin and icon if provided
-          if (message.origin) existing.webOrigin = message.origin;
+          if (message.origin) existing.sourceOrigin = message.origin;
           if (message.icon) {
-            const webIcon = this.sanitizeIcon(message.icon);
-            if (webIcon) existing.webIcon = webIcon;
+            const sourceIcon = this.sanitizeIcon(message.icon);
+            if (sourceIcon) existing.sourceIcon = sourceIcon;
           }
 
           this.send(ws, {
             type: 'pair',
             sessionToken: existing.token,
-            clientType: 'web',
+            clientType: existing.sourceClientType,
           });
 
-          // Notify connected targets that web client is back
+          // Notify connected targets that source client is back
           for (const target of existing.targetClients) {
             if (target.ws.readyState === WebSocket.OPEN) {
               this.send(target.ws, {
                 type: 'pair',
-                clientType: 'web',
-                origin: existing.webOrigin,
-                icon: existing.webIcon,
+                clientType: existing.sourceClientType,
+                origin: existing.sourceOrigin,
+                icon: existing.sourceIcon,
               });
             }
           }
 
-          console.log(`Web client rejoined session: ${existing.token}`);
+          console.log(`Source client (${clientType}) rejoined session: ${existing.token}`);
           return;
         }
-        // Token invalid or session already has a web client — fall through to create new
+        // Token invalid or session already has a source client — fall through to create new
       }
 
       // Limit total sessions
@@ -249,10 +260,10 @@ export class TokenSyncServer {
       const token = this.generateToken();
 
       // Sanitize icon — warn client if it was rejected
-      let webIcon: SyncIcon | undefined;
+      let sourceIcon: SyncIcon | undefined;
       if (message.icon) {
-        webIcon = this.sanitizeIcon(message.icon);
-        if (!webIcon) {
+        sourceIcon = this.sanitizeIcon(message.icon);
+        if (!sourceIcon) {
           console.log(
             `Rejected invalid icon from ${message.origin ?? 'unknown'}: type=${(message.icon as Record<string, unknown>).type}`,
           );
@@ -266,10 +277,11 @@ export class TokenSyncServer {
       const session: SyncSession = {
         id: this.generateSessionId(),
         token,
-        webClient: ws,
+        sourceClient: ws,
+        sourceClientType: clientType,
         targetClients: [],
-        webOrigin: message.origin,
-        webIcon,
+        sourceOrigin: message.origin,
+        sourceIcon,
         createdAt: new Date(),
         lastActivity: new Date(),
       };
@@ -280,15 +292,15 @@ export class TokenSyncServer {
       this.send(ws, {
         type: 'pair',
         sessionToken: token,
-        clientType: 'web',
+        clientType,
       });
 
-      console.log(`Web client paired with token: ${token}`);
+      console.log(`Source client (${clientType}) paired with token: ${token}`);
       return;
     }
 
-    // Target client (Figma, Aseprite, Sketch, etc.) joins existing session
-    if (clientType !== 'web' && sessionToken) {
+    // Target client (sender) joins existing session
+    if (role === 'target' && sessionToken) {
       const session = this.getSessionByToken(sessionToken);
 
       if (!session) {
@@ -311,18 +323,18 @@ export class TokenSyncServer {
       this.clientToSessionId.set(ws, session.id);
       session.lastActivity = new Date();
 
-      // Send web origin + icon to target client so it knows who it's paired with
+      // Send source origin + icon to target client so it knows who it's paired with
       this.send(ws, {
         type: 'pair',
         sessionToken,
         clientType,
-        origin: session.webOrigin,
-        icon: session.webIcon,
+        origin: session.sourceOrigin,
+        icon: session.sourceIcon,
       });
 
-      // Notify web client that a new target connected
-      if (session.webClient && session.webClient.readyState === WebSocket.OPEN) {
-        this.send(session.webClient, {
+      // Notify source client that a new target connected
+      if (session.sourceClient && session.sourceClient.readyState === WebSocket.OPEN) {
+        this.send(session.sourceClient, {
           type: 'pair',
           clientType,
           origin: message.origin,
@@ -330,7 +342,7 @@ export class TokenSyncServer {
       }
 
       console.log(
-        `${clientType} client joined session: ${sessionToken} (${session.targetClients.length} target clients)`,
+        `Target client (${clientType}) joined session: ${sessionToken} (${session.targetClients.length} target clients)`,
       );
       return;
     }
@@ -348,9 +360,9 @@ export class TokenSyncServer {
 
     session.lastActivity = new Date();
 
-    const isFromWeb = ws === session.webClient;
+    const isFromSource = ws === session.sourceClient;
 
-    if (isFromWeb) {
+    if (isFromSource) {
       // Validate payload before broadcasting
       const validation = validateTokenPayload(message.payload);
       if (!validation.success) {
@@ -370,7 +382,7 @@ export class TokenSyncServer {
           sentCount++;
         }
       }
-      console.log(`Synced from web to ${sentCount} target client(s)`);
+      console.log(`Synced from source to ${sentCount} target client(s)`);
     } else {
       // Validate payload from target client before forwarding
       const targetValidation = validateTokenPayload(message.payload);
@@ -380,16 +392,16 @@ export class TokenSyncServer {
         return;
       }
 
-      // Send to web client
-      if (session.webClient && session.webClient.readyState === WebSocket.OPEN) {
-        this.send(session.webClient, {
+      // Send to source client
+      if (session.sourceClient && session.sourceClient.readyState === WebSocket.OPEN) {
+        this.send(session.sourceClient, {
           type: 'sync',
           payload: message.payload,
         });
         const targetType = session.targetClients.find((t) => t.ws === ws)?.type || 'unknown';
-        console.log(`Synced from ${targetType} to web`);
+        console.log(`Synced from ${targetType} to source`);
       } else {
-        this.sendError(ws, 'Web client not connected');
+        this.sendError(ws, 'Source client not connected');
       }
     }
   }
@@ -409,38 +421,39 @@ export class TokenSyncServer {
 
     this.clientToSessionId.delete(ws);
 
-    if (ws === session.webClient) {
-      // Web client disconnected - keep session for potential rejoin
-      session.webClient = undefined;
+    if (ws === session.sourceClient) {
+      // Source client disconnected - keep session for potential rejoin
+      const sourceType = session.sourceClientType ?? 'receiver';
+      session.sourceClient = undefined;
       for (const target of session.targetClients) {
         if (target.ws.readyState === WebSocket.OPEN) {
           this.send(target.ws, {
             type: 'peer-disconnected',
-            clientType: 'web',
-            reason: 'Web client disconnected',
+            clientType: sourceType,
+            reason: `${sourceType} client disconnected`,
           });
         }
       }
 
       if (session.targetClients.length === 0) {
         this.removeSession(session.id);
-        console.log(`Session ${session.token} ended (web disconnect)`);
+        console.log(`Session ${session.token} ended (source disconnect)`);
       } else {
-        console.log(`Web client disconnected from session ${session.token}`);
+        console.log(`Source client (${sourceType}) disconnected from session ${session.token}`);
       }
     } else {
       // Target client disconnected - remove from array
       const disconnectedTarget = session.targetClients.find((t) => t.ws === ws);
       session.targetClients = session.targetClients.filter((t) => t.ws !== ws);
 
-      if (disconnectedTarget && session.webClient?.readyState === WebSocket.OPEN) {
-        this.send(session.webClient, {
+      if (disconnectedTarget && session.sourceClient?.readyState === WebSocket.OPEN) {
+        this.send(session.sourceClient, {
           type: 'peer-disconnected',
           clientType: disconnectedTarget.type,
           reason: `${disconnectedTarget.type} client disconnected`,
         });
       }
-      if (!session.webClient && session.targetClients.length === 0) {
+      if (!session.sourceClient && session.targetClients.length === 0) {
         this.removeSession(session.id);
         console.log(`Session ${session.token} ended (last target disconnect)`);
       } else {
@@ -470,8 +483,8 @@ export class TokenSyncServer {
     this.sessions.delete(sessionId);
     this.tokenToSessionId.delete(session.token);
 
-    if (session.webClient) {
-      this.clientToSessionId.delete(session.webClient);
+    if (session.sourceClient) {
+      this.clientToSessionId.delete(session.sourceClient);
     }
     for (const target of session.targetClients) {
       this.clientToSessionId.delete(target.ws);
@@ -588,6 +601,20 @@ export class TokenSyncServer {
     return false;
   }
 
+  private resolveRole(clientType: string): 'source' | 'target' {
+    if (clientType === 'web' || clientType === 'receiver') return 'source';
+    return 'target';
+  }
+
+  private validateClientType(clientType: string): string | null {
+    const trimmed = clientType.trim();
+    if (trimmed.length === 0) return 'clientType must not be empty';
+    if (trimmed.length > 32) return 'clientType must be 32 characters or fewer';
+    if (!/^[a-zA-Z0-9 _-]+$/.test(trimmed))
+      return 'clientType must contain only letters, numbers, spaces, hyphens, or underscores';
+    return null;
+  }
+
   private generateToken(): string {
     // Generate 6 random bytes and convert to hex (12 chars)
     // Format: beam://XXXXXXXXXXXX
@@ -610,9 +637,9 @@ export class TokenSyncServer {
         const session = this.removeSession(sessionId);
         if (!session) continue;
 
-        if (session.webClient?.readyState === WebSocket.OPEN) {
-          this.sendError(session.webClient, 'Session expired');
-          session.webClient.close();
+        if (session.sourceClient?.readyState === WebSocket.OPEN) {
+          this.sendError(session.sourceClient, 'Session expired');
+          session.sourceClient.close();
         }
         for (const target of session.targetClients) {
           if (target.ws.readyState === WebSocket.OPEN) {
@@ -645,8 +672,8 @@ export class TokenSyncServer {
 
     // Close all active connections so wss.close() doesn't hang
     for (const session of this.sessions.values()) {
-      if (session.webClient?.readyState === WebSocket.OPEN) {
-        session.webClient.close();
+      if (session.sourceClient?.readyState === WebSocket.OPEN) {
+        session.sourceClient.close();
       }
       for (const target of session.targetClients) {
         if (target.ws.readyState === WebSocket.OPEN) {

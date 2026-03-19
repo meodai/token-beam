@@ -115,7 +115,7 @@ class TypedEmitter<TPayload> {
 
 export interface SessionOptions {
   serverUrl: string;
-  clientType: string;
+  clientType?: string;
   sessionToken?: string;
   origin?: string;
   icon?: SyncIcon;
@@ -204,7 +204,7 @@ class SessionBase<TPayload = unknown> {
 
     const syncClientOptions: SyncClientOptions<TPayload> = {
       serverUrl: this.options.serverUrl,
-      clientType: this.options.clientType,
+      clientType: this.options.clientType ?? 'receiver',
       sessionToken: this.sessionToken,
       getSessionToken: () => this.sessionToken,
       origin: this.options.origin,
@@ -310,6 +310,7 @@ export class SourceSession<TPayload = unknown> extends SessionBase<TPayload> {
   constructor(options: SourceSessionOptions) {
     super({
       ...options,
+      clientType: options.clientType ?? 'receiver',
       serverUrl: options.serverUrl ?? DEFAULT_SYNC_SERVER_URL,
     });
   }
@@ -319,6 +320,7 @@ export class TargetSession<TPayload = unknown> extends SessionBase<TPayload> {
   constructor(options: TargetSessionOptions) {
     super({
       ...options,
+      clientType: options.clientType ?? 'sender',
       serverUrl: options.serverUrl ?? DEFAULT_SYNC_SERVER_URL,
     });
   }

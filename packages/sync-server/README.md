@@ -29,14 +29,14 @@ PORT=9000 npm start
 
 `ws://` is enabled only so older tools can still connect. It is unencrypted and should be considered legacy transport.
 
-### Web Client
+### Receiver (Web App)
 
 ```typescript
-import { SyncClient } from './sync-client';
+import { SourceSession } from 'token-beam';
 
-const client = new SyncClient({
-  serverUrl: 'ws://localhost:8080',
-  clientType: 'web',
+const session = new SourceSession({
+  // clientType defaults to 'receiver', or pass a custom name:
+  // clientType: 'My Dashboard',
   onPaired: (token) => {
     console.log('Share this token:', token); // e.g., "beam://A1B2C3D4E5F6"
   },
@@ -45,27 +45,30 @@ const client = new SyncClient({
   },
 });
 
-await client.connect();
+await session.connect();
 
 // Send updates
-client.sync(myTokenPayload);
+session.sync(myTokenPayload);
 ```
 
-### Figma Plugin
+### Sender (Design Tool Plugin)
 
 ```typescript
-const client = new SyncClient({
-  serverUrl: 'ws://localhost:8080',
-  clientType: 'figma',
-  sessionToken: 'beam://A1B2C3D4E5F6', // Token from web client
+import { TargetSession } from 'token-beam';
+
+const session = new TargetSession({
+  // clientType defaults to 'sender', or pass a custom name:
+  // clientType: 'My Figma Plugin',
+  sessionToken: 'beam://A1B2C3D4E5F6', // Token from receiver
   onSync: (payload) => {
-    // Apply tokens to Figma
     applyTokensToFigma(payload);
   },
 });
 
-await client.connect();
+await session.connect();
 ```
+
+> **Legacy:** `clientType: 'web'` still works as a receiver, and values like `'figma'`, `'sketch'`, etc. still work as senders. New integrations should use `'receiver'`/`'sender'` or a custom app name.
 
 ## Protocol
 
@@ -75,25 +78,27 @@ await client.connect();
 ```json
 {
   "type": "pair",
-  "clientType": "web" | "figma",
+  "clientType": "receiver" | "sender" | "My App Name",
   "sessionToken": "beam://A1B2C3D4E5F6",
   "icon": { "type": "unicode", "value": "🎨" }
 }
 ```
 
-The `sessionToken` field is only required for target clients (not `web`). The `icon` field is optional — web clients can provide it so design tool plugins can display the source app's branding.
+- `clientType`: identifies your app to the paired client. Use `"receiver"` for source/web clients, `"sender"` for target/design-tool clients, or any custom string (1-32 chars, alphanumeric + spaces/hyphens/underscores).
+- `sessionToken`: only required for senders (target clients joining an existing session).
+- `icon`: optional — source clients can provide it so design tool plugins can display branding.
 
 #### Pair Response (Server → Client)
 ```json
 {
   "type": "pair",
   "sessionToken": "beam://A1B2C3D4E5F6",
-  "clientType": "web" | "figma",
+  "clientType": "receiver" | "sender",
   "icon": { "type": "unicode", "value": "🎨" }
 }
 ```
 
-Target clients receive the web client's `origin` and `icon` (if provided) in the pair response.
+Target clients receive the source client's `origin` and `icon` (if provided) in the pair response.
 ```
 
 #### Sync Message (Client ↔ Server ↔ Client)
@@ -174,8 +179,8 @@ await server.start();
 ```typescript
 interface SyncClientOptions<T = unknown> {
   serverUrl: string;
-  clientType: string; // e.g., 'web', 'figma', 'sketch', 'aseprite'
-  sessionToken?: string; // Required for target clients (not 'web')
+  clientType?: string; // defaults to 'receiver' (SourceSession) or 'sender' (TargetSession)
+  sessionToken?: string; // Required for target/sender clients
   origin?: string; // Display name for this client
   icon?: SyncIcon; // Icon shown in paired plugins (unicode or SVG)
   onPaired?: (token: string, origin?: string, icon?: SyncIcon) => void;
@@ -191,9 +196,9 @@ interface SyncClientOptions<T = unknown> {
 
 ```
 Session Lifecycle:
-1. Web connects → Server generates token (e.g., "beam://A1B2C3D4E5F6")
+1. Receiver connects → Server generates token (e.g., "beam://A1B2C3D4E5F6")
 2. User copies token
-3. Figma enters token → Server pairs sessions
+3. Sender enters token → Server pairs sessions
 4. Bidirectional sync active
 5. Auto-cleanup on timeout/disconnect
 ```
