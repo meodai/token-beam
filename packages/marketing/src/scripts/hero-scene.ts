@@ -1,24 +1,29 @@
 import * as THREE from 'three';
 
-const COLORS = ['#ff6347', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+// Figma 5-hue accent palette — tokens cycle through these as they land on shapes
+const COLORS = ['#ff7262', '#a259ff', '#1abcfe', '#0acf83', '#f24822'];
 const SHAPE_COUNT = 14;
 const TOKEN_SPEED = 0.6;
 
+// Ink + accent for shape outlines and the emissive highlight
+const INK = 0x1e1e1e;
+const ACCENT = 0xff7262;
+
 const BEAM_LABELS = [
-  'beam://F4A1C3',
-  'beam://3B82F6',
-  'beam://10B981',
-  'beam://F59E0B',
-  'beam://8B5CF6',
-  'beam://EC4899',
-  'beam://2DD4BF',
-  'beam://A78BFA',
-  'beam://FB923C',
-  'beam://34D399',
-  'beam://F87171',
-  'beam://60A5FA',
-  'beam://C084FC',
-  'beam://FBBF24',
+  'tsp://FF7262',
+  'tsp://A259FF',
+  'tsp://1ABCFE',
+  'tsp://0ACF83',
+  'tsp://F24822',
+  'tsp://0D99FF',
+  'tsp://FF7262',
+  'tsp://A259FF',
+  'tsp://1ABCFE',
+  'tsp://0ACF83',
+  'tsp://F24822',
+  'tsp://0D99FF',
+  'tsp://FF7262',
+  'tsp://A259FF',
 ];
 
 interface ShapeNode {
@@ -196,7 +201,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
 
     // Fill mesh — starts with 0 faces drawn, revealed one by one
     const fillGeo = geo.clone().toNonIndexed(); // ensure each triangle has its own vertices
-    const fillMat = createFillMaterial(new THREE.Color(0x292f2f));
+    const fillMat = createFillMaterial(new THREE.Color(INK));
     const mesh = new THREE.Mesh(fillGeo, fillMat);
     mesh.position.copy(pos);
     mesh.rotation.copy(rot);
@@ -207,7 +212,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     // Edge outline — just contour lines
     const edges = new THREE.EdgesGeometry(geo, 15);
     const edgeMat = new THREE.LineBasicMaterial({
-      color: isDark ? 0xffffff : 0x292f2f,
+      color: isDark ? 0xffffff : INK,
     });
     const outline = new THREE.LineSegments(edges, edgeMat);
     outline.position.copy(pos);
@@ -219,7 +224,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     nodes.push({
       mesh,
       outline,
-      originalColor: new THREE.Color(0x292f2f),
+      originalColor: new THREE.Color(INK),
       lit: false,
       litTime: 0,
       fillColor: null,
@@ -242,7 +247,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     const padV = 18;
     const bgW = metrics.width + pad * 2;
     const bgH = 18 + padV * 2;
-    ctx.fillStyle = isDark ? '#ffffff' : '#292f2f';
+    ctx.fillStyle = isDark ? '#ffffff' : '#1e1e1e';
     ctx.fillRect(0, 4, bgW, bgH);
     ctx.fillStyle = isDark ? '#000000' : '#ffffff';
     ctx.fillText(text, pad, 4 + padV + 15);
@@ -302,7 +307,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
     function update(label: string, dark: boolean) {
       ctx.clearRect(0, 0, 512, 64);
       ctx.font = '300 28px monospace';
-      ctx.fillStyle = dark ? '#ffffff' : '#292f2f';
+      ctx.fillStyle = dark ? '#ffffff' : '#1e1e1e';
       ctx.fillText(label, 8, 36);
       tex.needsUpdate = true;
     }
@@ -317,8 +322,8 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   // Token sphere
   const tokenGeo = new THREE.SphereGeometry(0.06, 12, 12);
   const tokenMat = new THREE.MeshStandardMaterial({
-    color: 0xff6347,
-    emissive: 0xff6347,
+    color: ACCENT,
+    emissive: ACCENT,
     emissiveIntensity: 0.4,
   });
   const token = new THREE.Mesh(tokenGeo, tokenMat);
@@ -329,14 +334,14 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   const pathPositions = new Float32Array(6);
   pathGeo.setAttribute('position', new THREE.BufferAttribute(pathPositions, 3));
   const pathMat = new THREE.LineBasicMaterial({
-    color: 0xff6347,
+    color: ACCENT,
   });
   const pathLine = new THREE.Line(pathGeo, pathMat);
   scene.add(pathLine);
 
   // Endpoint dots for the path line
   const dotGeo = new THREE.SphereGeometry(0.02, 8, 8);
-  const dotMat = new THREE.MeshBasicMaterial({ color: 0xff6347 });
+  const dotMat = new THREE.MeshBasicMaterial({ color: ACCENT });
   const dotStart = new THREE.Mesh(dotGeo, dotMat);
   const dotEnd = new THREE.Mesh(dotGeo, dotMat.clone());
   scene.add(dotStart);
@@ -374,7 +379,7 @@ export function initHeroScene(canvas: HTMLCanvasElement) {
   const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
   function updateTheme() {
     const isDark = darkQuery.matches;
-    const edgeColor = isDark ? 0xffffff : 0x292f2f;
+    const edgeColor = isDark ? 0xffffff : INK;
     nodes.forEach((n) => {
       (n.outline.material as THREE.LineBasicMaterial).color.set(edgeColor);
       n.originalColor.set(edgeColor);
