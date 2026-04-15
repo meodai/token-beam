@@ -22,20 +22,23 @@ const description =
     <meta property="og:url" content="https://tsp.figma.com/" />
   </head>
   <body>
-    <header>
-      <div class="container header-content">
-        <a href="/" class="logo"
-          ><span class="logo__part">Token</span>
-          <span class="logo__icon" aria-hidden="true">⊷</span>
-          <span class="logo__part">Beam</span></a
-        >
-        <nav>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a href="/" class="wm" aria-label="tsp — Token Sync Protocol">
+          <span>tsp</span><span class="wm__proto">://</span>
+        </a>
+        <nav class="site-nav">
           <a href="#demo" class="nav--desktop">Demo</a>
           <a href="#plugins" class="nav--desktop">Plugins</a>
+          <a href="#websites" class="nav--desktop">Websites</a>
           <a href="#developers" class="nav--desktop">Developers</a>
-          <a href="#pricing" class="nav--desktop">Server Plans</a>
-          <a href="https://github.com/meodai/token-beam">GitHub</a>
         </nav>
+        <div class="site-header__cta">
+          <a href="https://github.com/meodai/token-beam" class="site-header__link nav--desktop"
+            >GitHub</a
+          >
+          <a href="#plugins" class="btn btn--primary">Get started</a>
+        </div>
       </div>
     </header>
 
@@ -1097,16 +1100,26 @@ session.connect();`}
       </section>
     </main>
 
-    <footer>
-      <div class="container">
-        <p>
-          &copy; 2026 tsp by <a href="https://github.com/meodai">David Aerne (meodai)</a>
-        </p>
-        <p class="footer__links">
-          <a href="mailto:token-beam@elastiq.ch">token-beam@elastiq.ch</a> &middot;
-          <a href="https://github.com/meodai/token-beam">GitHub</a> &middot; Server, library & plugins
-          are open source
-        </p>
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <div class="site-footer__cols">
+          <div class="site-footer__col">
+            <span class="site-footer__label">Product</span>
+            <a href="#plugins">Plugins</a>
+            <a href="#websites">Websites</a>
+            <a href="#demo">Demo</a>
+          </div>
+          <div class="site-footer__col">
+            <span class="site-footer__label">Developers</span>
+            <a href="https://github.com/meodai/token-beam">GitHub</a>
+            <a href="https://www.npmjs.com/package/token-beam">npm</a>
+            <a href="mailto:token-beam@elastiq.ch">Contact</a>
+          </div>
+        </div>
+        <div class="site-footer__meta">
+          A Figma project<br />
+          tsp://1.31.0 &middot; tsp.figma.com
+        </div>
       </div>
     </footer>
   </body>
@@ -1313,19 +1326,25 @@ session.connect();`}
     /* --- Buttons --- */
 
     .btn {
-      display: inline-block;
-      padding: 0.55rem 0.9rem 0.35rem;
-      border: 2px solid currentColor;
-      background: var(--bg-layer-1);
-      color: currentColor;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.625rem 1.125rem;
+      border: 1px solid var(--hair);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
       font-family: inherit;
-      font-weight: 400;
-      font-size: 0.85rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      font-weight: 500;
+      font-size: 0.875rem;
+      letter-spacing: 0;
+      text-transform: none;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.2s var(--ease);
+      transition:
+        background 0.15s var(--ease),
+        border-color 0.15s var(--ease),
+        color 0.15s var(--ease);
     }
 
     .btn::after {
@@ -1334,25 +1353,23 @@ session.connect();`}
     }
 
     .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 2px 0 0 currentColor;
+      border-color: var(--ink);
     }
 
     .btn:active {
-      transform: translateY(0);
-      box-shadow: none;
+      background: var(--surface-2);
     }
 
     .btn--primary {
-      background: var(--interactive);
-      color: var(--bg);
-      border-color: var(--interactive);
+      background: var(--ink);
+      color: var(--surface);
+      border-color: var(--ink);
     }
 
     .btn--primary:hover {
-      box-shadow: 0 2px 0 0 var(--interactive);
-      background: var(--interactive-weak);
-      color: var(--text);
+      background: #000;
+      border-color: #000;
+      color: var(--surface);
     }
 
     .btn--block {
@@ -1363,59 +1380,78 @@ session.connect();`}
 
     /* --- Header --- */
 
-    header {
-      padding: 1.5rem 0;
-      border-bottom: 1px solid var(--line);
-      background: var(--bg);
+    .site-header {
+      border-bottom: 1px solid var(--hair-2);
+      background: var(--surface);
     }
 
-    .header-content {
+    .site-header__inner {
+      max-width: var(--container-w);
+      margin: 0 auto;
+      padding: 1.125rem var(--gutter);
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
     }
 
-    .logo {
-      font-size: 1rem;
-      font-weight: 400;
+    .wm {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--ink);
       text-decoration: none;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      overflow: hidden;
-
-      &:hover {
-        color: var(--text);
-      }
+      display: inline-flex;
+      align-items: baseline;
     }
 
-    .logo__icon {
-      display: inline-block;
-      font-size: 3em;
-      margin-inline: -0.2em;
-      line-height: 0.5;
-      left: -0.09em;
-      transform: translateY(31%);
-      color: var(--interactive);
-      transition: transform 0.4s var(--ease);
+    .wm__proto {
+      color: #b3b3b3;
+      font-weight: 500;
     }
 
-    .logo:hover .logo__icon {
-      transform: translateY(52%) translateX(-5%) rotate(-180deg);
+    .wm:hover {
+      color: var(--ink);
     }
 
-    nav {
+    .site-nav {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.75rem;
     }
 
-    nav a {
-      font-size: 0.8rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+    .site-nav a {
+      font-size: 0.875rem;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .site-nav a:hover {
+      color: var(--link);
+    }
+
+    .site-nav a::after {
+      content: none !important;
+    }
+
+    .site-header__cta {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+    }
+
+    .site-header__link {
+      font-size: 0.875rem;
+      color: var(--ink-2);
       text-decoration: none;
     }
 
-    nav a::after {
+    .site-header__link:hover {
+      color: var(--ink);
+    }
+
+    .site-header__link::after {
       content: none !important;
     }
 
@@ -1980,24 +2016,74 @@ session.connect();`}
 
     /* --- Footer --- */
 
-    footer {
-      padding: 3rem 0;
-      border-top: 1px solid var(--line);
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    .site-footer {
+      border-top: 1px solid var(--hair-2);
+      background: var(--surface);
+      margin-top: 4rem;
     }
 
-    footer a {
+    .site-footer__inner {
+      max-width: var(--container-w);
+      margin: 0 auto;
+      padding: 2.5rem var(--gutter) 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+    }
+
+    .site-footer__cols {
+      display: flex;
+      gap: 3rem;
+    }
+
+    .site-footer__col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .site-footer__label {
+      font-size: 0.6875rem;
+      color: #bbb;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.25rem;
+    }
+
+    .site-footer__col a {
+      font-size: 0.8125rem;
+      color: var(--ink-2);
       text-decoration: none;
     }
 
-    .footer__links {
-      margin-top: 0.5rem;
+    .site-footer__col a:hover {
+      color: var(--link);
     }
 
-    .footer__links a::after {
+    .site-footer__col a::after {
       content: none !important;
+    }
+
+    .site-footer__meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--ink-3);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 720px) {
+      .site-footer__inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .site-footer__cols {
+        gap: 2rem;
+      }
+      .site-footer__meta {
+        text-align: left;
+      }
     }
 
     /* --- Responsive --- */
