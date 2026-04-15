@@ -199,8 +199,8 @@ function initSync() {
   session = new SourceSession<TokenSyncPayload>({
     serverUrl: SYNC_SERVER_URL,
     clientType: 'web',
-    origin: '⊷ Token Beam',
-    icon: { type: 'unicode', value: '⊷' },
+    origin: 'tsp',
+    icon: { type: 'unicode', value: '⧉' },
   });
 
   session.on('paired', ({ sessionToken: pairedToken }) => {
