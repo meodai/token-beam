@@ -5,3 +5,4 @@ dist/
 lib-dist/
 *.zip
 bundle/
+.superpowers/
