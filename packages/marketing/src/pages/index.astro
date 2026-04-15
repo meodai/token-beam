@@ -64,8 +64,17 @@ const description =
         </div>
       </section>
 
-      <section class="diagram">
+      <section class="diagram sec" id="how-it-works">
         <div class="container">
+          <div class="section-header">
+            <span class="sec-label">§02 · How it works</span>
+            <h2 class="sec-title">One protocol.<br />Every design tool.</h2>
+            <p class="sec-lead">
+              tsp is a lightweight protocol that connects Figma, your IDE, Storybook, Framer, and
+              anything else that speaks tokens. Changes propagate instantly over <code>tsp://</code
+              >.
+            </p>
+          </div>
           <svg
             class="diagram__svg"
             viewBox="0 0 800 320"
@@ -634,9 +643,15 @@ const description =
         </div>
       </section>
 
-      <section class="demo" id="demo">
+      <section class="demo sec" id="demo">
         <div class="container">
-          <h2>Try It Now</h2>
+          <div class="section-header">
+            <span class="sec-label">§03 · Live demo</span>
+            <h2 class="sec-title">See tokens move,<br />in real time.</h2>
+            <p class="sec-lead">
+              Open this page in two windows. Change a token here, watch it land there.
+            </p>
+          </div>
           <div class="demo__step-row">
             <span class="demo__step-number">1</span>
             <p class="demo__step-text">
@@ -649,7 +664,8 @@ const description =
             <p class="demo__step-text">Copy the session token below</p>
           </div>
 
-          <div class="demo__widget-wrap">
+          <div class="demo__widget-wrap demo-frame">
+            <span class="demo-frame__label">Live demo &middot; session</span>
             <div class="dts-widget" data-dts="widget">
               <div class="dts-widget__row">
                 <span class="dts-widget__label">Session</span>
@@ -1549,11 +1565,51 @@ session.connect();`}
       font-size: 0.9375rem;
     }
 
+    /* --- Shared section primitives --- */
+
+    .sec {
+      padding: 5rem 0;
+      border-top: 1px solid var(--hair-2);
+    }
+
+    .section-header {
+      max-width: 42rem;
+      margin: 0 0 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .sec-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      color: var(--ink-3);
+      text-transform: none;
+    }
+
+    .sec-title {
+      font-size: var(--t-h1);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+      color: var(--ink);
+      text-align: left;
+      margin: 0;
+    }
+
+    .sec-lead {
+      font-size: 1.0625rem;
+      line-height: 1.55;
+      color: var(--ink-2);
+      margin: 0;
+      max-width: 38rem;
+    }
+
     /* --- Diagram Section --- */
 
     .diagram {
-      padding: 4rem 0;
-      border-top: 1px solid var(--line);
+      padding: 5rem 0;
     }
 
     .diagram__svg {
@@ -1603,9 +1659,27 @@ session.connect();`}
     /* --- Demo Section --- */
 
     .demo {
-      padding: 5rem 0;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
+      /* .sec provides padding + border-top */
+    }
+
+    .demo-frame {
+      position: relative;
+      border: 1px solid var(--link);
+      padding: 1.25rem;
+      border-radius: 4px;
+      margin: 2rem 0 1.5rem;
+    }
+
+    .demo-frame__label {
+      position: absolute;
+      top: -0.55rem;
+      left: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      color: var(--link);
+      background: var(--surface);
+      padding: 0 0.375rem;
+      letter-spacing: 0.02em;
     }
 
     .demo__step-row {
