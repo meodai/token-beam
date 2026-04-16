@@ -3,7 +3,7 @@ import { Code } from 'astro:components';
 import '../styles/widget.css';
 const title = 'tsp — Token Sync Protocol';
 const description =
-  'Sync design tokens live between any tools. Push color, type, and spacing from Figma to your codebase and every connected tool in real time. Free, from Figma.';
+  'Sync design tokens live in both directions between Figma, code, and every connected tool. Keep color, type, and spacing aligned in real time. Free, from Figma.';
 ---
 
 <!doctype html>
@@ -51,11 +51,13 @@ const description =
             Free &middot; from Figma
           </div>
           <h1>
-            Sync design tokens <span class="grad-word">live</span><br />between any tools.
+            Keep design tokens in sync between tools and code, in
+            <span class="grad-word">real-time</span>.
           </h1>
           <p class="hero-text">
-            Push color, type, and spacing from Figma to your codebase — and every connected tool —
-            in real time. Free, from the team at Figma.
+            Sync color, type, and spacing both ways between Figma, your codebase, and every
+            connected tool. Make a change anywhere and watch it propagate live. Free, from the
+            team at Figma.
           </p>
           <div class="hero-buttons">
             <a href="#plugins" class="btn btn--primary">Get started →</a>
@@ -70,9 +72,9 @@ const description =
             <span class="sec-label">§02 · How it works</span>
             <h2 class="sec-title">One protocol.<br />Every design tool.</h2>
             <p class="sec-lead">
-              tsp is a lightweight protocol that connects Figma, your IDE, Storybook, Framer, and
-              anything else that speaks tokens. Changes propagate instantly over <code>tsp://</code
-              >.
+              tsp is a lightweight protocol for two-way token sync between Figma, your IDE,
+              Storybook, Framer, and anything else that speaks tokens. Connect once, then let
+              changes flow instantly over <code>tsp://</code>.
             </p>
           </div>
           <svg
@@ -649,13 +651,14 @@ const description =
             <span class="sec-label">§03 · Live demo</span>
             <h2 class="sec-title">See tokens move,<br />in real time.</h2>
             <p class="sec-lead">
-              Open this page in two windows. Change a token here, watch it land there.
+              Open this page beside a plugin. Change tokens on either side and watch the other one
+              update live.
             </p>
           </div>
           <div class="demo__step-row">
             <span class="demo__step-number">1</span>
             <p class="demo__step-text">
-              <a href="#plugins">Install the plugin</a> for your design tool
+              <a href="#plugins">Install a plugin</a> for the tool you want to pair
             </p>
           </div>
 
@@ -683,8 +686,8 @@ const description =
                   >
                   <div class="dts-widget__tooltip">
                     <p>
-                      Copy the session token and paste it into your design tool's tsp plugin
-                      to start syncing.
+                      Copy the session token and paste it into a tsp-enabled plugin to start a
+                      live two-way sync session.
                     </p>
                     <p>Available plugins:</p>
                     <ul class="dts-widget__plugins" data-dts="plugin-list">
@@ -700,13 +703,13 @@ const description =
 
           <div class="demo__step-row">
             <span class="demo__step-number">3</span>
-            <p class="demo__step-text">Paste the token into your plugin and connect</p>
+            <p class="demo__step-text">Paste the token into your plugin and pair the session</p>
           </div>
 
           <div class="demo__step-row">
             <span class="demo__step-number">4</span>
             <p class="demo__step-text">
-              Generate colors and watch them sync to your design tool in real time
+              Change tokens here or in the connected tool and watch both sides stay in sync
             </p>
           </div>
 
@@ -750,7 +753,8 @@ const description =
             <span class="sec-label">§04 · Plugins</span>
             <h2 class="sec-title">Works with every<br />design tool you use.</h2>
             <p class="sec-lead">
-              Grab the free plugin for your favorite tool. One click install, works right away.
+              Grab the free plugin for your favorite tool and join the same live token session from
+              anywhere.
             </p>
           </div>
           <div class="plugins__grid">
@@ -761,7 +765,7 @@ const description =
               rel="noreferrer"
             >
               <h3>Figma <img src="/icons/figma.svg" class="plugins__icon" alt="" /></h3>
-              <p>Sync colors directly into Figma Variables.</p>
+              <p>Pull tokens into Figma Variables and keep them aligned with the rest of your stack.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a
@@ -771,7 +775,7 @@ const description =
               rel="noreferrer"
             >
               <h3>Sketch <img src="/icons/sketch.svg" class="plugins__icon" alt="" /></h3>
-              <p>Update your color palettes and document swatches in real time.</p>
+              <p>Keep document swatches and color palettes synced with the rest of your workflow.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a
@@ -781,7 +785,7 @@ const description =
               rel="noreferrer"
             >
               <h3>Krita <img src="/icons/krita.svg" class="plugins__icon" alt="" /></h3>
-              <p>Receive palettes straight into your painting workspace.</p>
+              <p>Bring shared palettes straight into your painting workspace as tokens change.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a
@@ -792,8 +796,8 @@ const description =
             >
               <h3>Aseprite <img src="/icons/aseprite.svg" class="plugins__icon" alt="" /></h3>
               <p>
-                Receive or send palettes. Visualize your color choices in real time while tweaking
-                shaders or generators.
+                Send palettes out or pull them in. Ideal for live back-and-forth between pixel art,
+                shaders, and palette generators.
               </p>
               <div class="pills">
                 <span class="pill pill--send">&#x2191; send</span>
@@ -807,7 +811,7 @@ const description =
               rel="noreferrer"
             >
               <h3>Blender <img src="/icons/blender.svg" class="plugins__icon" alt="" /></h3>
-              <p>Push colors into your 3D materials and scene lighting.</p>
+              <p>Bring token-driven colors into your materials, shaders, and scene lighting.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
             <a
@@ -817,7 +821,7 @@ const description =
               rel="noreferrer"
             >
               <h3>Adobe XD <img src="/icons/adobexd.svg" class="plugins__icon" alt="" /></h3>
-              <p>Sync tokens into your XD design libraries and assets.</p>
+              <p>Keep XD libraries and color assets aligned with tokens coming from the rest of your tools.</p>
               <div class="pills"><span class="pill pill--receive">&#x2193; receive</span></div>
             </a>
           </div>
@@ -830,8 +834,8 @@ const description =
             <span class="sec-label">§05 · Websites</span>
             <h2 class="sec-title">Already shipping<br />with tsp.</h2>
             <p class="sec-lead">
-              These apps already speak tsp. Some <strong>send</strong> palettes to your tools,
-              others <strong>receive</strong> them — or both.
+              These apps already speak tsp. Some publish tokens, some subscribe to them, and some
+              do both in the same session.
             </p>
           </div>
           <div class="websites__grid">
@@ -950,8 +954,8 @@ const description =
                 instantly
               </dt>
               <dd>
-                Tweak a color on your website and watch it update in Figma, Blender, or Aseprite in
-                real time. No exporting, no copy-pasting hex codes.
+                Change a token in code, Figma, or another connected app and see the update land
+                everywhere else immediately. No exports, no stale values, no copy-pasting hex.
               </dd>
             </div>
             <div class="feature">
@@ -960,8 +964,8 @@ const description =
                 format
               </dt>
               <dd>
-                Each design tool gets a native plugin. You just paste a token — the plugin handles
-                the rest. No configuration, no setup.
+                Each design tool gets a native plugin. Pair a session once and let the adapters
+                translate shared tokens into native formats for each tool.
               </dd>
             </div>
             <div class="feature">
@@ -969,8 +973,8 @@ const description =
                 <span class="feat-dot" style="background: var(--c-cyan)"></span>No accounts needed
               </dt>
               <dd>
-                Simple <code>tsp://</code> tokens connect your tools. No sign-up, no login, no
-                third-party services. Just copy-paste and you're syncing.
+                Simple <code>tsp://</code> tokens pair your tools. No sign-up, no login, no account
+                setup. Copy, paste, and start syncing.
               </dd>
             </div>
             <div class="feature">
@@ -978,8 +982,8 @@ const description =
                 <span class="feat-dot" style="background: var(--c-green)"></span>Works both ways
               </dt>
               <dd>
-                Send colors from a generator to your design tool — or push a palette from Aseprite
-                back to a web app. The connection goes in both directions.
+                Start in a palette generator, refine in Aseprite, review in Figma, or feed tokens
+                back into code. tsp treats sync as a loop, not a one-way export.
               </dd>
             </div>
             <div class="feature">
@@ -1008,10 +1012,10 @@ const description =
         <div class="container">
           <div class="section-header">
             <span class="sec-label">§07 · Developers</span>
-            <h2 class="sec-title">A few lines of code,<br />and you're syncing.</h2>
+            <h2 class="sec-title">A few lines of code,<br />and you're in the loop.</h2>
             <p class="sec-lead">
-              Add real-time token sync to any site or tool. Built on the W3C Design Tokens spec;
-              the <code>token-beam</code> library is MIT-licensed.
+              Add bidirectional token sync to any site or tool. Built on the W3C Design Tokens
+              spec; the <code>token-beam</code> library is MIT-licensed.
             </p>
           </div>
           <div class="developers__tabs">

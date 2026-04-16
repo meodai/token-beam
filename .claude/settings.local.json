@@ -31,7 +31,15 @@
       "WebFetch(domain:www.aseprite.org)",
       "Bash(npm run:*)",
       "Bash(cd:*)",
-      "WebFetch(domain:colorhunt.co)"
+      "WebFetch(domain:colorhunt.co)",
+      "Bash(npx tsc:*)",
+      "Bash(npx prettier:*)",
+      "Bash(/Users/meodai/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(pnpm dev *)",
+      "Bash(grep -H '\"version\"' /Users/meodai/Sites/figma-sync/packages/*/package.json)",
+      "Bash(lsof -ti:4321)"
     ]
   }
 }
