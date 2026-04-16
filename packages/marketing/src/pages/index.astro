@@ -48,7 +48,7 @@ const description =
         <div class="hero__inner">
           <div class="eyebrow">
             <span class="eyebrow__dot" aria-hidden="true"></span>
-            Free &middot; from Figma
+            by Figma
           </div>
           <h1>
             Keep design tokens in sync between tools and code, in
@@ -79,568 +79,295 @@ const description =
           </div>
           <svg
             class="diagram__svg"
-            viewBox="0 0 800 320"
+            viewBox="0 0 800 360"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            aria-label="tsp architecture diagram: any website connects via the tsp:// protocol through a sync server to multiple design tools"
+            aria-label="tsp architecture diagram: connected apps orbit around the tsp protocol and sync bidirectionally through Figma TSB"
           >
-            <!-- Left: Sources -->
-            <text
-              x="90"
-              y="12"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="11"
-              font-weight="600"
-              letter-spacing="0.08em"
-              opacity="0.5">ANY SOURCE</text
-            >
+            <defs>
+              <marker
+                id="diagram-arrow-desktop"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.3"></path>
+              </marker>
+            </defs>
+            <circle cx="400" cy="180" r="178" stroke="currentColor" stroke-width="1" stroke-dasharray="4 8" opacity="0.12"></circle>
+            <circle cx="400" cy="180" r="68" stroke="currentColor" stroke-width="2" fill="none"></circle>
 
-            <rect
-              x="16"
-              y="44"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="90"
-              y="67"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Your Website</text
-            >
+            <text x="400" y="160" text-anchor="middle" fill="currentColor" font-size="12" font-weight="600" letter-spacing="0.08em" opacity="0.55">tsp://</text>
+            <text x="400" y="188" text-anchor="middle" fill="currentColor" font-size="18" font-weight="600">Figma TSB</text>
 
-            <rect
-              x="16"
-              y="96"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="90"
-              y="119"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">React App</text
-            >
+            <g transform="translate(400 180) scale(1.08) translate(-400 -180)">
+            <g transform="translate(400 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="72s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -86 C0 -102 0 -120 0 -140" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-desktop)" marker-end="url(#diagram-arrow-desktop)"></path>
+                <g transform="translate(0 -166)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="72s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-68" y="-17" width="136" height="34" rx="17" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <image href="/icons/figma.svg" x="-36" y="-7" width="14" height="14"></image>
+                    <text x="10" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="11" font-weight="300">Figma</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <rect
-              x="16"
-              y="148"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="90"
-              y="171"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Design System</text
-            >
+            <g transform="translate(400 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="45" to="405" dur="72s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -86 C0 -102 0 -120 0 -140" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-desktop)" marker-end="url(#diagram-arrow-desktop)"></path>
+                <g transform="translate(0 -166)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-45" to="-405" dur="72s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-68" y="-17" width="136" height="34" rx="17" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <image href="/icons/figma.svg" x="-36" y="-7" width="14" height="14"></image>
+                    <text x="10" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="11" font-weight="300">Figma Make</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <rect
-              x="16"
-              y="200"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="90"
-              y="223"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Node.js Script</text
-            >
+            <g transform="translate(400 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="90" to="450" dur="72s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -86 C0 -102 0 -120 0 -140" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-desktop)" marker-end="url(#diagram-arrow-desktop)"></path>
+                <g transform="translate(0 -166)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-90" to="-450" dur="72s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-68" y="-17" width="136" height="34" rx="17" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <image href="/icons/adobexd.svg" x="-36" y="-7" width="14" height="14"></image>
+                    <text x="10" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="11" font-weight="300">Adobe XD</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <rect
-              x="16"
-              y="252"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="90"
-              y="275"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Any App</text
-            >
+            <g transform="translate(400 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="135" to="495" dur="72s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -86 C0 -102 0 -120 0 -140" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-desktop)" marker-end="url(#diagram-arrow-desktop)"></path>
+                <g transform="translate(0 -166)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-135" to="-495" dur="72s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-68" y="-17" width="136" height="34" rx="17" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <image href="/icons/blender.svg" x="-36" y="-7" width="14" height="14"></image>
+                    <text x="10" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="11" font-weight="300">Blender</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <!-- Arrow left to center -->
-            <line
-              x1="196"
-              y1="160"
-              x2="278"
-              y2="160"
-              stroke="currentColor"
-              stroke-width="1.5"
-              opacity="0.3"></line>
-            <polygon points="278,155 288,160 278,165" fill="currentColor" opacity="0.3"></polygon>
+            <g transform="translate(400 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="180" to="540" dur="72s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -86 C0 -102 0 -120 0 -140" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-desktop)" marker-end="url(#diagram-arrow-desktop)"></path>
+                <g transform="translate(0 -166)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-180" to="-540" dur="72s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-68" y="-17" width="136" height="34" rx="17" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="11" font-weight="300">Swift</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <!-- Center: Protocol + Server -->
-            <rect
-              x="296"
-              y="100"
-              width="208"
-              height="120"
-              stroke="currentColor"
-              stroke-width="2"
-              fill="none"></rect>
+            <g transform="translate(400 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="225" to="585" dur="72s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -86 C0 -102 0 -120 0 -140" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-desktop)" marker-end="url(#diagram-arrow-desktop)"></path>
+                <g transform="translate(0 -166)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-225" to="-585" dur="72s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-68" y="-17" width="136" height="34" rx="17" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="11" font-weight="300">Design System</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <text
-              x="400"
-              y="92"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="11"
-              font-weight="600"
-              letter-spacing="0.08em"
-              opacity="0.5">tsp://</text
-            >
+            <g transform="translate(400 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="270" to="630" dur="72s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -86 C0 -102 0 -120 0 -140" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-desktop)" marker-end="url(#diagram-arrow-desktop)"></path>
+                <g transform="translate(0 -166)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-270" to="-630" dur="72s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-68" y="-17" width="136" height="34" rx="17" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="11" font-weight="300">JavaScript</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <!-- tsp:// protocol badge -->
-            <rect x="320" y="118" width="160" height="30" fill="currentColor" opacity="1"></rect>
-            <text
-              x="400"
-              y="138"
-              text-anchor="middle"
-              font-size="14"
-              font-weight="400"
-              letter-spacing="0.06em"
-            >
-              <tspan fill="currentColor" class="diagram__proto-text">tsp://</tspan>
-            </text>
+            <g transform="translate(400 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="315" to="675" dur="72s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -86 C0 -102 0 -120 0 -140" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-desktop)" marker-end="url(#diagram-arrow-desktop)"></path>
+                <g transform="translate(0 -166)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-315" to="-675" dur="72s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-68" y="-17" width="136" height="34" rx="17" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="11" font-weight="300">Your Website</text>
+                  </g>
+                </g>
+              </g>
+            </g>
+            </g>
 
-            <!-- Server label -->
-            <text
-              x="400"
-              y="174"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="11"
-              font-weight="300"
-              opacity="0.6">WebSocket Relay Server</text
-            >
-
-            <!-- W3C badge -->
-            <text
-              x="400"
-              y="200"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="10"
-              font-weight="300"
-              opacity="0.4">W3C DTCG Spec</text
-            >
-
-            <!-- Arrow center to right -->
-            <line
-              x1="512"
-              y1="160"
-              x2="602"
-              y2="160"
-              stroke="currentColor"
-              stroke-width="1.5"
-              opacity="0.3"></line>
-            <polygon points="602,155 612,160 602,165" fill="currentColor" opacity="0.3"></polygon>
-
-            <!-- Right: Targets -->
-            <text
-              x="710"
-              y="12"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="11"
-              font-weight="600"
-              letter-spacing="0.08em"
-              opacity="0.5">ANY TARGET</text
-            >
-
-            <!-- Figma -->
-            <rect
-              x="636"
-              y="44"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <g transform="translate(644,52) scale(0.83)"
-              ><path
-                fill="currentColor"
-                d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"
-              ></path></g
-            >
-            <text
-              x="776"
-              y="67"
-              text-anchor="end"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Figma</text
-            >
-
-            <!-- Krita -->
-            <rect
-              x="636"
-              y="96"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <g transform="translate(644,104) scale(0.83)"
-              ><path
-                fill="currentColor"
-                d="M.652.76a.625.625 0 00-.5.246c-.352.448-.035.898.362 1.262.206.189 1.77 1.794 3.428 3.527a11.054 11.054 0 011.815-1.983C3.667 2.515 1.694 1.266 1.461 1.1 1.201.914.917.762.652.76zm5.105 3.052c1.848 1.148 3.786 2.332 4.693 2.84 1.469.821 3.758 2.684 4.092 4.434.535.466 2.182 1.916 2.596 2.413.698-.211 1.518.133 2.06 1.12.866 1.583.227 3.747-1.968 4.988a5.42 5.42 0 01-.296.267l.296-.267c1.14-1.468-.714-2.44-1.175-3.864a2.06 2.06 0 01-.11-.78c-.533-.282-2.11-1.452-2.795-1.965-1.801.16-4.207-1.773-5.35-3.08-.7-.802-2.32-2.517-3.858-4.123a11.052 11.052 0 00-2.046 6.393A11.052 11.052 0 1012.948 1.136c-2.64.004-5.19.954-7.19 2.676zm8.71 7.552c-.515.126-.968.831-1.118 1.306-.038.115-.04.303.066.342.802.592 1.556 1.168 2.4 1.7.162-.393.746-.963 1.096-1.2zm-11.53 1.639c.812 1.898 5.798 7.17 12.06 2.695a2.07 2.07 0 00.114.715c.46 1.42 2.36 2.427 1.238 3.89-2.135 1.364-5 1.201-6.989.528-3.558-1.204-5.914-4.332-6.424-7.828zm13.782.7a.771.771 0 00-.065.049c-.004.003-.008.008-.011.008.003-.003.007-.008.01-.008.024-.015.044-.034.066-.048z"
-              ></path></g
-            >
-            <text
-              x="776"
-              y="119"
-              text-anchor="end"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Krita</text
-            >
-
-            <!-- Aseprite -->
-            <rect
-              x="636"
-              y="148"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <g transform="translate(644,156) scale(0.83)"
-              ><path
-                fill="currentColor"
-                d="M4.006 0v1.6h15.988V0zm15.988 1.6v1.6h1.6V1.6zm1.6 1.6v14.4h-1.6v1.6H4.006v-1.6h-1.6V3.2H.809v17.6h1.599v1.6h1.599V24h15.988v-1.6h1.6v-1.6h1.598V3.2zm-19.187 0h1.599V1.6h-1.6zm4.796 3.2v6.4h1.6V6.4zm7.995 0v6.4h1.599V6.4z"
-              ></path></g
-            >
-            <text
-              x="776"
-              y="171"
-              text-anchor="end"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Aseprite</text
-            >
-
-            <!-- Blender -->
-            <rect
-              x="636"
-              y="200"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <g transform="translate(644,208) scale(0.83)"
-              ><path
-                fill="currentColor"
-                d="M12.51 13.214c.046-.8.438-1.506 1.03-2.006a3.424 3.424 0 0 1 2.212-.79c.85 0 1.631.3 2.211.79.592.5.983 1.206 1.028 2.005.045.823-.285 1.586-.865 2.153a3.389 3.389 0 0 1-2.374.938 3.393 3.393 0 0 1-2.376-.938c-.58-.567-.91-1.33-.865-2.152M7.35 14.831c.006.314.106.922.256 1.398a7.372 7.372 0 0 0 1.593 2.757 8.227 8.227 0 0 0 2.787 2.001 8.947 8.947 0 0 0 3.66.76 8.964 8.964 0 0 0 3.657-.772 8.285 8.285 0 0 0 2.785-2.01 7.428 7.428 0 0 0 1.592-2.762 6.964 6.964 0 0 0 .25-3.074 7.123 7.123 0 0 0-1.016-2.779 7.764 7.764 0 0 0-1.852-2.043h.002L13.566 2.55l-.02-.015c-.492-.378-1.319-.376-1.86.002-.547.382-.609 1.015-.123 1.415l-.001.001 3.126 2.543-9.53.01h-.013c-.788.001-1.545.518-1.695 1.172-.154.665.38 1.217 1.2 1.22V8.9l4.83-.01-8.62 6.617-.034.025c-.813.622-1.075 1.658-.563 2.313.52.667 1.625.668 2.447.004L7.414 14s-.069.52-.063.831zm12.09 1.741c-.97.988-2.326 1.548-3.795 1.55-1.47.004-2.827-.552-3.797-1.538a4.51 4.51 0 0 1-1.036-1.622 4.282 4.282 0 0 1 .282-3.519 4.702 4.702 0 0 1 1.153-1.371c.942-.768 2.141-1.183 3.396-1.185 1.256-.002 2.455.41 3.398 1.175.48.391.87.854 1.152 1.367a4.28 4.28 0 0 1 .522 1.706 4.236 4.236 0 0 1-.239 1.811 4.54 4.54 0 0 1-1.035 1.626"
-              ></path></g
-            >
-            <text
-              x="776"
-              y="223"
-              text-anchor="end"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Blender</text
-            >
-
-            <!-- Any Tool -->
-            <rect
-              x="636"
-              y="252"
-              width="148"
-              height="36"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="776"
-              y="275"
-              text-anchor="end"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Any Tool</text
-            >
           </svg>
 
           <!-- Portrait version for mobile -->
           <svg
             class="diagram__svg diagram__svg--mobile"
-            viewBox="0 0 320 700"
+            viewBox="0 0 320 360"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
-            <!-- Top: Sources -->
-            <text
-              x="160"
-              y="-8"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="11"
-              font-weight="600"
-              letter-spacing="0.08em"
-              color="var(--text-muted)">ANY SOURCE</text
-            >
+            <defs>
+              <marker
+                id="diagram-arrow-mobile"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.3"></path>
+              </marker>
+            </defs>
+            <circle cx="160" cy="180" r="132" stroke="currentColor" stroke-width="1" stroke-dasharray="4 8" opacity="0.12"></circle>
+            <circle cx="160" cy="180" r="46" stroke="currentColor" stroke-width="2" fill="none"></circle>
 
-            <rect
-              x="36"
-              y="20"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="41"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Your Website</text
-            >
+            <text x="160" y="168" text-anchor="middle" fill="currentColor" font-size="10" font-weight="600" letter-spacing="0.08em" opacity="0.55">tsp://</text>
+            <text x="160" y="192" text-anchor="middle" fill="currentColor" font-size="14" font-weight="600">Figma TSB</text>
 
-            <rect
-              x="36"
-              y="62"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="83"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">React App</text
-            >
+            <g transform="translate(160 180) scale(1.08) translate(-160 -180)">
+            <g transform="translate(160 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="64s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -62 C0 -74 0 -86 0 -100" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-mobile)" marker-end="url(#diagram-arrow-mobile)"></path>
+                <g transform="translate(0 -122)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="64s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-44" y="-14" width="88" height="28" rx="14" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <image href="/icons/figma.svg" x="-28" y="-6" width="12" height="12"></image>
+                    <text x="8" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="9" font-weight="300">Figma</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <rect
-              x="36"
-              y="104"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="125"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Design System</text
-            >
+            <g transform="translate(160 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="45" to="405" dur="64s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -62 C0 -74 0 -86 0 -100" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-mobile)" marker-end="url(#diagram-arrow-mobile)"></path>
+                <g transform="translate(0 -122)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-45" to="-405" dur="64s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-44" y="-14" width="88" height="28" rx="14" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <image href="/icons/figma.svg" x="-28" y="-6" width="12" height="12"></image>
+                    <text x="8" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="9" font-weight="300">Figma Make</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <rect
-              x="36"
-              y="146"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="167"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Any App</text
-            >
+            <g transform="translate(160 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="90" to="450" dur="64s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -62 C0 -74 0 -86 0 -100" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-mobile)" marker-end="url(#diagram-arrow-mobile)"></path>
+                <g transform="translate(0 -122)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-90" to="-450" dur="64s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-44" y="-14" width="88" height="28" rx="14" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <image href="/icons/adobexd.svg" x="-28" y="-6" width="12" height="12"></image>
+                    <text x="8" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="9" font-weight="300">Adobe XD</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <!-- Arrow down -->
-            <line
-              x1="160"
-              y1="228"
-              x2="160"
-              y2="258"
-              stroke="currentColor"
-              stroke-width="1.5"
-              color="var(--text-muted)"></line>
-            <polygon points="155,258 160,268 165,258" fill="currentColor"></polygon>
+            <g transform="translate(160 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="135" to="495" dur="64s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -62 C0 -74 0 -86 0 -100" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-mobile)" marker-end="url(#diagram-arrow-mobile)"></path>
+                <g transform="translate(0 -122)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-135" to="-495" dur="64s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-44" y="-14" width="88" height="28" rx="14" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <image href="/icons/blender.svg" x="-28" y="-6" width="12" height="12"></image>
+                    <text x="8" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="9" font-weight="300">Blender</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <!-- Center: Protocol -->
-            <rect
-              x="56"
-              y="296"
-              width="208"
-              height="108"
-              stroke="currentColor"
-              stroke-width="2"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="288"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="11"
-              font-weight="600"
-              letter-spacing="0.08em"
-              color="var(--text-muted)">tsp://</text
-            >
-            <rect x="80" y="314" width="160" height="28" fill="currentColor"></rect>
-            <text
-              x="160"
-              y="333"
-              text-anchor="middle"
-              font-size="14"
-              font-weight="400"
-              letter-spacing="0.06em"
-            >
-              <tspan fill="currentColor" class="diagram__proto-text">tsp://</tspan>
-            </text>
-            <text
-              x="160"
-              y="368"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="11"
-              font-weight="300"
-              color="var(--text-muted)">WebSocket Relay Server</text
-            >
-            <text
-              x="160"
-              y="390"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="10"
-              font-weight="300"
-              color="var(--text-subtle)">W3C DTCG Spec</text
-            >
+            <g transform="translate(160 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="180" to="540" dur="64s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -62 C0 -74 0 -86 0 -100" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-mobile)" marker-end="url(#diagram-arrow-mobile)"></path>
+                <g transform="translate(0 -122)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-180" to="-540" dur="64s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-44" y="-14" width="88" height="28" rx="14" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="9" font-weight="300">Swift</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <!-- Arrow down -->
-            <line
-              x1="160"
-              y1="412"
-              x2="160"
-              y2="442"
-              stroke="currentColor"
-              stroke-width="1.5"
-              color="var(--text-muted)"></line>
-            <polygon points="155,442 160,452 165,442" fill="currentColor"></polygon>
+            <g transform="translate(160 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="225" to="585" dur="64s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -62 C0 -74 0 -86 0 -100" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-mobile)" marker-end="url(#diagram-arrow-mobile)"></path>
+                <g transform="translate(0 -122)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-225" to="-585" dur="64s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-44" y="-14" width="88" height="28" rx="14" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="9" font-weight="300">Design System</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <!-- Bottom: Targets -->
-            <text
-              x="160"
-              y="472"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="11"
-              font-weight="600"
-              letter-spacing="0.08em"
-              color="var(--text-muted)">ANY TARGET</text
-            >
+            <g transform="translate(160 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="270" to="630" dur="64s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -62 C0 -74 0 -86 0 -100" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-mobile)" marker-end="url(#diagram-arrow-mobile)"></path>
+                <g transform="translate(0 -122)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-270" to="-630" dur="64s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-44" y="-14" width="88" height="28" rx="14" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="9" font-weight="300">JavaScript</text>
+                  </g>
+                </g>
+              </g>
+            </g>
 
-            <rect
-              x="36"
-              y="500"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="521"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Figma</text
-            >
+            <g transform="translate(160 180)">
+              <g>
+                <animateTransform attributeName="transform" type="rotate" from="315" to="675" dur="64s" repeatCount="indefinite"></animateTransform>
+                <path d="M0 -62 C0 -74 0 -86 0 -100" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-start="url(#diagram-arrow-mobile)" marker-end="url(#diagram-arrow-mobile)"></path>
+                <g transform="translate(0 -122)">
+                  <g>
+                    <animateTransform attributeName="transform" type="rotate" from="-315" to="-675" dur="64s" repeatCount="indefinite"></animateTransform>
+                    <rect x="-44" y="-14" width="88" height="28" rx="14" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" fill="currentColor" font-size="9" font-weight="300">Your Website</text>
+                  </g>
+                </g>
+              </g>
+            </g>
+            </g>
 
-            <rect
-              x="36"
-              y="542"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="563"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Krita</text
-            >
-
-            <rect
-              x="36"
-              y="584"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="605"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Aseprite</text
-            >
-
-            <rect
-              x="36"
-              y="626"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="647"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Blender</text
-            >
-
-            <rect
-              x="36"
-              y="668"
-              width="248"
-              height="32"
-              stroke="currentColor"
-              stroke-width="1.5"
-              fill="none"></rect>
-            <text
-              x="160"
-              y="689"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              font-weight="300">Any Tool</text
-            >
           </svg>
         </div>
       </section>
@@ -1578,6 +1305,7 @@ session.connect();`}
       margin: 0 auto;
       display: block;
       font-family: var(--font-mono);
+      overflow: visible;
     }
 
     .diagram__proto-text {
@@ -1586,6 +1314,19 @@ session.connect();`}
 
     .diagram__svg--mobile {
       display: none;
+      overflow: visible;
+    }
+
+    .diagram__svg rect,
+    .diagram__svg--mobile rect {
+      fill: var(--surface);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .diagram__svg animateTransform,
+      .diagram__svg--mobile animateTransform {
+        display: none;
+      }
     }
 
     @media (max-width: 768px) {
