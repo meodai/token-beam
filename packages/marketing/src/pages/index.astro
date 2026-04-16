@@ -1071,72 +1071,6 @@ session.connect();`}
         </div>
       </section>
 
-      <section class="pricing" id="pricing">
-        <div class="container">
-          <h2>Server Plans</h2>
-          <p class="section-intro">
-            Using tsp is always free. These plans are only for companies running their own
-            sync server.
-          </p>
-          <div class="pricing__grid">
-            <div class="pricing__card">
-              <h3>Free</h3>
-              <div class="pricing__price">$0</div>
-              <div class="pricing__detail">Forever</div>
-              <ul>
-                <li>Self-hosted (AGPL-3.0)</li>
-                <li>MIT library (<code>token-beam</code> on npm)</li>
-                <li>All plugins included (MIT)</li>
-                <li>Community support</li>
-              </ul>
-              <a href="https://github.com/meodai/token-beam" class="btn btn--block">Get Started</a>
-            </div>
-
-            <div class="pricing__card pricing__card--featured">
-              <h3>Pro</h3>
-              <div class="pricing__price">$29</div>
-              <div class="pricing__detail">per month</div>
-              <ul>
-                <li>Hosted by us (no setup)</li>
-                <li>Unlimited sessions</li>
-                <li>99.9% uptime SLA</li>
-                <li>Email support</li>
-              </ul>
-              <a href="mailto:token-beam@elastiq.ch" class="btn btn--primary btn--block"
-                >Get Started</a
-              >
-            </div>
-
-            <div class="pricing__card">
-              <h3>Enterprise</h3>
-              <div class="pricing__price">Custom</div>
-              <div class="pricing__detail">contact us</div>
-              <ul>
-                <li>Everything in Pro</li>
-                <li>Commercial self-hosting license</li>
-                <li>SSO & SAML authentication</li>
-                <li>Priority support (24h SLA)</li>
-                <li>Custom integrations</li>
-              </ul>
-              <a href="mailto:token-beam@elastiq.ch" class="btn btn--primary btn--block"
-                >Contact Sales</a
-              >
-            </div>
-          </div>
-
-          <div class="pricing__note">
-            <p>
-              <strong>100% Open Source.</strong> The server (AGPL-3.0), library and all plugins (MIT)
-              are fully open source.
-            </p>
-            <p>
-              <strong>OSS Exception:</strong> Open source projects get Pro hosting free. <a
-                href="mailto:token-beam@elastiq.ch">Apply here</a
-              >.
-            </p>
-          </div>
-        </div>
-      </section>
     </main>
 
     <footer class="site-footer">
@@ -1668,15 +1602,6 @@ session.connect();`}
       }
     }
 
-    /* --- Section intro --- */
-
-    .section-intro {
-      text-align: center;
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      margin-bottom: 2.5rem;
-    }
-
     /* --- Demo Section --- */
 
     .demo {
@@ -2006,100 +1931,6 @@ session.connect();`}
       }
     }
 
-    /* --- Pricing --- */
-
-    .pricing {
-      padding: 5rem 0;
-      border-top: 1px solid var(--line);
-    }
-
-    .pricing__grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 0;
-      max-width: 54rem;
-      margin: 0 auto;
-    }
-
-    .pricing__card {
-      padding: 2rem 1.5rem;
-      border: 2px solid var(--line);
-      margin-left: -2px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .pricing__card:first-child {
-      margin-left: 0;
-    }
-
-    .pricing__card--featured {
-      border-color: var(--text);
-      z-index: 1;
-    }
-
-    .pricing__card h3 {
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.25rem;
-    }
-
-    .pricing__price {
-      font-size: 2.4rem;
-      font-weight: 200;
-      letter-spacing: -0.03em;
-      margin: 0 0 0.25rem;
-    }
-
-    .pricing__detail {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 1.5rem;
-    }
-
-    .pricing__card .btn {
-      margin-top: auto;
-    }
-
-    .pricing__card ul {
-      list-style: none;
-      margin: 1.5rem 0;
-    }
-
-    .pricing__card li {
-      padding: 0.3rem 0;
-      padding-left: 1.2rem;
-      position: relative;
-      font-size: 0.85rem;
-    }
-
-    .pricing__card li::before {
-      content: '+';
-      position: absolute;
-      left: 0;
-      color: var(--text-subtle);
-      font-weight: 400;
-    }
-
-    .pricing__note {
-      text-align: center;
-      margin-top: 2.5rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .pricing__note p + p {
-      margin-top: 0.25rem;
-    }
-
-    .pricing__note a::after {
-      content: none !important;
-    }
-
     /* --- Footer --- */
 
     .site-footer {
@@ -2213,24 +2044,7 @@ session.connect();`}
 
       .developers__links {
         flex-direction: column;
-        align-items: center;
-      }
-
-      .features__grid {
-        grid-template-columns: 1fr;
-      }
-
-      .pricing__grid {
-        grid-template-columns: 1fr;
-      }
-
-      .pricing__card {
-        margin-left: 0;
-        margin-top: -2px;
-      }
-
-      .pricing__card:first-child {
-        margin-top: 0;
+        align-items: flex-start;
       }
     }
 
